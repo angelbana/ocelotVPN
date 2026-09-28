@@ -219,13 +219,13 @@ Window {
                     GhostButton {
                         glyph: "window"
                         onClicked: root.windowRequested("connection")
-                        ToolTip.text: qsTr("Open the Ocelot window")
+                        tip: qsTr("Open the Ocelot window")
                     }
 
                     GhostButton {
                         glyph: "gear"
                         onClicked: root.windowRequested("settings")
-                        ToolTip.text: qsTr("Settings")
+                        tip: qsTr("Settings")
                     }
                 }
             }
@@ -385,20 +385,20 @@ Window {
                 GhostButton {
                     glyph: "log"
                     onClicked: root.windowRequested("log")
-                    ToolTip.text: qsTr("Activity log")
+                    tip: qsTr("Activity log")
                 }
 
                 GhostButton {
                     glyph: "info"
                     onClicked: root.windowRequested("about")
-                    ToolTip.text: qsTr("About Ocelot")
+                    tip: qsTr("About Ocelot")
                 }
 
                 GhostButton {
                     glyph: "power"
                     tint: Theme.faint
                     onClicked: controller.quit()
-                    ToolTip.text: qsTr("Quit Ocelot")
+                    tip: qsTr("Quit Ocelot")
                 }
             }
         }

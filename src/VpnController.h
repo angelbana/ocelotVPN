@@ -47,6 +47,9 @@ class VpnController : public QObject {
     Q_PROPERTY(QString currentProfile READ currentProfile WRITE setCurrentProfile NOTIFY currentProfileChanged)
     Q_PROPERTY(QString gateway READ gateway NOTIFY currentProfileChanged)
     Q_PROPERTY(QString protocolName READ protocolName NOTIFY currentProfileChanged)
+    // The same protocol in one word, for the places where the full name -
+    // "Cisco AnyConnect or OpenConnect" - would crowd out everything beside it.
+    Q_PROPERTY(QString protocolShortName READ protocolShortName NOTIFY currentProfileChanged)
     // The character shown for the selected profile, and one entry per profile
     // for the list beside it. The list is a property of its own because the
     // sidebar needs a name, an emoji and a server for every profile at once.
@@ -152,6 +155,7 @@ public:
     void setCurrentProfile(const QString& name);
     QString gateway() const;
     QString protocolName() const;
+    QString protocolShortName() const;
     QString profileEmoji() const;
     QVariantList profileEntries() const;
 
@@ -314,6 +318,7 @@ private:
     QString m_currentProfile;
     QString m_gateway;
     QString m_protocolName;
+    QString m_protocolShortName;
     QString m_profileEmoji;
 
     QString m_ip;

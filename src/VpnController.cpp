@@ -321,6 +321,7 @@ void VpnController::loadCurrentProfileInfo()
 {
     m_gateway.clear();
     m_protocolName.clear();
+    m_protocolShortName.clear();
     m_profileEmoji.clear();
 
     if (m_currentProfile.isEmpty() == true) {
@@ -338,6 +339,7 @@ void VpnController::loadCurrentProfileInfo()
         const QVariantMap entry = item.toMap();
         if (entry.value("name").toString() == protocol) {
             m_protocolName = entry.value("label").toString();
+            m_protocolShortName = entry.value("short").toString();
             break;
         }
     }
@@ -351,6 +353,11 @@ QString VpnController::gateway() const
 QString VpnController::protocolName() const
 {
     return m_protocolName;
+}
+
+QString VpnController::protocolShortName() const
+{
+    return m_protocolShortName;
 }
 
 QString VpnController::profileEmoji() const
@@ -635,7 +642,7 @@ QVariantList VpnController::languages() const
 
     QVariantMap russian;
     russian["value"] = LanguageRussian;
-    russian["label"] = QString::fromUtf8("Ð ÑÑÑÐºÐ¸Ð¹");
+    russian["label"] = QStringLiteral("Русский");
     list.append(russian);
 
     return list;
@@ -1238,6 +1245,25 @@ void VpnController::answerPrompt(bool accepted, const QString& text)
     }
 }
 
+// The library's own pretty names say what a protocol is compatible with, which
+// is long: "Cisco AnyConnect or OpenConnect". Beside a connect button there is
+// room for one word, so each protocol gets one here.
+static QString shortProtocolName(const QString& name)
+{
+    static const QHash<QString, QString> names{
+        { QStringLiteral("anyconnect"), QStringLiteral("AnyConnect") },
+        { QStringLiteral("nc"), QStringLiteral("Juniper") },
+        { QStringLiteral("pulse"), QStringLiteral("Pulse") },
+        { QStringLiteral("gp"), QStringLiteral("GlobalProtect") },
+        { QStringLiteral("f5"), QStringLiteral("F5") },
+        { QStringLiteral("fortinet"), QStringLiteral("Fortinet") },
+        { QStringLiteral("array"), QStringLiteral("Array") }
+    };
+
+    const QString known = names.value(name);
+    return known.isEmpty() ? name.toUpper() : known;
+}
+
 QVariantList VpnController::protocols() const
 {
     QVariantList list;
@@ -1245,9 +1271,11 @@ QVariantList VpnController::protocols() const
 
     if (openconnect_get_supported_protocols(&protos) >= 0) {
         for (oc_vpn_proto* p = protos; p->name; ++p) {
+            const QString name = QString::fromUtf8(p->name);
             list.append(QVariantMap{
-                { QStringLiteral("name"), QString::fromUtf8(p->name) },
+                { QStringLiteral("name"), name },
                 { QStringLiteral("label"), QString::fromUtf8(p->pretty_name) },
+                { QStringLiteral("short"), shortProtocolName(name) },
                 { QStringLiteral("description"), QString::fromUtf8(p->description) } });
         }
         openconnect_free_supported_protocols(protos);
@@ -1742,8 +1770,10 @@ QString VpnController::aboutText() const
     // is passed on, and the artwork travels inside the installer, the app
     // image and the disk image. A note in docs/ would not reach anyone who
     // receives the program.
-    txt += tr("<br>Icon by Google, from the Material Design Icons, used under "
-              "<a href=\"https://creativecommons.org/licenses/by/4.0/\">CC BY 4.0</a>.<br>");
+    txt += tr("<br>The two icons in the notification area are by Google, from the "
+              "Material Design Icons, used under "
+              "<a href=\"https://creativecommons.org/licenses/by/4.0/\">CC BY 4.0</a>. "
+              "Everything else here is drawn by this program.<br>");
 
     return txt;
 }

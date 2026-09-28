@@ -253,6 +253,7 @@ Popup {
         }
 
         ScrollView {
+            ScrollBar.vertical: AppScrollBar {}
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true

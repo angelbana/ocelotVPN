@@ -3,22 +3,22 @@
 <context>
     <name>AboutPane</name>
     <message>
-        <location filename="../qml/AboutPane.qml" line="91" />
+        <location filename="../qml/AboutPane.qml" line="92" />
         <source>Project page</source>
         <translation>Страница проекта</translation>
     </message>
     <message>
-        <location filename="../qml/AboutPane.qml" line="97" />
+        <location filename="../qml/AboutPane.qml" line="98" />
         <source>Report an issue</source>
         <translation>Сообщить о проблеме</translation>
     </message>
     <message>
-        <location filename="../qml/AboutPane.qml" line="103" />
+        <location filename="../qml/AboutPane.qml" line="104" />
         <source>License</source>
         <translation>Лицензия</translation>
     </message>
     <message>
-        <location filename="../qml/AboutPane.qml" line="121" />
+        <location filename="../qml/AboutPane.qml" line="122" />
         <source>Built on</source>
         <translation>Собрано на</translation>
     </message>
@@ -39,188 +39,188 @@
 <context>
     <name>ConnectionPane</name>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="68" />
+        <location filename="../qml/ConnectionPane.qml" line="69" />
         <source>Ocelot</source>
         <translation>Ocelot</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="86" />
+        <location filename="../qml/ConnectionPane.qml" line="87" />
         <source>The connection dropped — dialling again shortly</source>
         <translation>Связь оборвалась — скоро наберём снова</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="107" />
+        <location filename="../qml/ConnectionPane.qml" line="108" />
         <source>DTLS</source>
         <translation>DTLS</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="123" />
+        <location filename="../qml/ConnectionPane.qml" line="126" />
         <source>Add a profile to tell Ocelot which VPN to dial.</source>
         <translation>Добавьте профиль, чтобы Ocelot знал, куда звонить.</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="145" />
+        <location filename="../qml/ConnectionPane.qml" line="152" />
         <source>Disconnect</source>
         <translation>Отключиться</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="146" />
+        <location filename="../qml/ConnectionPane.qml" line="153" />
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="147" />
+        <location filename="../qml/ConnectionPane.qml" line="154" />
         <source>Disconnecting</source>
         <translation>Отключаемся</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="148" />
+        <location filename="../qml/ConnectionPane.qml" line="155" />
         <source>Connect</source>
         <translation>Подключиться</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="161" />
+        <location filename="../qml/ConnectionPane.qml" line="168" />
         <source>via %1</source>
         <translation>по %1</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="195" />
+        <location filename="../qml/ConnectionPane.qml" line="202" />
         <source>Connected, but no DNS servers were applied</source>
         <translation>Подключено, но серверы имён не назначены</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="204" />
+        <location filename="../qml/ConnectionPane.qml" line="211" />
         <source>Traffic will route, but names on the VPN will not resolve. Either the server sent no resolvers, or the vpnc script could not apply them.</source>
         <translation>Трафик пойдёт, но имена внутри VPN разрешаться не будут. Либо сервер не прислал серверы имён, либо сценарий vpnc не смог их применить.</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="215" />
+        <location filename="../qml/ConnectionPane.qml" line="222" />
         <source>Open the log</source>
         <translation>Открыть журнал</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="232" />
+        <location filename="../qml/ConnectionPane.qml" line="239" />
         <source>Throughput</source>
         <translation>Поток</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="244" />
+        <location filename="../qml/ConnectionPane.qml" line="251" />
         <source>Download</source>
         <translation>Приём</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="246" />
-        <location filename="../qml/ConnectionPane.qml" line="255" />
+        <location filename="../qml/ConnectionPane.qml" line="253" />
+        <location filename="../qml/ConnectionPane.qml" line="262" />
         <source>%1 in total</source>
         <translation>всего %1</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="253" />
+        <location filename="../qml/ConnectionPane.qml" line="260" />
         <source>Upload</source>
         <translation>Передача</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="262" />
+        <location filename="../qml/ConnectionPane.qml" line="269" />
         <source>Uptime</source>
         <translation>На связи</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="297" />
+        <location filename="../qml/ConnectionPane.qml" line="304" />
         <source>IPv4 address</source>
         <translation>Адрес IPv4</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="305" />
+        <location filename="../qml/ConnectionPane.qml" line="312" />
         <source>IPv6 address</source>
         <translation>Адрес IPv6</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="312" />
+        <location filename="../qml/ConnectionPane.qml" line="319" />
         <source>DNS servers</source>
         <translation>Серверы имён</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="313" />
+        <location filename="../qml/ConnectionPane.qml" line="320" />
         <source>none applied</source>
         <translation>не назначены</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="320" />
+        <location filename="../qml/ConnectionPane.qml" line="327" />
         <source>Search domains</source>
         <translation>Домены поиска</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="326" />
+        <location filename="../qml/ConnectionPane.qml" line="333" />
         <source>CSTP cipher</source>
         <translation>Шифр CSTP</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="334" />
+        <location filename="../qml/ConnectionPane.qml" line="341" />
         <source>DTLS cipher</source>
         <translation>Шифр DTLS</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="351" />
+        <location filename="../qml/ConnectionPane.qml" line="358" />
         <source>This profile</source>
         <translation>Этот профиль</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="389" />
+        <location filename="../qml/ConnectionPane.qml" line="396" />
         <source>Edit</source>
         <translation>Изменить</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="402" />
+        <location filename="../qml/ConnectionPane.qml" line="409" />
         <source>Protocol</source>
         <translation>Протокол</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="409" />
+        <location filename="../qml/ConnectionPane.qml" line="416" />
         <source>Last connected</source>
         <translation>Последнее подключение</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="415" />
+        <location filename="../qml/ConnectionPane.qml" line="422" />
         <source>Name resolution</source>
         <translation>Разрешение имён</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="416" />
+        <location filename="../qml/ConnectionPane.qml" line="423" />
         <source>everything through the VPN</source>
         <translation>всё через VPN</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="417" />
+        <location filename="../qml/ConnectionPane.qml" line="424" />
         <source>as the server asks</source>
         <translation>как просит сервер</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="422" />
+        <location filename="../qml/ConnectionPane.qml" line="429" />
         <source>Connects without asking</source>
         <translation>Подключается без вопросов</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="423" />
+        <location filename="../qml/ConnectionPane.qml" line="430" />
         <source>yes, the password is remembered</source>
         <translation>да, пароль запомнен</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="424" />
+        <location filename="../qml/ConnectionPane.qml" line="431" />
         <source>no, it asks every time</source>
         <translation>нет, спрашивает каждый раз</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="483" />
+        <location filename="../qml/ConnectionPane.qml" line="490" />
         <source>No profile yet</source>
         <translation>Профилей пока нет</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="492" />
+        <location filename="../qml/ConnectionPane.qml" line="499" />
         <source>A profile is one VPN: its address, who you sign in as, and how.</source>
         <translation>Профиль — это один VPN: его адрес, под кем вы входите и как.</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="503" />
+        <location filename="../qml/ConnectionPane.qml" line="510" />
         <source>Add a profile</source>
         <translation>Добавить профиль</translation>
     </message>
@@ -256,74 +256,74 @@
 <context>
     <name>Main</name>
     <message>
-        <location filename="../qml/Main.qml" line="155" />
-        <location filename="../qml/Main.qml" line="158" />
         <location filename="../qml/Main.qml" line="161" />
+        <location filename="../qml/Main.qml" line="164" />
+        <location filename="../qml/Main.qml" line="167" />
         <source>Check for updates</source>
         <translation>Проверка обновлений</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="156" />
+        <location filename="../qml/Main.qml" line="162" />
         <source>The latest version could not be determined.</source>
         <translation>Не удалось узнать, какая версия самая свежая.</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="159" />
+        <location filename="../qml/Main.qml" line="165" />
         <source>You are up to date. The latest version is %1.</source>
         <translation>У вас свежая версия. Последняя — %1.</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="162" />
+        <location filename="../qml/Main.qml" line="168" />
         <source>Version %1 is available, you have %2.&lt;br&gt;&lt;a href="%3"&gt;Download it here&lt;/a&gt;.</source>
         <translation>Доступна версия %1, у вас %2.&lt;br&gt;&lt;a href="%3"&gt;Скачать&lt;/a&gt;.</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="208" />
+        <location filename="../qml/Main.qml" line="214" />
         <source>Ocelot</source>
         <translation>Ocelot</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="242" />
+        <location filename="../qml/Main.qml" line="249" />
         <source>Profiles</source>
         <translation>Профили</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="284" />
+        <location filename="../qml/Main.qml" line="291" />
         <source>New profile</source>
         <translation>Новый профиль</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="309" />
+        <location filename="../qml/Main.qml" line="316" />
         <source>Activity log</source>
         <translation>Журнал событий</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="310" />
+        <location filename="../qml/Main.qml" line="317" />
         <source>Settings</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="311" />
+        <location filename="../qml/Main.qml" line="318" />
         <source>About</source>
         <translation>О программе</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="359" />
+        <location filename="../qml/Main.qml" line="366" />
         <source>License</source>
         <translation>Лицензия</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="404" />
+        <location filename="../qml/Main.qml" line="411" />
         <source>Remove</source>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="409" />
+        <location filename="../qml/Main.qml" line="416" />
         <source>Remove this profile?</source>
         <translation>Удалить профиль?</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="410" />
+        <location filename="../qml/Main.qml" line="417" />
         <source>The profile '%1' and the password saved with it are deleted from this computer.</source>
         <translation>Профиль «%1» и сохранённый с ним пароль будут удалены с этого компьютера.</translation>
     </message>
@@ -435,240 +435,240 @@
         <translation>Дополнительно</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="275" />
+        <location filename="../qml/ProfileEditor.qml" line="276" />
         <source>Name</source>
         <translation>Название</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="287" />
+        <location filename="../qml/ProfileEditor.qml" line="288" />
         <source>Character</source>
         <translation>Значок</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="329" />
+        <location filename="../qml/ProfileEditor.qml" line="330" />
         <source>VPN protocol</source>
         <translation>Протокол VPN</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="346" />
+        <location filename="../qml/ProfileEditor.qml" line="347" />
         <source>Gateway</source>
         <translation>Шлюз</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="369" />
+        <location filename="../qml/ProfileEditor.qml" line="370" />
         <source>Username</source>
         <translation>Имя пользователя</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="383" />
+        <location filename="../qml/ProfileEditor.qml" line="384" />
         <source>Password</source>
         <translation>Пароль</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="397" />
+        <location filename="../qml/ProfileEditor.qml" line="398" />
         <source>The password for this server</source>
         <translation>Пароль для этого сервера</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="398" />
+        <location filename="../qml/ProfileEditor.qml" line="399" />
         <source>Asked for at every connection</source>
         <translation>Спрашивается при каждом подключении</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="404" />
+        <location filename="../qml/ProfileEditor.qml" line="405" />
         <source>Remember it</source>
         <translation>Запомнить</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="410" />
+        <location filename="../qml/ProfileEditor.qml" line="411" />
         <source>Windows seals a remembered password to this account on this computer, so it cannot be read anywhere else — and turning this off deletes it.</source>
         <translation>Запомненный пароль Windows запечатывает под эту учётную запись на этом компьютере, поэтому прочитать его больше негде — а если выключить, он будет удалён.</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="421" />
+        <location filename="../qml/ProfileEditor.qml" line="422" />
         <source>Group name</source>
         <translation>Группа</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="435" />
-        <location filename="../qml/ProfileEditor.qml" line="475" />
-        <location filename="../qml/ProfileEditor.qml" line="519" />
-        <location filename="../qml/ProfileEditor.qml" line="603" />
-        <location filename="../qml/ProfileEditor.qml" line="646" />
+        <location filename="../qml/ProfileEditor.qml" line="436" />
+        <location filename="../qml/ProfileEditor.qml" line="476" />
+        <location filename="../qml/ProfileEditor.qml" line="520" />
+        <location filename="../qml/ProfileEditor.qml" line="604" />
+        <location filename="../qml/ProfileEditor.qml" line="647" />
         <source>Clear</source>
         <translation>Очистить</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="444" />
+        <location filename="../qml/ProfileEditor.qml" line="445" />
         <source>OTP token</source>
         <translation>Одноразовый пароль</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="459" />
+        <location filename="../qml/ProfileEditor.qml" line="460" />
         <source>Token secret</source>
         <translation>Секрет токена</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="471" />
+        <location filename="../qml/ProfileEditor.qml" line="472" />
         <source>0x... or base32:...</source>
         <translation>0x... или base32:...</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="495" />
+        <location filename="../qml/ProfileEditor.qml" line="496" />
         <source>CA certificate</source>
         <translation>Сертификат удостоверяющего центра</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="507" />
+        <location filename="../qml/ProfileEditor.qml" line="508" />
         <source>System trust store</source>
         <translation>Системное хранилище доверия</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="511" />
-        <location filename="../qml/ProfileEditor.qml" line="595" />
-        <location filename="../qml/ProfileEditor.qml" line="641" />
-        <location filename="../qml/ProfileEditor.qml" line="759" />
+        <location filename="../qml/ProfileEditor.qml" line="512" />
+        <location filename="../qml/ProfileEditor.qml" line="596" />
+        <location filename="../qml/ProfileEditor.qml" line="642" />
+        <location filename="../qml/ProfileEditor.qml" line="760" />
         <source>Browse...</source>
         <translation>Обзор...</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="541" />
+        <location filename="../qml/ProfileEditor.qml" line="542" />
         <source>Trusted server certificate</source>
         <translation>Доверенный сертификат сервера</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="560" />
+        <location filename="../qml/ProfileEditor.qml" line="561" />
         <source>Forget</source>
         <translation>Забыть</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="571" />
+        <location filename="../qml/ProfileEditor.qml" line="572" />
         <source>Saved the first time you accepted this server. Forget it if the server's certificate changed.</source>
         <translation>Сохранён, когда вы впервые приняли этот сервер. Забудьте его, если сертификат сервера сменился.</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="579" />
+        <location filename="../qml/ProfileEditor.qml" line="580" />
         <source>User certificate</source>
         <translation>Сертификат пользователя</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="591" />
+        <location filename="../qml/ProfileEditor.qml" line="592" />
         <source>Stored in the profile</source>
         <translation>Хранится в профиле</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="591" />
-        <location filename="../qml/ProfileEditor.qml" line="637" />
+        <location filename="../qml/ProfileEditor.qml" line="592" />
+        <location filename="../qml/ProfileEditor.qml" line="638" />
         <source>None</source>
         <translation>Нет</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="625" />
+        <location filename="../qml/ProfileEditor.qml" line="626" />
         <source>User key</source>
         <translation>Ключ пользователя</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="657" />
+        <location filename="../qml/ProfileEditor.qml" line="658" />
         <source>Certificate from the system store</source>
         <translation>Сертификат из системного хранилища</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="712" />
+        <location filename="../qml/ProfileEditor.qml" line="713" />
         <source>Interface name</source>
         <translation>Имя интерфейса</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="720" />
+        <location filename="../qml/ProfileEditor.qml" line="721" />
         <source>Automatic</source>
         <translation>Автоматически</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="726" />
+        <location filename="../qml/ProfileEditor.qml" line="727" />
         <source>Log level</source>
         <translation>Подробность журнала</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="733" />
+        <location filename="../qml/ProfileEditor.qml" line="734" />
         <source>Application default</source>
         <translation>Как в программе</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="743" />
+        <location filename="../qml/ProfileEditor.qml" line="744" />
         <source>vpnc-script</source>
         <translation>vpnc-script</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="755" />
+        <location filename="../qml/ProfileEditor.qml" line="756" />
         <source>Bundled vpnc-script</source>
         <translation>Встроенный vpnc-script</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="767" />
+        <location filename="../qml/ProfileEditor.qml" line="768" />
         <source>Reconnect timeout, s</source>
         <translation>Время на переподключение, с</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="782" />
+        <location filename="../qml/ProfileEditor.qml" line="783" />
         <source>DTLS attempt period, s</source>
         <translation>Период попыток DTLS, с</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="800" />
+        <location filename="../qml/ProfileEditor.qml" line="801" />
         <source>Minimize on connect</source>
         <translation>Сворачивать при подключении</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="807" />
+        <location filename="../qml/ProfileEditor.qml" line="808" />
         <source>Name resolution</source>
         <translation>Разрешение имён</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="814" />
+        <location filename="../qml/ProfileEditor.qml" line="815" />
         <source>As the server asks (split)</source>
         <translation>Как просит сервер (раздельно)</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="815" />
+        <location filename="../qml/ProfileEditor.qml" line="816" />
         <source>Everything through the VPN</source>
         <translation>Всё через VPN</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="821" />
+        <location filename="../qml/ProfileEditor.qml" line="822" />
         <source>Split sends only the domains the server named through the tunnel, and leaves the rest to your usual resolvers.</source>
         <translation>При раздельном режиме через туннель идут только домены, которые назвал сервер, остальное остаётся вашим обычным серверам имён.</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="823" />
+        <location filename="../qml/ProfileEditor.qml" line="824" />
         <source>Only Windows honours this; elsewhere the vpnc script decides.</source>
         <translation>Это учитывает только Windows; в других системах решает сценарий vpnc.</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="834" />
+        <location filename="../qml/ProfileEditor.qml" line="835" />
         <source>Disable UDP</source>
         <translation>Без UDP</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="835" />
+        <location filename="../qml/ProfileEditor.qml" line="836" />
         <source>Use only TLS; skips DTLS.</source>
         <translation>Только TLS, без DTLS.</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="842" />
+        <location filename="../qml/ProfileEditor.qml" line="843" />
         <source>Use system proxy</source>
         <translation>Системный прокси</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="860" />
+        <location filename="../qml/ProfileEditor.qml" line="861" />
         <source>Remove profile</source>
         <translation>Удалить профиль</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="873" />
+        <location filename="../qml/ProfileEditor.qml" line="874" />
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileEditor.qml" line="879" />
+        <location filename="../qml/ProfileEditor.qml" line="880" />
         <source>Save</source>
         <translation>Сохранить</translation>
     </message>
@@ -681,27 +681,27 @@
         <translation>Последнее подключение: %1</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileRow.qml" line="134" />
+        <location filename="../qml/ProfileRow.qml" line="136" />
         <source>Edit this profile</source>
         <translation>Изменить этот профиль</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileRow.qml" line="148" />
+        <location filename="../qml/ProfileRow.qml" line="150" />
         <source>Connect</source>
         <translation>Подключиться</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileRow.qml" line="154" />
+        <location filename="../qml/ProfileRow.qml" line="156" />
         <source>Edit…</source>
         <translation>Изменить…</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileRow.qml" line="160" />
+        <location filename="../qml/ProfileRow.qml" line="162" />
         <source>Duplicate</source>
         <translation>Сделать копию</translation>
     </message>
     <message>
-        <location filename="../qml/ProfileRow.qml" line="165" />
+        <location filename="../qml/ProfileRow.qml" line="167" />
         <source>Remove…</source>
         <translation>Удалить…</translation>
     </message>
@@ -709,22 +709,22 @@
 <context>
     <name>PromptSheet</name>
     <message>
-        <location filename="../qml/PromptSheet.qml" line="171" />
+        <location filename="../qml/PromptSheet.qml" line="154" />
         <source>Hide certificate details</source>
         <translation>Скрыть данные сертификата</translation>
     </message>
     <message>
-        <location filename="../qml/PromptSheet.qml" line="171" />
+        <location filename="../qml/PromptSheet.qml" line="154" />
         <source>Show certificate details</source>
         <translation>Показать данные сертификата</translation>
     </message>
     <message>
-        <location filename="../qml/PromptSheet.qml" line="215" />
+        <location filename="../qml/PromptSheet.qml" line="199" />
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../qml/PromptSheet.qml" line="223" />
+        <location filename="../qml/PromptSheet.qml" line="207" />
         <source>Continue</source>
         <translation>Продолжить</translation>
     </message>
@@ -803,32 +803,32 @@
         <translation> Осталось немного попыток до блокировки токена!</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="132" />
+        <location filename="../main.cpp" line="136" />
         <source>OpenConnect is a VPN client, that utilizes TLS and DTLS for secure session establishment, and is compatible with many VPN protocols.</source>
         <translation>OpenConnect — клиент VPN: он устанавливает защищённый сеанс по TLS и DTLS и понимает многие протоколы VPN.</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="138" />
+        <location filename="../main.cpp" line="142" />
         <source>auto-connect to existing profile &lt;name&gt;</source>
         <translation>подключиться к готовому профилю &lt;name&gt;</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="139" />
+        <location filename="../main.cpp" line="143" />
         <source>name</source>
         <translation>название</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="146" />
+        <location filename="../main.cpp" line="150" />
         <source>started by the sign-in task</source>
         <translation>запущено заданием на вход в систему</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="155" />
+        <location filename="../main.cpp" line="159" />
         <source>The bundled font could not be loaded; falling back to the system one</source>
         <translation>Встроенный шрифт не загрузился, берём системный</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="176" />
+        <location filename="../main.cpp" line="180" />
         <source>Could not load the user interface</source>
         <translation>Не удалось загрузить интерфейс</translation>
     </message>
@@ -838,58 +838,58 @@
         <translation>Вход с запомненным паролем не удался, пробуем спросить заново</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1003" />
+        <location filename="../VpnController.cpp" line="1006" />
         <source>Disconnecting...</source>
         <translation>Отключаемся...</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1021" />
+        <location filename="../VpnController.cpp" line="1024" />
         <source>term_thread: IPC error: %1</source>
         <translation>term_thread: ошибка межпроцессного обмена: %1</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1089" />
+        <location filename="../VpnController.cpp" line="1092" />
         <location filename="../vpninfo.cpp" line="605" />
         <source>Disconnected</source>
         <translation>Отключено</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1193" />
+        <location filename="../VpnController.cpp" line="1196" />
         <source>update_stats: IPC error: %1</source>
         <translation>update_stats: ошибка межпроцессного обмена: %1</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1197" />
+        <location filename="../VpnController.cpp" line="1200" />
         <source>update_stats: invalid socket</source>
         <translation>update_stats: недействительный сокет</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1653" />
+        <location filename="../VpnController.cpp" line="1677" />
         <source>Skipping automatic check for current version</source>
         <translation>Автоматическая проверка версии пропущена</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1665" />
+        <location filename="../VpnController.cpp" line="1689" />
         <source>Checking for current version</source>
         <translation>Проверяем, какая версия свежая</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1693" />
+        <location filename="../VpnController.cpp" line="1717" />
         <source>Version location: %1</source>
         <translation>Адрес версии: %1</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1700" />
+        <location filename="../VpnController.cpp" line="1724" />
         <source>Latest available version is %1, current %2</source>
         <translation>Самая свежая версия — %1, текущая — %2</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1710" />
+        <location filename="../VpnController.cpp" line="1734" />
         <source>Unable to identify current version from %1</source>
         <translation>Не удалось определить версию по %1</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1713" />
+        <location filename="../VpnController.cpp" line="1737" />
         <source>Unable to identify current version: %1</source>
         <translation>Не удалось определить текущую версию: %1</translation>
     </message>
@@ -1048,247 +1048,247 @@
 <context>
     <name>SettingsPane</name>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="91" />
+        <location filename="../qml/SettingsPane.qml" line="92" />
         <source>Settings</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="108" />
+        <location filename="../qml/SettingsPane.qml" line="109" />
         <source>Connecting without being asked</source>
         <translation>Подключение без вопросов</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="112" />
+        <location filename="../qml/SettingsPane.qml" line="113" />
         <source>Which profile</source>
         <translation>Какой профиль</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="113" />
+        <location filename="../qml/SettingsPane.qml" line="114" />
         <source>The one the two settings below dial.</source>
         <translation>Тот, который набирают две настройки ниже.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="117" />
+        <location filename="../qml/SettingsPane.qml" line="118" />
         <source>Nothing</source>
         <translation>Ничего</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="128" />
+        <location filename="../qml/SettingsPane.qml" line="129" />
         <source>Connect when Ocelot starts</source>
         <translation>Подключаться при запуске Ocelot</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="129" />
+        <location filename="../qml/SettingsPane.qml" line="130" />
         <source>Dials as soon as the window is up, however it was started.</source>
         <translation>Набирает, как только появилось окно, — как бы программу ни запустили.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="139" />
+        <location filename="../qml/SettingsPane.qml" line="140" />
         <source>Connect when I sign in to Windows</source>
         <translation>Подключаться при входе в Windows</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="140" />
+        <location filename="../qml/SettingsPane.qml" line="141" />
         <source>Turning this on also has Ocelot start at sign-in, since it cannot dial before it is running.</source>
         <translation>Вместе с этим включится и запуск при входе: пока программа не запущена, набирать некому.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="154" />
+        <location filename="../qml/SettingsPane.qml" line="155" />
         <source>Dial again if the connection drops</source>
         <translation>Набирать снова, если связь оборвалась</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="155" />
+        <location filename="../qml/SettingsPane.qml" line="156" />
         <source>Only after a connection that was up and was not ended by you. The waits grow: 5 seconds, then 10, 20, 30, a minute, and then it stops.</source>
         <translation>Только после соединения, которое уже работало и оборвалось не по вашей воле. Паузы растут: 5 секунд, потом 10, 20, 30, минута — и попытки прекращаются.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="172" />
+        <location filename="../qml/SettingsPane.qml" line="173" />
         <source>The program</source>
         <translation>Программа</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="178" />
+        <location filename="../qml/SettingsPane.qml" line="179" />
         <source>Start Ocelot when I sign in</source>
         <translation>Запускать Ocelot при входе в систему</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="179" />
+        <location filename="../qml/SettingsPane.qml" line="180" />
         <source>Registered as a scheduled task, which is what lets it start with the privileges it needs without asking every time.</source>
         <translation>Заводится как задание планировщика — только так программа получает нужные права при запуске, не спрашивая каждый раз.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="191" />
+        <location filename="../qml/SettingsPane.qml" line="192" />
         <source>Start out of the way</source>
         <translation>Запускаться незаметно</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="192" />
+        <location filename="../qml/SettingsPane.qml" line="193" />
         <source>Open straight to the notification area instead of showing the window.</source>
         <translation>Сразу в область уведомлений, без окна.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="202" />
+        <location filename="../qml/SettingsPane.qml" line="203" />
         <source>Keep running in the notification area</source>
         <translation>Оставаться в области уведомлений</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="203" />
+        <location filename="../qml/SettingsPane.qml" line="204" />
         <source>Minimizing puts Ocelot in the tray rather than the taskbar.</source>
         <translation>При сворачивании Ocelot уходит в трей, а не на панель задач.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="213" />
+        <location filename="../qml/SettingsPane.qml" line="214" />
         <source>Closing the window leaves Ocelot running</source>
         <translation>Закрытие окна не выключает Ocelot</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="214" />
+        <location filename="../qml/SettingsPane.qml" line="215" />
         <source>Quit from the tray menu. A connection survives a closed window; it does not survive quitting.</source>
         <translation>Выйти можно из меню в трее. Закрытое окно соединение переживёт, выход — нет.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="225" />
+        <location filename="../qml/SettingsPane.qml" line="226" />
         <source>Say when the tunnel comes up or goes down</source>
         <translation>Сообщать о подключении и отключении</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="226" />
+        <location filename="../qml/SettingsPane.qml" line="227" />
         <source>A short message from the notification area, and nothing while the connection just sits there working.</source>
         <translation>Короткое сообщение из области уведомлений — и тишина, пока соединение просто работает.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="237" />
+        <location filename="../qml/SettingsPane.qml" line="238" />
         <source>One Ocelot at a time</source>
         <translation>Только один Ocelot</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="238" />
+        <location filename="../qml/SettingsPane.qml" line="239" />
         <source>Starting it again brings this window forward instead of opening a second one.</source>
         <translation>Повторный запуск поднимает это окно, а не открывает второе.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="255" />
+        <location filename="../qml/SettingsPane.qml" line="256" />
         <source>Appearance</source>
         <translation>Внешний вид</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="259" />
+        <location filename="../qml/SettingsPane.qml" line="260" />
         <source>Language</source>
         <translation>Язык</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="260" />
+        <location filename="../qml/SettingsPane.qml" line="261" />
         <source>Takes effect straight away.</source>
         <translation>Применяется сразу.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="276" />
+        <location filename="../qml/SettingsPane.qml" line="277" />
         <source>Three looks with the same layout: only the colours change.</source>
         <translation>Три вида с одинаковым расположением: меняются только цвета.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="290" />
+        <location filename="../qml/SettingsPane.qml" line="291" />
         <source>Ocelot</source>
         <translation>Ocelot</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="290" />
+        <location filename="../qml/SettingsPane.qml" line="291" />
         <source>warm paper</source>
         <translation>тёплая бумага</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="291" />
+        <location filename="../qml/SettingsPane.qml" line="292" />
         <source>Day</source>
         <translation>Дневная</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="291" />
+        <location filename="../qml/SettingsPane.qml" line="292" />
         <source>cool and light</source>
         <translation>светлая и прохладная</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="292" />
+        <location filename="../qml/SettingsPane.qml" line="293" />
         <source>Night</source>
         <translation>Ночная</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="292" />
+        <location filename="../qml/SettingsPane.qml" line="293" />
         <source>dark</source>
         <translation>тёмная</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="373" />
+        <location filename="../qml/SettingsPane.qml" line="374" />
         <source>Maintenance</source>
         <translation>Обслуживание</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="378" />
+        <location filename="../qml/SettingsPane.qml" line="379" />
         <source>Look for new versions</source>
         <translation>Искать новые версии</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="379" />
+        <location filename="../qml/SettingsPane.qml" line="380" />
         <source>Asks GitHub every few days whether a newer release exists. Nothing is downloaded or installed without you.</source>
         <translation>Раз в несколько дней спрашивает GitHub, вышло ли что-то новее. Ничего не скачивается и не ставится без вас.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="388" />
+        <location filename="../qml/SettingsPane.qml" line="389" />
         <source>Updates</source>
         <translation>Обновления</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="390" />
+        <location filename="../qml/SettingsPane.qml" line="391" />
         <source>Checking…</source>
         <translation>Проверяем…</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="392" />
+        <location filename="../qml/SettingsPane.qml" line="393" />
         <source>Version %1 is installed.</source>
         <translation>Установлена версия %1.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="394" />
+        <location filename="../qml/SettingsPane.qml" line="395" />
         <source>Version %1 is out; you have %2.</source>
         <translation>Вышла версия %1, у вас %2.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="396" />
+        <location filename="../qml/SettingsPane.qml" line="397" />
         <source>Version %1 is installed, which is the latest.</source>
         <translation>Установлена версия %1 — она же самая свежая.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="401" />
+        <location filename="../qml/SettingsPane.qml" line="402" />
         <source>Download</source>
         <translation>Приём</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="401" />
+        <location filename="../qml/SettingsPane.qml" line="402" />
         <source>Check now</source>
         <translation>Проверить</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="421" />
+        <location filename="../qml/SettingsPane.qml" line="422" />
         <source>Split DNS</source>
         <translation>Разделённый DNS</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="422" />
+        <location filename="../qml/SettingsPane.qml" line="423" />
         <source>A connection that ended abruptly can leave its rules behind, and the names they cover stop resolving.</source>
         <translation>Резко оборвавшееся соединение может оставить свои правила, и имена, которых они касаются, перестают разрешаться.</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="427" />
+        <location filename="../qml/SettingsPane.qml" line="428" />
         <source>Repair</source>
         <translation>Починить</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="435" />
+        <location filename="../qml/SettingsPane.qml" line="436" />
         <source>Log level</source>
         <translation>Подробность журнала</translation>
     </message>
     <message>
-        <location filename="../qml/SettingsPane.qml" line="436" />
+        <location filename="../qml/SettingsPane.qml" line="437" />
         <source>Profiles set to the program default use this. Debug and trace carry protocol details, so share those with care.</source>
         <translation>Это берут профили, где выбрано «как в программе». Отладка и трассировка содержат подробности протокола — делитесь ими осторожно.</translation>
     </message>
@@ -1339,113 +1339,113 @@
 <context>
     <name>TrayPopover</name>
     <message>
-        <location filename="../qml/TrayPopover.qml" line="157" />
+        <location filename="../qml/TrayPopover.qml" line="177" />
         <source>Ocelot</source>
         <translation>Ocelot</translation>
     </message>
     <message>
-        <location filename="../qml/TrayPopover.qml" line="176" />
+        <location filename="../qml/TrayPopover.qml" line="196" />
         <source>Dialling again shortly</source>
         <translation>Скоро наберём снова</translation>
     </message>
     <message>
-        <location filename="../qml/TrayPopover.qml" line="202" />
+        <location filename="../qml/TrayPopover.qml" line="222" />
         <source>Open the Ocelot window</source>
         <translation>Открыть окно Ocelot</translation>
     </message>
     <message>
-        <location filename="../qml/TrayPopover.qml" line="208" />
+        <location filename="../qml/TrayPopover.qml" line="228" />
         <source>Settings</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../qml/TrayPopover.qml" line="227" />
+        <location filename="../qml/TrayPopover.qml" line="247" />
         <source>Down</source>
         <translation>Приём</translation>
     </message>
     <message>
-        <location filename="../qml/TrayPopover.qml" line="229" />
-        <location filename="../qml/TrayPopover.qml" line="238" />
+        <location filename="../qml/TrayPopover.qml" line="249" />
+        <location filename="../qml/TrayPopover.qml" line="258" />
         <source>%1 total</source>
         <translation>всего %1</translation>
     </message>
     <message>
-        <location filename="../qml/TrayPopover.qml" line="236" />
+        <location filename="../qml/TrayPopover.qml" line="256" />
         <source>Up</source>
         <translation>Передача</translation>
     </message>
     <message>
-        <location filename="../qml/TrayPopover.qml" line="258" />
+        <location filename="../qml/TrayPopover.qml" line="278" />
         <source>IP address</source>
         <translation>Адрес IP</translation>
     </message>
     <message>
-        <location filename="../qml/TrayPopover.qml" line="265" />
+        <location filename="../qml/TrayPopover.qml" line="285" />
         <source>DNS</source>
         <translation>DNS</translation>
     </message>
     <message>
-        <location filename="../qml/TrayPopover.qml" line="266" />
+        <location filename="../qml/TrayPopover.qml" line="286" />
         <source>none applied</source>
         <translation>не назначены</translation>
     </message>
     <message>
-        <location filename="../qml/TrayPopover.qml" line="282" />
+        <location filename="../qml/TrayPopover.qml" line="302" />
         <source>Disconnect</source>
         <translation>Отключиться</translation>
     </message>
     <message>
-        <location filename="../qml/TrayPopover.qml" line="283" />
+        <location filename="../qml/TrayPopover.qml" line="303" />
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../qml/TrayPopover.qml" line="284" />
+        <location filename="../qml/TrayPopover.qml" line="304" />
         <source>Disconnecting</source>
         <translation>Отключаемся</translation>
     </message>
     <message>
-        <location filename="../qml/TrayPopover.qml" line="285" />
+        <location filename="../qml/TrayPopover.qml" line="305" />
         <source>Add your first profile</source>
         <translation>Добавьте первый профиль</translation>
     </message>
     <message>
-        <location filename="../qml/TrayPopover.qml" line="287" />
+        <location filename="../qml/TrayPopover.qml" line="307" />
         <source>Connect to %1</source>
         <translation>Подключиться к %1</translation>
     </message>
     <message>
-        <location filename="../qml/TrayPopover.qml" line="288" />
+        <location filename="../qml/TrayPopover.qml" line="308" />
         <source>Connect</source>
         <translation>Подключиться</translation>
     </message>
     <message>
-        <location filename="../qml/TrayPopover.qml" line="310" />
+        <location filename="../qml/TrayPopover.qml" line="330" />
         <source>Profiles</source>
         <translation>Профили</translation>
     </message>
     <message>
-        <location filename="../qml/TrayPopover.qml" line="326" />
+        <location filename="../qml/TrayPopover.qml" line="346" />
         <source>No server set</source>
         <translation>Сервер не указан</translation>
     </message>
     <message>
-        <location filename="../qml/TrayPopover.qml" line="354" />
+        <location filename="../qml/TrayPopover.qml" line="374" />
         <source>Add profile</source>
         <translation>Добавить профиль</translation>
     </message>
     <message>
-        <location filename="../qml/TrayPopover.qml" line="368" />
+        <location filename="../qml/TrayPopover.qml" line="388" />
         <source>Activity log</source>
         <translation>Журнал событий</translation>
     </message>
     <message>
-        <location filename="../qml/TrayPopover.qml" line="374" />
+        <location filename="../qml/TrayPopover.qml" line="394" />
         <source>About Ocelot</source>
         <translation>Об Ocelot</translation>
     </message>
     <message>
-        <location filename="../qml/TrayPopover.qml" line="381" />
+        <location filename="../qml/TrayPopover.qml" line="401" />
         <source>Quit Ocelot</source>
         <translation>Выйти из Ocelot</translation>
     </message>
@@ -1468,323 +1468,327 @@
         <translation>Набираем снова после обрыва связи (попытка %1)</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="632" />
+        <location filename="../VpnController.cpp" line="635" />
         <source>Same as Windows</source>
         <translation>Как в Windows</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="705" />
+        <location filename="../VpnController.cpp" line="708" />
         <source>Starting with Windows</source>
         <translation>Запуск вместе с Windows</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="706" />
+        <location filename="../VpnController.cpp" line="709" />
         <source>The scheduled task could not be changed.</source>
         <translation>Не удалось изменить задание планировщика.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="752" />
+        <location filename="../VpnController.cpp" line="755" />
         <source>Connecting when you sign in</source>
         <translation>Подключение при входе в систему</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="753" />
+        <location filename="../VpnController.cpp" line="756" />
         <source>The scheduled task could not be created.</source>
         <translation>Не удалось создать задание планировщика.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="846" />
+        <location filename="../VpnController.cpp" line="849" />
         <source>Giving up on dialling again; connect by hand when the server is back</source>
         <translation>Больше не набираем: подключитесь вручную, когда сервер вернётся</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="855" />
+        <location filename="../VpnController.cpp" line="858" />
         <source>The connection was lost; dialling again in %1 seconds</source>
         <translation>Связь оборвалась, наберём снова через %1 с</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="881" />
+        <location filename="../VpnController.cpp" line="884" />
         <source>Nothing was connected at start: no profile is named for it</source>
         <translation>При запуске подключаться не к чему: профиль для этого не выбран</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="885" />
+        <location filename="../VpnController.cpp" line="888" />
         <source>Connecting to %1 at start</source>
         <translation>Подключаемся к %1 при запуске</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="905" />
-        <location filename="../VpnController.cpp" line="911" />
-        <location filename="../VpnController.cpp" line="920" />
-        <location filename="../VpnController.cpp" line="938" />
-        <location filename="../VpnController.cpp" line="949" />
+        <location filename="../VpnController.cpp" line="908" />
+        <location filename="../VpnController.cpp" line="914" />
+        <location filename="../VpnController.cpp" line="923" />
+        <location filename="../VpnController.cpp" line="941" />
+        <location filename="../VpnController.cpp" line="952" />
         <source>Connection failed</source>
         <translation>Подключиться не удалось</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="906" />
+        <location filename="../VpnController.cpp" line="909" />
         <source>A previous VPN instance is still running.</source>
         <translation>Предыдущее соединение ещё не завершилось.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="912" />
+        <location filename="../VpnController.cpp" line="915" />
         <source>Select a VPN profile to connect to.</source>
         <translation>Выберите профиль, к которому подключаться.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="921" />
+        <location filename="../VpnController.cpp" line="924" />
         <source>Selected VPN profile '%1' does not exist.</source>
         <translation>Выбранного профиля «%1» не существует.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="939" />
+        <location filename="../VpnController.cpp" line="942" />
         <source>There was an issue initializing the VPN (%1).</source>
         <translation>Не удалось подготовить соединение (%1).</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="950" />
+        <location filename="../VpnController.cpp" line="953" />
         <source>There was an issue establishing IPC with openconnect; try restarting the application.</source>
         <translation>Не удалось наладить обмен с openconnect, попробуйте перезапустить программу.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="978" />
+        <location filename="../VpnController.cpp" line="981" />
         <source>Setting proxy to: %1</source>
         <translation>Ставим прокси: %1</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="981" />
+        <location filename="../VpnController.cpp" line="984" />
         <source>Unexpected error setting proxy</source>
         <translation>Неожиданная ошибка при настройке прокси</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1069" />
+        <location filename="../VpnController.cpp" line="1072" />
         <source>Connected</source>
         <translation>Подключено</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1070" />
+        <location filename="../VpnController.cpp" line="1073" />
         <source>You are connected to %1</source>
         <translation>Вы подключены к %1</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1107" />
+        <location filename="../VpnController.cpp" line="1110" />
         <source>The connection dropped</source>
         <translation>Связь оборвалась</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1109" />
+        <location filename="../VpnController.cpp" line="1112" />
         <source>The tunnel to %1 is closed.</source>
         <translation>Туннель до %1 закрыт.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1110" />
+        <location filename="../VpnController.cpp" line="1113" />
         <source>The tunnel to %1 went down.</source>
         <translation>Туннель до %1 упал.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1266" />
+        <location filename="../VpnController.cpp" line="1290" />
         <source>Disabled</source>
         <translation>Выключено</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1267" />
+        <location filename="../VpnController.cpp" line="1291" />
         <source>STOKEN (RSA)</source>
         <translation>STOKEN (RSA)</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1268" />
+        <location filename="../VpnController.cpp" line="1292" />
         <source>TOTP</source>
         <translation>TOTP</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1269" />
+        <location filename="../VpnController.cpp" line="1293" />
         <source>HOTP</source>
         <translation>HOTP</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1276" />
+        <location filename="../VpnController.cpp" line="1300" />
         <source>Error</source>
         <translation>Ошибки</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1277" />
+        <location filename="../VpnController.cpp" line="1301" />
         <source>Info</source>
         <translation>Обычная</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1278" />
+        <location filename="../VpnController.cpp" line="1302" />
         <source>Debug</source>
         <translation>Отладка</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1279" />
+        <location filename="../VpnController.cpp" line="1303" />
         <source>Trace</source>
         <translation>Трассировка</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1372" />
+        <location filename="../VpnController.cpp" line="1396" />
         <source>You need to specify a gateway. E.g. vpn.example.com:443</source>
         <translation>Укажите шлюз, например vpn.example.com:443</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1375" />
+        <location filename="../VpnController.cpp" line="1399" />
         <source>You need to specify a name for this connection. E.g. 'My company'</source>
         <translation>Дайте соединению название, например «Работа»</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1385" />
+        <location filename="../VpnController.cpp" line="1409" />
         <source>Enter password</source>
         <translation>Введите пароль</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1405" />
+        <location filename="../VpnController.cpp" line="1429" />
         <source>Cannot import CA certificate.</source>
         <translation>Не удалось прочитать сертификат удостоверяющего центра.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1410" />
+        <location filename="../VpnController.cpp" line="1434" />
         <source>Cannot import user key.</source>
         <translation>Не удалось прочитать ключ пользователя.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1415" />
+        <location filename="../VpnController.cpp" line="1439" />
         <source>Cannot import user certificate.</source>
         <translation>Не удалось прочитать сертификат пользователя.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1419" />
+        <location filename="../VpnController.cpp" line="1443" />
         <source>There is a client certificate specified but no key!</source>
         <translation>Сертификат пользователя указан, а ключ — нет!</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1478" />
+        <location filename="../VpnController.cpp" line="1502" />
         <source>%1 (copy)</source>
         <translation>%1 (копия)</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1480" />
+        <location filename="../VpnController.cpp" line="1504" />
         <source>%1 (copy %2)</source>
         <translation>%1 (копия %2)</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1556" />
-        <location filename="../VpnController.cpp" line="1638" />
+        <location filename="../VpnController.cpp" line="1580" />
+        <location filename="../VpnController.cpp" line="1662" />
         <source>Connect to...</source>
         <translation>Подключиться к...</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1558" />
+        <location filename="../VpnController.cpp" line="1582" />
         <source>Disconnect</source>
         <translation>Отключиться</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1563" />
+        <location filename="../VpnController.cpp" line="1587" />
         <source>Show window</source>
         <translation>Показать окно</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1568" />
+        <location filename="../VpnController.cpp" line="1592" />
         <source>Quit</source>
         <translation>Выйти</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1609" />
+        <location filename="../VpnController.cpp" line="1633" />
         <source>Connected to %1</source>
         <translation>Подключено к %1</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1612" />
+        <location filename="../VpnController.cpp" line="1636" />
         <source>Connecting to %1</source>
         <translation>Подключаемся к %1</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1615" />
+        <location filename="../VpnController.cpp" line="1639" />
         <source>Disconnecting from %1</source>
         <translation>Отключаемся от %1</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1107" />
-        <location filename="../VpnController.cpp" line="1618" />
+        <location filename="../VpnController.cpp" line="1773" />
+        <source>&lt;br&gt;The two icons in the notification area are by Google, from the Material Design Icons, used under &lt;a href="https://creativecommons.org/licenses/by/4.0/"&gt;CC BY 4.0&lt;/a&gt;. Everything else here is drawn by this program.&lt;br&gt;</source>
+        <translation>&lt;br&gt;Два значка в области уведомлений — от Google, из набора Material Design Icons, по лицензии &lt;a href="https://creativecommons.org/licenses/by/4.0/"&gt;CC BY 4.0&lt;/a&gt;. Всё остальное здесь программа рисует сама.&lt;br&gt;</translation>
+    </message>
+    <message>
+        <location filename="../VpnController.cpp" line="1110" />
+        <location filename="../VpnController.cpp" line="1642" />
         <source>Disconnected</source>
         <translation>Отключено</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1638" />
+        <location filename="../VpnController.cpp" line="1662" />
         <source>(no servers to connect)</source>
         <translation>(подключаться не к чему)</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1706" />
+        <location filename="../VpnController.cpp" line="1730" />
         <source>New version available</source>
         <translation>Вышла новая версия</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1707" />
+        <location filename="../VpnController.cpp" line="1731" />
         <source>%1 version %2 is available!</source>
         <translation>Вышла версия %2 программы %1!</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1727" />
+        <location filename="../VpnController.cpp" line="1751" />
         <source>Development snapshot &lt;i&gt;%1&lt;/i&gt; (%2 bit)&lt;br&gt;</source>
         <translation>Промежуточная сборка &lt;i&gt;%1&lt;/i&gt; (%2 бит)&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1730" />
+        <location filename="../VpnController.cpp" line="1754" />
         <source>Built at &lt;i&gt;%1&lt;/i&gt;&lt;br&gt;</source>
         <translation>Собрана &lt;i&gt;%1&lt;/i&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1732" />
+        <location filename="../VpnController.cpp" line="1756" />
         <source>Version &lt;i&gt;%1&lt;/i&gt; (%2 bit)&lt;br&gt;</source>
         <translation>Версия &lt;i&gt;%1&lt;/i&gt; (%2 бит)&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1737" />
+        <location filename="../VpnController.cpp" line="1761" />
         <source>&lt;br&gt;&lt;i&gt;%1&lt;/i&gt; is free software built on the OpenConnect project. See the license for more information.&lt;br&gt;</source>
         <translation>&lt;br&gt;&lt;i&gt;%1&lt;/i&gt; — свободная программа, построенная на проекте OpenConnect. Подробности — в лицензии.&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1741" />
+        <location filename="../VpnController.cpp" line="1765" />
         <source>&lt;br&gt;For macOS there is a client of its own: &lt;a href="%1"&gt;%1&lt;/a&gt;.&lt;br&gt;</source>
         <translation>&lt;br&gt;Для macOS есть отдельный клиент: &lt;a href="%1"&gt;%1&lt;/a&gt;.&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1749" />
         <source>&lt;br&gt;Icon by Google, from the Material Design Icons, used under &lt;a href="https://creativecommons.org/licenses/by/4.0/"&gt;CC BY 4.0&lt;/a&gt;.&lt;br&gt;</source>
-        <translation>&lt;br&gt;Значок — Google, из набора Material Design Icons, по лицензии &lt;a href="https://creativecommons.org/licenses/by/4.0/"&gt;CC BY 4.0&lt;/a&gt;.&lt;br&gt;</translation>
+        <translation type="vanished">&lt;br&gt;Значок — Google, из набора Material Design Icons, по лицензии &lt;a href="https://creativecommons.org/licenses/by/4.0/"&gt;CC BY 4.0&lt;/a&gt;.&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1757" />
+        <location filename="../VpnController.cpp" line="1783" />
         <source>Based on</source>
         <translation>Построено на</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1758" />
+        <location filename="../VpnController.cpp" line="1784" />
         <source>&lt;br&gt;- &lt;a href="https://www.infradead.org/openconnect"&gt;OpenConnect&lt;/a&gt; </source>
         <translation>&lt;br&gt;- &lt;a href="https://www.infradead.org/openconnect"&gt;OpenConnect&lt;/a&gt; </translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1759" />
+        <location filename="../VpnController.cpp" line="1785" />
         <source>&lt;br&gt;- &lt;a href="https://www.gnutls.org"&gt;GnuTLS&lt;/a&gt; v</source>
         <translation>&lt;br&gt;- &lt;a href="https://www.gnutls.org"&gt;GnuTLS&lt;/a&gt; v</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1760" />
+        <location filename="../VpnController.cpp" line="1786" />
         <source>&lt;br&gt;- &lt;a href="https://github.com/gabime/spdlog"&gt;spdlog&lt;/a&gt; v%1.%2.%3</source>
         <translation>&lt;br&gt;- &lt;a href="https://github.com/gabime/spdlog"&gt;spdlog&lt;/a&gt; v%1.%2.%3</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1764" />
+        <location filename="../VpnController.cpp" line="1790" />
         <source>&lt;br&gt;- &lt;a href="https://www.qt.io"&gt;Qt&lt;/a&gt; v%1</source>
         <translation>&lt;br&gt;- &lt;a href="https://www.qt.io"&gt;Qt&lt;/a&gt; v%1</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1766" />
+        <location filename="../VpnController.cpp" line="1792" />
         <source>&lt;br&gt;&lt;br&gt;%1&lt;br&gt;</source>
         <translation>&lt;br&gt;&lt;br&gt;%1&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1767" />
+        <location filename="../VpnController.cpp" line="1793" />
         <source>&lt;br&gt;&lt;i&gt;%1&lt;/i&gt; comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under the conditions of the GNU General Public License version 2.&lt;br&gt;</source>
         <translation>&lt;br&gt;&lt;i&gt;%1&lt;/i&gt; поставляется БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ. Это свободная программа, и вы можете распространять её на условиях GNU General Public License версии 2.&lt;br&gt;</translation>
     </message>

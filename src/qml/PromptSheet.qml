@@ -138,29 +138,12 @@ Popup {
                 onAccepted: root.answer(true)
             }
 
-            ComboBox {
+            AppComboBox {
                 id: choices
 
                 Layout.fillWidth: true
                 visible: root.promptType === root.promptChoice
                 model: root.request.choices !== undefined ? root.request.choices : []
-                font.pixelSize: Theme.fontNormal
-
-                background: Rectangle {
-                    radius: Theme.radius
-                    color: Theme.surface
-                    border.width: 1
-                    border.color: Theme.lineStrong
-                }
-
-                contentItem: Text {
-                    leftPadding: 10
-                    text: choices.displayText
-                    color: Theme.ink
-                    font: choices.font
-                    verticalAlignment: Text.AlignVCenter
-                    elide: Text.ElideRight
-                }
             }
 
             AppButton {
@@ -173,6 +156,7 @@ Popup {
             }
 
             ScrollView {
+                ScrollBar.vertical: AppScrollBar {}
                 Layout.fillWidth: true
                 Layout.preferredHeight: Math.round(160 * Theme.scale)
                 visible: root.detailsExpanded

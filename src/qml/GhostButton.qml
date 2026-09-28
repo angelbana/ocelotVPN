@@ -26,6 +26,8 @@ Button {
     property color tint: Theme.muted
     property string glyph: ""
     property bool selected: false
+    // What the button means, for the ones that are an icon and nothing else.
+    property string tip: ""
 
     implicitHeight: Math.round(text.length > 0 ? 26 * Theme.scale : 24 * Theme.scale)
     implicitWidth: row.implicitWidth + Math.round((text.length > 0 ? 18 : 12) * Theme.scale)
@@ -74,6 +76,8 @@ Button {
         }
     }
 
-    ToolTip.visible: hovered && ToolTip.text.length > 0
-    ToolTip.delay: 600
+    AppTip {
+        text: root.tip
+        visible: root.hovered && root.tip.length > 0
+    }
 }

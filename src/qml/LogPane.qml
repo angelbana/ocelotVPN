@@ -88,7 +88,7 @@ Item {
                 topMargin: Math.round(10 * Theme.scale)
                 bottomMargin: Math.round(10 * Theme.scale)
 
-                ScrollBar.vertical: ScrollBar {
+                ScrollBar.vertical: AppScrollBar {
                     policy: ScrollBar.AsNeeded
                 }
 

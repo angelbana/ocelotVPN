@@ -31,6 +31,10 @@ Canvas {
 
     // "sleepy" | "curious" | "happy" | "worried" | "asking"
     property string mood: "sleepy"
+    // The tinted disc behind the face. On is right everywhere in the program,
+    // where it carries the state colour; off is for the program's own icon,
+    // which brings its own background.
+    property bool halo: true
     property int size: Math.round(96 * Theme.scale)
 
     readonly property color moodTint: mood === "happy" ? Theme.ok
@@ -46,6 +50,7 @@ Canvas {
     antialiasing: true
 
     onMoodChanged: requestPaint()
+    onHaloChanged: requestPaint()
     onMoodTintChanged: requestPaint()
 
     // A theme change repaints everything; the pelt is the one that gives it away
@@ -62,7 +67,8 @@ Canvas {
         ctx.save();
         ctx.scale(k, k);
 
-        drawHalo(ctx);
+        if (halo)
+            drawHalo(ctx);
         drawWhiskers(ctx);
         drawEar(ctx, -1);
         drawEar(ctx, 1);

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
 
 project(ocelot
     VERSION 1.0.0
-    HOMEPAGE_URL https://github.com/angelbana/ocelotVPN-windows
+    HOMEPAGE_URL https://github.com/angelbana/ocelotVPN
     LANGUAGES CXX
 )
 
@@ -27,7 +27,7 @@ set(APP_NAME "Ocelot")
 
 # Everything that points at the project itself is derived from one address,
 # because the repository is the part of this most likely to move.
-set(APP_REPO_URL "https://github.com/angelbana/ocelotVPN-windows")
+set(APP_REPO_URL "https://github.com/angelbana/ocelotVPN")
 set(APP_RELEASES_URL "${APP_REPO_URL}/releases")
 set(APP_ISSUES_URL "${APP_REPO_URL}/issues")
 # Asking for the latest release answers with a redirect to the tag it points

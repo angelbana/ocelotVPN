@@ -45,10 +45,12 @@ AbstractButton {
     implicitHeight: Math.round(40 * Theme.scale)
     hoverEnabled: true
 
-    ToolTip.visible: hovered && ToolTip.text.length > 0
-    ToolTip.delay: 900
-    ToolTip.text: root.lastConnected.length > 0
-        ? qsTr("Last connected %1").arg(root.lastConnected) : ""
+    AppTip {
+        delay: 900
+        text: root.lastConnected.length > 0
+            ? qsTr("Last connected %1").arg(root.lastConnected) : ""
+        visible: root.hovered && text.length > 0
+    }
 
     background: Rectangle {
         radius: Theme.radiusSmall
@@ -131,7 +133,7 @@ AbstractButton {
             visible: root.allowActions && root.hovered && !root.active
             glyph: "pencil"
             onClicked: root.editRequested()
-            ToolTip.text: qsTr("Edit this profile")
+            tip: qsTr("Edit this profile")
         }
     }
 
@@ -141,27 +143,27 @@ AbstractButton {
         onTapped: menu.popup()
     }
 
-    Menu {
+    AppMenu {
         id: menu
 
-        MenuItem {
+        AppMenuItem {
             text: qsTr("Connect")
             enabled: controller.status === Theme.statusDisconnected
             onTriggered: controller.connectToProfile(root.name)
         }
 
-        MenuItem {
+        AppMenuItem {
             text: qsTr("Edit…")
             enabled: controller.status === Theme.statusDisconnected
             onTriggered: root.editRequested()
         }
 
-        MenuItem {
+        AppMenuItem {
             text: qsTr("Duplicate")
             onTriggered: root.duplicateRequested()
         }
 
-        MenuItem {
+        AppMenuItem {
             text: qsTr("Remove…")
             enabled: controller.status === Theme.statusDisconnected
             onTriggered: root.removeRequested()

@@ -77,6 +77,7 @@ Item {
     }
 
     ScrollView {
+        ScrollBar.vertical: AppScrollBar {}
         anchors.fill: parent
         contentWidth: availableWidth
         clip: true

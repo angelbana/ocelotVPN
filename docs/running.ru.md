@@ -14,7 +14,7 @@ Ocelot собирается для Windows и для Linux, и каждая по
 Артефакты прогона перечислены внизу его страницы в разделе
 `Actions -> Release -> <прогон>`, либо доступны через GitHub CLI:
 
-    gh run download <номер-прогона> -R angelbana/ocelotVPN-windows -n windows-installer
+    gh run download <номер-прогона> -R angelbana/ocelotVPN -n windows-installer
 
 | Артефакт            | Содержимое                                      | Подпись |
 |---------------------|-------------------------------------------------|---------|

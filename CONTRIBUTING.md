@@ -1,7 +1,7 @@
 Contributions are welcome, large or small.
 
 Before writing code, it is worth opening an
-[issue](https://github.com/angelbana/ocelotVPN-windows/issues) to discuss what you
+[issue](https://github.com/angelbana/ocelotVPN/issues) to discuss what you
 have in mind, especially for anything ambitious. That gives everyone a chance
 to point you in the right direction, and to say whether someone is already
 working on the same thing.

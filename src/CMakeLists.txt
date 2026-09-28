@@ -36,6 +36,10 @@ set(${PROJECT_NAME}_QML
     qml/AppDialog.qml
     qml/AppField.qml
     qml/AppToggle.qml
+    qml/AppMenu.qml
+    qml/AppMenuItem.qml
+    qml/AppScrollBar.qml
+    qml/AppTip.qml
     qml/Card.qml
     qml/ChunkyButton.qml
     qml/ConnectionPane.qml
@@ -298,7 +302,7 @@ else()
     )
     # The name has to match the Icon= line of the desktop entry, not the file
     # it is copied from.
-    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/Resources/mono_lock.png
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/Resources/ocelot.png
         DESTINATION share/icons/hicolor/256x256/apps
         RENAME ocelot.png
         COMPONENT App

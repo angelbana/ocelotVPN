@@ -33,6 +33,7 @@ Item {
     readonly property bool hasProfile: controller.currentProfile !== ""
 
     ScrollView {
+        ScrollBar.vertical: AppScrollBar {}
         anchors.fill: parent
         contentWidth: availableWidth
         clip: true
@@ -110,8 +111,10 @@ Item {
                             }
 
                             Pill {
+                                // The address alone: the mask belongs in the
+                                // details, where there is room for it.
                                 visible: controller.ip !== ""
-                                text: controller.ip
+                                text: controller.ip.split("/")[0]
                                 tint: Theme.muted
                             }
                         }
@@ -161,8 +164,8 @@ Item {
 
                         Text {
                             Layout.alignment: Qt.AlignHCenter
-                            visible: root.connected && controller.protocolName !== ""
-                            text: qsTr("via %1").arg(controller.protocolName)
+                            visible: root.connected && controller.protocolShortName !== ""
+                            text: qsTr("via %1").arg(controller.protocolShortName)
                             color: Theme.faint
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fontCaption

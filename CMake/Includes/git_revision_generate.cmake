@@ -8,13 +8,29 @@ if(IS_DIRECTORY ${GIT_ROOT_DIR}/.git)
         WORKING_DIRECTORY ${GIT_ROOT_DIR}
         RESULT_VARIABLE res_var
         OUTPUT_VARIABLE GIT_COM_ID
+        ERROR_QUIET
     )
-    if(NOT ${res_var} EQUAL 0)
-        set(GIT_COMMIT_ID "?.?.?-unknown")
-        message(WARNING "Git failed (not a repo, or no tags). Build will not contain git revision info.")
+
+    if(res_var EQUAL 0)
+        string(STRIP "${GIT_COM_ID}" GIT_COMMIT_ID)
+        string(REGEX REPLACE "^v" "" GIT_COMMIT_ID "${GIT_COMMIT_ID}")
+    else()
+        # No tags yet, which is the ordinary state of a repository before its
+        # first release. The version is then the one the project declares,
+        # said plainly: a row of question marks in an About screen helps no
+        # one, and the old code crashed the build here instead.
+        execute_process(
+            COMMAND ${GIT_EXECUTABLE} status --porcelain --untracked-files=no
+            WORKING_DIRECTORY ${GIT_ROOT_DIR}
+            OUTPUT_VARIABLE git_changes
+            ERROR_QUIET
+        )
+        if("${git_changes}" STREQUAL "")
+            set(GIT_COMMIT_ID "${PROJECT_VERSION}-dev")
+        else()
+            set(GIT_COMMIT_ID "${PROJECT_VERSION}-dev-dirty")
+        endif()
     endif()
-    string(REGEX REPLACE "\n$" "" GIT_COMMIT_ID ${GIT_COM_ID})
-    string(REGEX REPLACE "^v" "" GIT_COMMIT_ID ${GIT_COMMIT_ID})
 
     # check number of digits in version string
     string(REPLACE "." ";" GIT_COMMIT_ID_VLIST ${GIT_COMMIT_ID})

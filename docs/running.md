@@ -14,7 +14,7 @@ build one.
 Artifacts of a run are listed at the bottom of its page under
 `Actions -> Release -> <run>`, or with the GitHub CLI:
 
-    gh run download <run-id> -R angelbana/ocelotVPN-windows -n windows-installer
+    gh run download <run-id> -R angelbana/ocelotVPN -n windows-installer
 
 | Artifact            | Contents                                        | Signed |
 |---------------------|-------------------------------------------------|--------|

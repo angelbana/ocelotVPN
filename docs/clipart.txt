@@ -1,5 +1,16 @@
-Application icon, tray icons and installer images
--------------------------------------------------
+The program's own icon
+----------------------
+
+The ocelot on the icon is the one the program draws in its window, rendered
+from src/qml/Mascot.qml rather than kept as a second copy of the artwork. It is
+produced by loading that file into a warm disc and saving the result at every
+size Windows asks for (16 through 256), which are then packed into
+src/ocelot.ico; the 256 one is also src/Resources/ocelot.png, which is what a
+Linux desktop shows.
+
+
+The icons in the notification area
+----------------------------------
 
 Taken from the "virtual private network vpn symbol" icon:
 https://icon-icons.com/icon/virtual-private-network-vpn-symbol/72481
@@ -8,14 +19,10 @@ By Google, from the Google Material Design Icons pack.
 Licence: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
 
 That licence allows the artwork to be used commercially and redistributed,
-including inside the installer and the app image, and asks
-for one thing in return: that the author and the licence are named. The
-credit is therefore given in the program's About window as well as here -
-a line in a file under docs/ is not something the people who receive the
-program ever see.
-
-The Windows application icon and the tray icons are rendered from the coloured
-artwork.
+including inside the installer and the app image, and asks for one thing in
+return: that the author and the licence are named. The credit is therefore
+given in the program's About window as well as here - a line in a file under
+docs/ is not something the people who receive the program ever see.
 
 
 Previously used artwork, replaced by the above

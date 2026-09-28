@@ -232,6 +232,7 @@ ApplicationWindow {
 
                 // the profiles
                 ScrollView {
+                    ScrollBar.vertical: AppScrollBar {}
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     contentWidth: availableWidth

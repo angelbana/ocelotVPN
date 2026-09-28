@@ -26,6 +26,7 @@ Item {
     signal licenseRequested()
 
     ScrollView {
+        ScrollBar.vertical: AppScrollBar {}
         anchors.fill: parent
         contentWidth: availableWidth
         clip: true
