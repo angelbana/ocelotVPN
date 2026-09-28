@@ -1,0 +1,49 @@
+/*
+ * Copyright (C) 2014 Red Hat
+ * Copyright (C) 2016 by Lubomír Carik <Lubomir.Carik@gmail.com>
+ *
+ * This file is part of Ocelot.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#pragma once
+
+#cmakedefine PROJ_ADMIN_PRIV_ELEVATION
+#cmakedefine PROJ_GNUTLS_DEBUG
+#cmakedefine PROJ_PKCS11
+
+#cmakedefine APP_NAME "@APP_NAME@"
+
+#cmakedefine PRODUCT_NAME_SHORT "@PRODUCT_NAME_SHORT@"
+#cmakedefine PRODUCT_NAME_LONG "@PRODUCT_NAME_LONG@"
+#cmakedefine PROJECT_VERSION "@PROJECT_VERSION@"
+
+// This is used to compare with the latest release on GitHub
+// to find out whether a newer version exists.
+#cmakedefine INTERNAL_PROJECT_VERSION "@INTERNAL_PROJECT_VERSION@"
+#cmakedefine PRODUCT_NAME_COPYRIGHT_FULL "@PRODUCT_NAME_COPYRIGHT_FULL@"
+#cmakedefine PRODUCT_NAME_COMPANY "@PRODUCT_NAME_COMPANY@"
+#cmakedefine PRODUCT_NAME_COMPANY_DOMAIN "@PRODUCT_NAME_COMPANY_DOMAIN@"
+
+#cmakedefine APP_REPO_URL "@APP_REPO_URL@"
+#cmakedefine APP_RELEASES_URL "@APP_RELEASES_URL@"
+#cmakedefine APP_ISSUES_URL "@APP_ISSUES_URL@"
+#cmakedefine APP_LATEST_RELEASE_URL "@APP_LATEST_RELEASE_URL@"
+#cmakedefine APP_MACOS_URL "@APP_MACOS_URL@"
+
+#cmakedefine CMAKE_PROJECT_HOMEPAGE_URL "@CMAKE_PROJECT_HOMEPAGE_URL@"
+#cmakedefine DEFAULT_VPNC_SCRIPT "@DEFAULT_VPNC_SCRIPT@"
+// Left undefined where there is nothing to fall back to.
+#cmakedefine DEFAULT_VPNC_SCRIPT_FALLBACK "@DEFAULT_VPNC_SCRIPT_FALLBACK@"

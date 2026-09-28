@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>@PRODUCT_NAME_COMPANY_DOMAIN@.ocelot</id>
+  <launchable type="desktop-id">ocelot.desktop</launchable>
+
+  <name>@APP_NAME@</name>
+  <summary>@PRODUCT_NAME_LONG@</summary>
+
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-2.0-or-later</project_license>
+
+  <description>
+    <p>
+      A graphical client for VPN servers that speak the Cisco AnyConnect
+      protocol, built on OpenConnect. It keeps the servers you connect to as
+      profiles, checks the certificate a server presents, and shows the state
+      of the tunnel while it is up.
+    </p>
+  </description>
+
+  <url type="homepage">@CMAKE_PROJECT_HOMEPAGE_URL@</url>
+
+  <categories>
+    <category>Network</category>
+    <category>Security</category>
+  </categories>
+
+  <releases>
+    <release version="@PROJECT_VERSION@"/>
+  </releases>
+
+  <content_rating type="oars-1.1"/>
+</component>

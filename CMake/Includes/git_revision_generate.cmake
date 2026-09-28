@@ -1,0 +1,67 @@
+#create a pretty commit id using git
+#uses 'git describe --tags', so tags are required in the repo
+#create a tag with 'git tag <name>' and 'git push --tags'
+
+if(IS_DIRECTORY ${GIT_ROOT_DIR}/.git)
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} describe --tags --dirty
+        WORKING_DIRECTORY ${GIT_ROOT_DIR}
+        RESULT_VARIABLE res_var
+        OUTPUT_VARIABLE GIT_COM_ID
+    )
+    if(NOT ${res_var} EQUAL 0)
+        set(GIT_COMMIT_ID "?.?.?-unknown")
+        message(WARNING "Git failed (not a repo, or no tags). Build will not contain git revision info.")
+    endif()
+    string(REGEX REPLACE "\n$" "" GIT_COMMIT_ID ${GIT_COM_ID})
+    string(REGEX REPLACE "^v" "" GIT_COMMIT_ID ${GIT_COMMIT_ID})
+
+    # check number of digits in version string
+    string(REPLACE "." ";" GIT_COMMIT_ID_VLIST ${GIT_COMMIT_ID})
+    list(LENGTH GIT_COMMIT_ID_VLIST GIT_COMMIT_ID_VLIST_COUNT)
+
+    # no.: major
+    string(REGEX REPLACE "^v([0-9]+)\\..*" "\\1" VERSION_MAJOR "${GIT_COMMIT_ID}")
+    # no.: minor
+    string(REGEX REPLACE "^v[0-9]+\\.([0-9]+).*" "\\1" VERSION_MINOR "${GIT_COMMIT_ID}")
+
+    if(${GIT_COMMIT_ID_VLIST_COUNT} STREQUAL "2")
+        # no. patch
+        set(VERSION_PATCH "0")
+        # SHA1 string + git 'dirty' flag
+        string(REGEX REPLACE "^v[0-9]+\\.[0-9]+(.*)" "\\1" VERSION_SHA1 "${GIT_COMMIT_ID}")
+    else()
+        # no. patch
+        string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" VERSION_PATCH "${GIT_COMMIT_ID}")
+        # SHA1 string + git 'dirty' flag
+        string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.[0-9]+(.*)" "\\1" VERSION_SHA1 "${GIT_COMMIT_ID}")
+    endif()
+
+    set(PROJECT_VERSION "${GIT_COMMIT_ID}")
+    message(STATUS "Version: ${PROJECT_VERSION} [git]")
+else()
+    message(STATUS "Version: ${PROJECT_VERSION} [cmake]")
+endif()
+
+if(PROJ_ADMIN_PRIV_ELEVATION)
+    set(UAC_FLAG "")
+else()
+    set(UAC_FLAG "//")
+endif()
+
+message(STATUS "Processing resource file...")
+file(READ ${INPUT_DIR}/${PROJECT_NAME}.rc.in rc_temporary)
+string(CONFIGURE ${rc_temporary} rc_updated)
+file(WRITE ${OUTPUT_DIR}/${PROJECT_NAME}.rc.tmp ${rc_updated})
+execute_process(
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${OUTPUT_DIR}/${PROJECT_NAME}.rc.tmp ${OUTPUT_DIR}/${PROJECT_NAME}.rc
+)
+
+message(STATUS "Processing config.h file...")
+file(READ ${OUTPUT_DIR}/config.h config_temp)
+string(FIND "${config_temp}" "undef PROJECT_VERSION" ALREADY_UPDATED)
+
+if(${ALREADY_UPDATED} LESS 0)
+file(APPEND ${OUTPUT_DIR}/config.h "#undef PROJECT_VERSION\n#define PROJECT_VERSION \"${PROJECT_VERSION}\"\n")
+endif()

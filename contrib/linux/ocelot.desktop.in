@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=@APP_NAME@
+GenericName=VPN Client
+Comment=@PRODUCT_NAME_LONG@
+Icon=ocelot
+Exec=ocelot
+Terminal=false
+Categories=Network;Security;
+Keywords=VPN;AnyConnect;OpenConnect;Cisco;
+StartupWMClass=ocelot

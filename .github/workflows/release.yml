@@ -1,0 +1,294 @@
+# Builds the Windows installer and Authenticode-signs both the program and the
+# installer through the signserver instance.
+#
+# The program is signed before CPack puts it into the installer: it asks for
+# administrator privileges, so an unsigned executable inside a signed installer
+# would still make UAC report an unknown publisher on every start.
+#
+# Signing itself is an HTTPS call and needs no Windows runner, but splitting it
+# into its own job would mean carrying the whole build tree between jobs just to
+# repackage, so everything stays in one job here.
+
+name: Release
+
+# A push builds nothing. A tag builds everything, because a release has to be
+# complete; anything else is asked for by hand, naming the platforms it needs.
+# This was learned the expensive way: Windows minutes cost twice Linux ones,
+# and a day of pushing a branch to see what happens eats into the month's
+# quota with nothing to show for it.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      platforms:
+        description: 'Which platforms to build'
+        type: choice
+        default: all
+        options:
+          - all
+          - windows
+          - linux
+
+# A push replaces the one before it: the older run is building code nobody is
+# waiting for any more, and it takes runners - the Intel Mac especially - from
+# the run that matters.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    if: >-
+      startsWith(github.ref, 'refs/tags/')
+      || inputs.platforms == 'all'
+      || inputs.platforms == 'windows'
+    runs-on: windows-latest
+
+    # to attach the installer to the release of the tag it was built from
+    permissions:
+      contents: write
+
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0    # the version comes from git describe
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            git
+            patch
+            make
+            unzip
+            zip
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-pkgconf
+            mingw-w64-x86_64-qt6-base
+            mingw-w64-x86_64-qt6-declarative
+            mingw-w64-x86_64-qt6-tools
+            mingw-w64-x86_64-nsis
+
+      # Without --head the script builds openconnect v9.12, which is API 5.9.
+      # The wintun workaround in vpninfo.cpp insists on exactly that version,
+      # and master has already moved past it.
+      - name: Build the dependencies
+        run: ./contrib/build_deps_mingw@msys2.sh
+
+      # openconnect-TAG already defaults to v9.12, which is what the dependency
+      # script builds without --head; naming it here too would only be a second
+      # place to keep in step with the archives that script leaves in external/
+      # actions/checkout writes the files through Git for Windows, which
+      # converts them to CRLF, while the version is read by the git inside
+      # MSYS2, which does not expect that and reports every text file as
+      # modified - enough for `git describe --dirty` to mark the version.
+      - name: Read the checkout the same way it was written
+        run: git config core.autocrlf true
+
+      - name: Configure
+        run: cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -S . -B build
+
+      - name: Build
+        run: cmake --build build -j$(nproc)
+
+      # CPack copies the program into a staging tree and only then rewrites it
+      # there, with fixup_bundle and windeployqt. Signing the built executable
+      # is therefore pointless: the copy that ends up in the installer is
+      # written afterwards. Stage first, sign the staged copy, and let NSIS
+      # assemble the installer from that tree.
+      - name: Stage the installer contents
+        run: cd build && cpack
+
+      # The staging directory carries the version in its name, and the signing
+      # action expands * in the file name only, so the path is resolved here.
+      - name: Locate the staged program
+        run: |
+          echo "STAGED_EXE=$(ls -d build/_CPack_Packages/win64/NSIS/*/App/ocelot.exe)" >> "$GITHUB_ENV"
+          echo "NSIS_DIR=build/_CPack_Packages/win64/NSIS" >> "$GITHUB_ENV"
+
+      # Only for tags. A branch run is here to check that the packaging still
+      # works, and reaching out to the signing service for every push would
+      # spend it on builds nobody receives.
+      - name: Sign the staged program
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: sculkdev/sign-with-signserver@v1
+        with:
+          url: ${{ secrets.SIGNSERVER_URL }}
+          sub: ${{ secrets.SIGNSERVER_SUB }}
+          secret: ${{ secrets.SIGNSERVER_SECRET }}
+          path: ${{ env.STAGED_EXE }}
+          in-place: true
+          require-timestamp: true
+          fail-on-warning: true
+
+      # makensis rather than cpack: cpack would run its install step again and
+      # overwrite the signature in the staging tree. NSIS only reads what is
+      # already there, and writes the installer next to the script.
+      - name: Assemble the installer from the signed staging tree
+        run: makensis "$NSIS_DIR/project.nsi"
+
+      - name: Sign the installer
+        id: sign-installer
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: sculkdev/sign-with-signserver@v1
+        with:
+          url: ${{ secrets.SIGNSERVER_URL }}
+          sub: ${{ secrets.SIGNSERVER_SUB }}
+          secret: ${{ secrets.SIGNSERVER_SECRET }}
+          path: ${{ env.NSIS_DIR }}/*-win64.exe
+          in-place: true
+          require-timestamp: true
+          fail-on-warning: true
+
+      - name: Refresh the checksum of the signed installer
+        run: |
+          cd "$NSIS_DIR"
+          for f in *-win64.exe; do
+              sha512sum "$f" > "$f.sha512"
+          done
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: windows-installer
+          path: |
+            build/_CPack_Packages/win64/NSIS/*-win64.exe
+            build/_CPack_Packages/win64/NSIS/*-win64.exe.sha512
+
+      # Artifacts of a run expire; a release keeps the installer at a stable
+      # address. Only for tags - a manual run has nothing to attach it to.
+      # Run in pwsh: the MSYS2 shell does not carry the Windows PATH, so gh
+      # would not be found there.
+      - name: Publish the installer on the release page
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # The same shape as the other three jobs: create the release if this
+          # one got here first, then add to it. No job waits for another, and
+          # none of them assumes a release already exists.
+          $files = @(Get-ChildItem "$env:NSIS_DIR/*-win64.exe", "$env:NSIS_DIR/*-win64.exe.sha512" | ForEach-Object { $_.FullName })
+          gh release view $env:GITHUB_REF_NAME 2>$null | Out-Null
+          if ($LASTEXITCODE -ne 0) {
+              gh release create $env:GITHUB_REF_NAME --title $env:GITHUB_REF_NAME --notes "Built from $env:GITHUB_SHA."
+          }
+          gh release upload $env:GITHUB_REF_NAME $files --clobber
+
+  # Fedora rather than the Ubuntu runner: the program needs Qt 6.5 for
+  # Application.styleHints.colorScheme, and Ubuntu 24.04 still carries 6.4.
+  linux:
+    if: >-
+      startsWith(github.ref, 'refs/tags/')
+      || inputs.platforms == 'all'
+      || inputs.platforms == 'linux'
+    runs-on: ubuntu-latest
+    container: fedora:41
+
+    steps:
+      # Deliberately without spdlog-devel: the project falls back to building
+      # and statically linking its own copy when the system one is missing,
+      # which is what the Windows build already does. With the system
+      # package installed, the published executable asks for libspdlog.so at
+      # startup and stops before showing anything on a machine without it.
+      - name: Install the dependencies
+        run: |
+          dnf -y install --setopt=install_weak_deps=False \
+              gcc-c++ cmake git patch pkgconf-pkg-config \
+              qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qttools-devel \
+              openconnect-devel gnutls-devel libxml2-devel \
+              file wget findutils fuse-libs \
+              qt6-qtdeclarative qt6-qtbase-gui
+
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0    # the version comes from git describe
+
+      - name: Allow git to read the checkout
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build -j$(nproc)
+
+      # An AppImage is built from an installed tree, not from the build
+      # directory: the desktop entry, the icon and the metadata only exist
+      # after the install step.
+      - name: Install into a staging tree
+        run: |
+          cmake --install build --prefix "$PWD/AppDir/usr"
+          test -x AppDir/usr/bin/ocelot
+          test -f AppDir/usr/share/applications/ocelot.desktop
+          test -f AppDir/usr/share/icons/hicolor/256x256/apps/ocelot.png
+          find AppDir -type f | sort
+
+      # linuxdeploy copies in the libraries the program and its Qt plugins
+      # need, so the result runs on distributions older than the one it was
+      # built on. It needs FUSE to run as an AppImage itself, which a container
+      # does not have; --appimage-extract-and-run unpacks it instead.
+      - name: Build the AppImage
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: 1
+          QMAKE: /usr/bin/qmake6
+          OUTPUT: ocelot-x86_64.AppImage
+          # The strip inside linuxdeploy is older than the compiler here and
+          # rejects every library Fedora builds: "unknown type [0x13] section
+          # .relr.dyn". Stripping only makes the result smaller, so it is
+          # dropped rather than worked around.
+          NO_STRIP: "true"
+          # The QML of this program is compiled into the executable as a Qt
+          # resource, so the plugin has nothing to scan and deploys none of
+          # Qt's own QML modules - the libraries end up bundled but QtQuick
+          # itself does not, and the program stops at "module QtQuick is not
+          # installed". Pointing it at the sources is what lets it find them.
+          QML_SOURCES_PATHS: ${{ github.workspace }}/src/qml
+        run: |
+          base=https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous
+          qtbase=https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous
+          wget -q "$base/linuxdeploy-x86_64.AppImage"
+          wget -q "$qtbase/linuxdeploy-plugin-qt-x86_64.AppImage"
+          chmod +x linuxdeploy-x86_64.AppImage linuxdeploy-plugin-qt-x86_64.AppImage
+          ./linuxdeploy-x86_64.AppImage \
+              --appdir AppDir \
+              --plugin qt \
+              --output appimage
+          ls -l ./*.AppImage
+
+      - name: Checksum the AppImage
+        run: sha512sum ocelot-x86_64.AppImage > ocelot-x86_64.AppImage.sha512
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: linux-appimage
+          path: |
+            ocelot-x86_64.AppImage
+            ocelot-x86_64.AppImage.sha512
+
+      # Artifacts expire with the run; a release keeps the file at an address
+      # that can be handed to someone. Only for tags - a branch run has no
+      # release to attach anything to.
+      - name: Publish the app image on the release page
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          dnf -y install --setopt=install_weak_deps=False gh
+          # Whichever job finishes first creates the release; the others add to
+          # it. Uploading into a release that does not exist yet is what broke
+          # the first run of this: only the Windows job created one, and it is
+          # the slowest of the four.
+          if ! gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+              gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" \
+                  --notes "Built from $GITHUB_SHA." || true
+          fi
+          gh release upload "$GITHUB_REF_NAME" \
+              ocelot-x86_64.AppImage \
+              ocelot-x86_64.AppImage.sha512 --clobber

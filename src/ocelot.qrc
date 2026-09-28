@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="">
+        <file>images/network-connected.png</file>
+        <file>images/network-disconnected.png</file>
+        <file>Resources/mono_lock.png</file>
+        <file>fonts/Nunito.ttf</file>
+    </qresource>
+</RCC>

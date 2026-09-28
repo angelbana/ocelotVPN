@@ -1,0 +1,8 @@
+# These are read on Linux, where a desktop entry with CRLF is rejected and the
+# metadata parser is no happier about it. The checkout here converts text files
+# to CRLF, so they have to be held to LF explicitly.
+contrib/linux/* text eol=lf
+
+*.exe filter=lfs diff=lfs merge=lfs -text
+*.dll filter=lfs diff=lfs merge=lfs -text
+*.a filter=lfs diff=lfs merge=lfs -text

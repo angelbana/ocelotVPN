@@ -1,0 +1,31 @@
+Application icon, tray icons and installer images
+-------------------------------------------------
+
+Taken from the "virtual private network vpn symbol" icon:
+https://icon-icons.com/icon/virtual-private-network-vpn-symbol/72481
+
+By Google, from the Google Material Design Icons pack.
+Licence: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+That licence allows the artwork to be used commercially and redistributed,
+including inside the installer and the app image, and asks
+for one thing in return: that the author and the licence are named. The
+credit is therefore given in the program's About window as well as here -
+a line in a file under docs/ is not something the people who receive the
+program ever see.
+
+The Windows application icon and the tray icons are rendered from the coloured
+artwork.
+
+
+Previously used artwork, replaced by the above
+----------------------------------------------
+
+logo*.ico: CC0: https://openclipart.org/detail/197887/mono_lock-by-dannya
+
+network-disconnected.png: https://openclipart.org/detail/198073/mono%20network%20disconnected
+network-connected.png: https://openclipart.org/detail/198072/mono%20network%20connected
+
+- NSIS installer (coloured)
+https://openclipart.org/detail/197887/mono_lock-by-dannya
+https://openclipart.org/detail/161209/lock-and-key

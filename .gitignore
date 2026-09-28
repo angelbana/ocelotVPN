@@ -1,0 +1,19 @@
+# temporary files
+*.sw[op]
+*~
+
+# project files
+/*.pro.user
+/CMakeLists.txt.user
+
+# temporary build folders
+build-release*/
+build*/
+
+
+# temporary...
+_xxx/
+*.zip
+*.exe
+*.exe.sha512
+
