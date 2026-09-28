@@ -1,13 +1,13 @@
-# Ocelot for Windows
+# Ocelot
 
 [![EN](https://img.shields.io/badge/lang-EN-0b5fff?style=flat-square)](README.md)
 [![RU](https://img.shields.io/badge/lang-RU-6c757d?style=flat-square)](README.ru.md)
 
 A VPN client for servers that speak the Cisco AnyConnect protocol, built on
-OpenConnect. Windows is the system it is made for; a Linux app image is built
-alongside it.
+OpenConnect. Windows is the system it is made for, and a Linux app image is
+built from the same source.
 
-For macOS there is a client of its own:
+The Mac client is a project of its own:
 [ocelotVPN](https://github.com/mraliscoder/ocelotVPN).
 
 This program began as a fork of
