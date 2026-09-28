@@ -282,9 +282,17 @@ signals:
     // A click on the notification area icon; the popover decides what to do
     // with it, since only it knows whether it is already showing.
     void popoverToggleRequested();
+    // The pointer resting on that icon, which shows the popover without taking
+    // the keyboard away from whatever the person was doing.
+    void popoverPeekRequested();
     void windowMinimizeRequested();
     void windowHideRequested();
     void readyToShutdown();
+
+protected:
+    // The notification area icon has no hover signal of its own; the only sign
+    // that the pointer is on it is the tooltip request the system sends.
+    bool eventFilter(QObject* watched, QEvent* event) override;
 
 private slots:
     void requestStats();

@@ -48,6 +48,17 @@ ApplicationWindow {
     visible: true
     color: Theme.surface
     title: Qt.application.displayName
+    // The window draws its own top, so the system does not draw one. What is
+    // lost with it - the drag, the resize, the three buttons - is put back by
+    // WindowChrome and ResizeEdges below.
+    flags: Qt.Window | Qt.FramelessWindowHint
+
+    header: WindowChrome {
+        window: mainWindow
+        title: controller.status === Theme.statusConnected && controller.currentProfile !== ""
+            ? qsTr("Ocelot — connected to %1").arg(controller.currentProfile)
+            : Qt.application.displayName
+    }
 
     Component.onCompleted: {
         const saved = controller.windowGeometry();
@@ -138,6 +149,10 @@ ApplicationWindow {
 
         function onPopoverToggleRequested() {
             popover.toggle();
+        }
+
+        function onPopoverPeekRequested() {
+            popover.peek();
         }
 
         // The chart's history is collected here, because this is the one thing
@@ -366,6 +381,12 @@ ApplicationWindow {
                 onLicenseRequested: messageDialog.show(qsTr("License"), controller.licenseText())
             }
         }
+    }
+
+    // A frameless window has no edges to catch, so they are drawn in - last,
+    // so they sit above everything else.
+    ResizeEdges {
+        window: mainWindow
     }
 
     // ----------------------------------------------------------- the popover

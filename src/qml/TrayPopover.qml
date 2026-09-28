@@ -44,6 +44,10 @@ Window {
     // on Windows, and this one has buttons to tab through and a list to pick
     // from. It stays out of the taskbar all the same.
     flags: Qt.Tool | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
+    // Nobody's child. Declared inside the main window it would be transient for
+    // it, and showing it would drag that window to the front as well - which is
+    // the opposite of what a popover from the notification area is for.
+    transientParent: null
     color: "transparent"
     visible: false
 
@@ -61,6 +65,41 @@ Window {
             show();
             raise();
             requestActivate();
+        }
+    }
+
+    // The pointer resting on the icon. The popover appears, but the keyboard
+    // stays where it was: this is a look, not a visit. It goes away again when
+    // the pointer does, unless it has been clicked into in the meantime.
+    function peek() {
+        if (visible) {
+            return;
+        }
+        everActivated = false;
+        place();
+        show();
+        raise();
+        leaveTimer.restart();
+    }
+
+    Timer {
+        id: leaveTimer
+
+        interval: 1600
+        onTriggered: {
+            if (root.visible && !root.active && !hover.hovered)
+                root.hide();
+        }
+    }
+
+    HoverHandler {
+        id: hover
+
+        onHoveredChanged: {
+            if (hovered)
+                leaveTimer.stop();
+            else if (!root.active)
+                leaveTimer.restart();
         }
     }
 

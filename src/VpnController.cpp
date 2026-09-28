@@ -40,6 +40,7 @@ extern "C" {
 #include <QApplication>
 #include <QClipboard>
 #include <QDateTime>
+#include <QEvent>
 #include <QEventLoop>
 #include <QFileSelector>
 #include <QIcon>
@@ -1594,6 +1595,7 @@ void VpnController::createTrayIcon()
         this, &VpnController::quit);
 
     m_trayIcon = new QSystemTrayIcon(this);
+    m_trayIcon->installEventFilter(this);
     m_trayIcon->setContextMenu(m_trayMenu);
     connect(m_trayIcon, &QSystemTrayIcon::activated,
         this, [this](QSystemTrayIcon::ActivationReason reason) {
@@ -1611,6 +1613,14 @@ void VpnController::createTrayIcon()
     updateTrayIcon();
     updateTrayMenu();
     m_trayIcon->show();
+}
+
+bool VpnController::eventFilter(QObject* watched, QEvent* event)
+{
+    if (watched == m_trayIcon && event->type() == QEvent::ToolTip) {
+        emit popoverPeekRequested();
+    }
+    return QObject::eventFilter(watched, event);
 }
 
 void VpnController::updateTrayIcon()

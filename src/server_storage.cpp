@@ -305,7 +305,6 @@ int StoredServer::save()
     settings.setValue("vpnc-script", m_vpnc_script_filename);
     settings.setValue("emoji", m_emoji);
     settings.setValue("dns-mode", m_dns_mode);
-    settings.setValue("last-connected", m_last_connected);
     if (m_log_level == -1)
         settings.remove("log-level");
     else
@@ -335,15 +334,6 @@ void StoredServer::set_dns_mode(const int mode)
     this->m_dns_mode = mode;
 }
 
-qint64 StoredServer::get_last_connected() const
-{
-    return this->m_last_connected;
-}
-
-void StoredServer::set_last_connected(const qint64 when)
-{
-    this->m_last_connected = when;
-}
 
 const QString& StoredServer::get_username() const
 {

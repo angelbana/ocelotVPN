@@ -120,10 +120,6 @@ public:
     int get_dns_mode() const;
     void set_dns_mode(const int mode);
 
-    // When this profile last carried a connection, as seconds since the epoch;
-    // zero when it never has.
-    qint64 get_last_connected() const;
-    void set_last_connected(const qint64 when);
 
     int get_log_level();
     void set_log_level(const int log_level);
@@ -151,6 +147,5 @@ private:
     QString m_vpnc_script_filename;
     QString m_emoji;
     int m_dns_mode;
-    qint64 m_last_connected;
     int m_log_level;
 };

@@ -55,6 +55,7 @@ set(${PROJECT_NAME}_QML
     qml/ProfileRow.qml
     qml/PromptSheet.qml
     qml/PulseDot.qml
+    qml/ResizeEdges.qml
     qml/SectionLabel.qml
     qml/SettingsPane.qml
     qml/StatTile.qml
@@ -62,6 +63,7 @@ set(${PROJECT_NAME}_QML
     qml/Theme.qml
     qml/ThroughputChart.qml
     qml/TrayPopover.qml
+    qml/WindowChrome.qml
 )
 
 # Both are single objects the whole interface reads: the palette, and the
