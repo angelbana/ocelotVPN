@@ -486,20 +486,30 @@ Item {
                 }
 
                 Text {
-                    Layout.alignment: Qt.AlignHCenter
+                    Layout.fillWidth: true
+                    Layout.leftMargin: Theme.padding
+                    Layout.rightMargin: Theme.padding
                     text: qsTr("No profile yet")
                     color: Theme.ink
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontMedium
                     font.weight: Font.DemiBold
+                    horizontalAlignment: Text.AlignHCenter
                 }
 
                 Text {
-                    Layout.alignment: Qt.AlignHCenter
+                    // Centred within the width it has, not centred at whatever
+                    // width the sentence happens to be: the long one used to
+                    // reach past both edges of the pane.
+                    Layout.fillWidth: true
+                    Layout.leftMargin: Theme.padding
+                    Layout.rightMargin: Theme.padding
                     text: qsTr("A profile is one VPN: its address, who you sign in as, and how.")
                     color: Theme.muted
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontNormal
+                    horizontalAlignment: Text.AlignHCenter
+                    wrapMode: Text.WordWrap
                 }
 
                 ChunkyButton {

@@ -272,6 +272,26 @@ Item {
 
                 Separator {}
 
+                SettingRow {
+                    label: qsTr("Window frame")
+                    hint: qsTr("Ocelot's own top, as the Mac client has it, or the one every "
+                        + "other window on this desktop wears.")
+
+                    AppComboBox {
+                        implicitWidth: Math.round(200 * Theme.scale)
+                        textRole: "label"
+                        valueRole: "value"
+                        model: [
+                            { "value": 0, "label": qsTr("Drawn by Ocelot") },
+                            { "value": 1, "label": qsTr("The system's") }
+                        ]
+                        selectedValue: controller.windowStyle
+                        onActivated: controller.windowStyle = currentValue
+                    }
+                }
+
+                Separator {}
+
                 Text {
                     Layout.fillWidth: true
                     text: qsTr("Three looks with the same layout: only the colours change.")

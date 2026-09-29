@@ -48,13 +48,17 @@ ApplicationWindow {
     visible: true
     color: Theme.surface
     title: Qt.application.displayName
-    // The window draws its own top, so the system does not draw one. What is
-    // lost with it - the drag, the resize, the three buttons - is put back by
-    // WindowChrome and ResizeEdges below.
-    flags: Qt.Window | Qt.FramelessWindowHint
+    // Either the system draws the top of the window or this program does. When
+    // it does, what goes with the frame - the drag, the resize, the buttons -
+    // is put back by WindowChrome and ResizeEdges below.
+    readonly property bool ownChrome: controller.windowStyle === 0
+
+    flags: ownChrome ? (Qt.Window | Qt.FramelessWindowHint) : Qt.Window
 
     header: WindowChrome {
         window: mainWindow
+        visible: mainWindow.ownChrome
+        height: visible ? implicitHeight : 0
         title: controller.status === Theme.statusConnected && controller.currentProfile !== ""
             ? qsTr("Ocelot — connected to %1").arg(controller.currentProfile)
             : Qt.application.displayName
@@ -387,6 +391,7 @@ ApplicationWindow {
     // so they sit above everything else.
     ResizeEdges {
         window: mainWindow
+        visible: mainWindow.ownChrome
     }
 
     // ----------------------------------------------------------- the popover

@@ -29,9 +29,7 @@
 #include <QVariantMap>
 #include <QWaitCondition>
 
-class QAction;
 class QEventLoop;
-class QMenu;
 class QNetworkAccessManager;
 class QNetworkReply;
 class QQmlEngine;
@@ -88,6 +86,8 @@ class VpnController : public QObject {
     // The language of the interface. Changing it takes effect at once: the
     // translation is inside the program, and Qt re-reads every visible string.
     Q_PROPERTY(int language READ language WRITE setLanguage NOTIFY settingsChanged)
+    // Whether the window wears the system's frame or draws its own.
+    Q_PROPERTY(int windowStyle READ windowStyle WRITE setWindowStyle NOTIFY settingsChanged)
     Q_PROPERTY(int logLevel READ logLevel WRITE setLogLevel NOTIFY settingsChanged)
     Q_PROPERTY(bool minimizeToTray READ minimizeToTray WRITE setMinimizeToTray NOTIFY settingsChanged)
     Q_PROPERTY(bool minimizeInsteadOfClose READ minimizeInsteadOfClose WRITE setMinimizeInsteadOfClose NOTIFY settingsChanged)
@@ -119,6 +119,15 @@ public:
         StatusConnected
     };
     Q_ENUM(Status)
+
+    // Who draws the top of the window. The system's frame is what every other
+    // program on the desktop has; Ocelot's own is the one the Mac client has,
+    // and the one this program is built around.
+    enum WindowStyle {
+        WindowStyleOcelot,
+        WindowStyleSystem
+    };
+    Q_ENUM(WindowStyle)
 
     // Three looks that differ in colour only. Ocelot is the one the program
     // is named after and the one it starts with.
@@ -184,6 +193,8 @@ public:
     void setTheme(int mode);
     int language() const;
     void setLanguage(int language);
+    int windowStyle() const;
+    void setWindowStyle(int style);
     int logLevel() const;
     void setLogLevel(int level);
     bool minimizeToTray() const;
@@ -301,7 +312,6 @@ private slots:
 private:
     void createTrayIcon();
     void updateTrayIcon();
-    void updateTrayMenu();
     void reloadProfiles();
     void loadCurrentProfileInfo();
     void readSettings();
@@ -350,11 +360,9 @@ private:
     QNetworkAccessManager* m_network;
 
     QSystemTrayIcon* m_trayIcon;
-    QMenu* m_trayMenu;
-    QMenu* m_trayProfilesMenu;
-    QAction* m_trayDisconnectAction;
 
     int m_theme;
+    int m_windowStyle;
     int m_language;
     QTranslator* m_translator;
     QQmlEngine* m_qmlEngine;

@@ -17,15 +17,16 @@
 
 import QtQuick
 import QtQuick.Controls.Basic
-import QtQuick.Layouts
 
 // The top of the window, drawn by the program rather than by the system.
 //
-// The window is frameless, so this bar is also what a person drags it by, and
-// the three buttons at its right are the ones the system would otherwise draw.
-// They keep the arrangement Windows uses - minimize, maximize, close, in that
-// order, at that end - because a window that puts them somewhere else is a
-// window people close by accident.
+// Three round buttons at the left and the name in the middle, the way the Mac
+// client has them, so the two programs are recognisably one family. The window
+// is frameless, so this bar is also what it is dragged by.
+//
+// The marks inside the buttons only appear under the pointer. That is the point
+// of them: at rest the colours are enough, and three glyphs sitting there all
+// the time would be three more things to look at.
 Rectangle {
     id: root
 
@@ -42,11 +43,9 @@ Rectangle {
         color: Theme.line
     }
 
-    // Dragging anywhere in the bar moves the window; the system does the work,
-    // so it snaps to the edges of the screen as any other window does.
     TapHandler {
         gesturePolicy: TapHandler.DragThreshold
-        onTapped: (eventPoint, button) => {
+        onTapped: {
             if (tapCount === 2)
                 root.toggleMaximized();
         }
@@ -63,130 +62,123 @@ Rectangle {
             root.window.showMaximized();
     }
 
-    RowLayout {
-        anchors.fill: parent
-        anchors.leftMargin: Math.round(12 * Theme.scale)
-        spacing: 8
+    // The title sits in the middle of the window, not in the middle of what is
+    // left over beside the buttons.
+    Text {
+        anchors.centerIn: parent
+        width: Math.min(implicitWidth, root.width - Math.round(220 * Theme.scale))
+        text: root.title
+        color: Theme.muted
+        font.family: Theme.fontFamily
+        font.pixelSize: Theme.fontSmall
+        font.weight: Font.DemiBold
+        horizontalAlignment: Text.AlignHCenter
+        elide: Text.ElideRight
+    }
 
-        Text {
-            Layout.fillWidth: true
-            text: root.title
-            color: Theme.muted
-            font.family: Theme.fontFamily
-            font.pixelSize: Theme.fontCaption
-            font.weight: Font.Medium
-            elide: Text.ElideRight
+    Row {
+        id: lights
+
+        property bool showMarks: lightsHover.hovered
+
+        anchors.left: parent.left
+        anchors.leftMargin: Math.round(13 * Theme.scale)
+        anchors.verticalCenter: parent.verticalCenter
+        spacing: Math.round(8 * Theme.scale)
+
+        HoverHandler {
+            id: lightsHover
         }
 
-        // The three system buttons. Square and flush to the top right, the way
-        // every other window on this desktop has them.
-        Row {
-            Layout.fillHeight: true
-            spacing: 0
+        component Light: AbstractButton {
+            id: light
 
-            component ChromeButton: AbstractButton {
-                id: chrome
+            property color tint: "#ff5f57"
+            property string mark: ""
 
-                property string mark: ""
-                property bool closes: false
+            implicitWidth: Math.round(13 * Theme.scale)
+            implicitHeight: implicitWidth
+            hoverEnabled: true
 
-                width: Math.round(46 * Theme.scale)
-                height: root.height
-                hoverEnabled: true
+            background: Rectangle {
+                radius: width / 2
+                color: light.enabled ? (light.down ? Qt.darker(light.tint, 1.25) : light.tint)
+                    : Theme.lineStrong
+                border.width: 1
+                border.color: Qt.darker(color, 1.12)
+            }
 
-                background: Rectangle {
-                    color: chrome.closes
-                        ? (chrome.hovered ? "#d8453a" : "transparent")
-                        : (chrome.hovered ? Theme.cardHover : "transparent")
+            contentItem: Canvas {
+                opacity: lights.showMarks && light.enabled ? 1 : 0
+                antialiasing: true
 
-                    Behavior on color {
-                        ColorAnimation { duration: 110 }
-                    }
+                Behavior on opacity {
+                    NumberAnimation { duration: 110 }
                 }
 
-                contentItem: Item {
-                    Canvas {
-                        anchors.centerIn: parent
-                        width: Math.round(11 * Theme.scale)
-                        height: width
-                        antialiasing: true
+                onPaint: {
+                    const ctx = getContext("2d");
+                    const k = width / 13;
+                    ctx.reset();
+                    ctx.save();
+                    ctx.scale(k, k);
+                    ctx.strokeStyle = Qt.rgba(0, 0, 0, 0.55);
+                    ctx.fillStyle = ctx.strokeStyle;
+                    ctx.lineWidth = 1.3;
+                    ctx.lineCap = "round";
 
-                        property color ink: chrome.closes && chrome.hovered
-                            ? "#ffffff" : Theme.muted
+                    switch (light.mark) {
+                    case "close":
+                        ctx.beginPath();
+                        ctx.moveTo(4, 4);
+                        ctx.lineTo(9, 9);
+                        ctx.moveTo(9, 4);
+                        ctx.lineTo(4, 9);
+                        ctx.stroke();
+                        break;
 
-                        onInkChanged: requestPaint()
+                    case "minimize":
+                        ctx.beginPath();
+                        ctx.moveTo(3.4, 6.5);
+                        ctx.lineTo(9.6, 6.5);
+                        ctx.stroke();
+                        break;
 
-                        Connections {
-                            target: Theme
-                            function onModeChanged() { parent.children[0].requestPaint(); }
-                        }
-
-                        onPaint: {
-                            const ctx = getContext("2d");
-                            const k = width / 11;
-                            ctx.reset();
-                            ctx.save();
-                            ctx.scale(k, k);
-                            ctx.strokeStyle = ink;
-                            ctx.lineWidth = 1.2;
-                            ctx.lineCap = "round";
-
-                            switch (chrome.mark) {
-                            case "minimize":
-                                ctx.beginPath();
-                                ctx.moveTo(0.5, 5.5);
-                                ctx.lineTo(10.5, 5.5);
-                                ctx.stroke();
-                                break;
-
-                            case "maximize":
-                                if (root.window.visibility === Window.Maximized) {
-                                    // Two sheets, for the window that would come
-                                    // back to its old size.
-                                    ctx.strokeRect(0.5, 2.5, 8, 8);
-                                    ctx.beginPath();
-                                    ctx.moveTo(2.5, 2.5);
-                                    ctx.lineTo(2.5, 0.5);
-                                    ctx.lineTo(10.5, 0.5);
-                                    ctx.lineTo(10.5, 8.5);
-                                    ctx.lineTo(8.5, 8.5);
-                                    ctx.stroke();
-                                } else {
-                                    ctx.strokeRect(0.5, 0.5, 10, 10);
-                                }
-                                break;
-
-                            case "close":
-                                ctx.beginPath();
-                                ctx.moveTo(0.8, 0.8);
-                                ctx.lineTo(10.2, 10.2);
-                                ctx.moveTo(10.2, 0.8);
-                                ctx.lineTo(0.8, 10.2);
-                                ctx.stroke();
-                                break;
-                            }
-
-                            ctx.restore();
-                        }
+                    case "zoom":
+                        // Two facing corners, which is what this button does:
+                        // fill the screen, or give the window back its size.
+                        ctx.beginPath();
+                        ctx.moveTo(3.6, 8.2);
+                        ctx.lineTo(3.6, 4.4);
+                        ctx.lineTo(7.4, 4.4);
+                        ctx.moveTo(9.4, 4.8);
+                        ctx.lineTo(9.4, 8.6);
+                        ctx.lineTo(5.6, 8.6);
+                        ctx.stroke();
+                        break;
                     }
+
+                    ctx.restore();
                 }
             }
+        }
 
-            ChromeButton {
-                mark: "minimize"
-                onClicked: root.window.showMinimized()
-            }
+        Light {
+            tint: "#ff5f57"
+            mark: "close"
+            onClicked: root.window.close()
+        }
 
-            ChromeButton {
-                mark: "maximize"
-                onClicked: root.toggleMaximized()
-            }
+        Light {
+            tint: "#febc2e"
+            mark: "minimize"
+            onClicked: root.window.showMinimized()
+        }
 
-            ChromeButton {
-                mark: "close"
-                closes: true
-                onClicked: root.window.close()
-            }
+        Light {
+            tint: "#28c840"
+            mark: "zoom"
+            onClicked: root.toggleMaximized()
         }
     }
 }

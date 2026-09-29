@@ -213,10 +213,8 @@ VpnController::VpnController(bool useTray, QObject* parent)
     , m_lastCheckTime(0)
     , m_network(new QNetworkAccessManager(this))
     , m_trayIcon(nullptr)
-    , m_trayMenu(nullptr)
-    , m_trayProfilesMenu(nullptr)
-    , m_trayDisconnectAction(nullptr)
     , m_theme(ThemeOcelot)
+    , m_windowStyle(WindowStyleOcelot)
     , m_language(LanguageSystem)
     , m_translator(nullptr)
     , m_qmlEngine(nullptr)
@@ -599,6 +597,23 @@ void VpnController::setSingleInstance(bool value)
     emit settingsChanged();
 }
 
+int VpnController::windowStyle() const
+{
+    return m_windowStyle;
+}
+
+void VpnController::setWindowStyle(int style)
+{
+    if (style < WindowStyleOcelot || style > WindowStyleSystem || m_windowStyle == style) {
+        return;
+    }
+
+    m_windowStyle = style;
+    OcSettings settings;
+    settings.setValue("Settings/windowStyle", m_windowStyle);
+    emit settingsChanged();
+}
+
 int VpnController::language() const
 {
     return m_language;
@@ -621,7 +636,6 @@ void VpnController::setLanguage(int language)
     if (m_qmlEngine != nullptr) {
         m_qmlEngine->retranslate();
     }
-    updateTrayMenu();
     updateTrayIcon();
 }
 
@@ -1122,7 +1136,6 @@ void VpnController::setStatus(int status)
             }
 
             updateTrayIcon();
-            updateTrayMenu();
             emit statusChanged();
 
             if (status == StatusDisconnected && m_quitWhenDisconnected == true) {
@@ -1570,39 +1583,23 @@ void VpnController::reloadProfiles()
         loadCurrentProfileInfo();
         emit currentProfileChanged();
     }
-
-    updateTrayMenu();
 }
 
 void VpnController::createTrayIcon()
 {
-    m_trayMenu = new QMenu();
-
-    m_trayProfilesMenu = m_trayMenu->addMenu(tr("Connect to..."));
-
-    m_trayDisconnectAction = m_trayMenu->addAction(tr("Disconnect"));
-    connect(m_trayDisconnectAction, &QAction::triggered,
-        this, &VpnController::disconnectVpn);
-
-    m_trayMenu->addSeparator();
-    QAction* showAction = m_trayMenu->addAction(tr("Show window"));
-    connect(showAction, &QAction::triggered,
-        this, [this]() { emit windowRequested(true); });
-
-    m_trayMenu->addSeparator();
-    QAction* quitAction = m_trayMenu->addAction(tr("Quit"));
-    connect(quitAction, &QAction::triggered,
-        this, &VpnController::quit);
-
     m_trayIcon = new QSystemTrayIcon(this);
     m_trayIcon->installEventFilter(this);
-    m_trayIcon->setContextMenu(m_trayMenu);
+
+    // No menu of the system's own. Everything it used to offer - connecting to
+    // a profile, disconnecting, the window, quitting - is in the popover, drawn
+    // like the rest of the program; a menu in the system's style beside it
+    // would be the one thing here that belongs to a different design.
     connect(m_trayIcon, &QSystemTrayIcon::activated,
         this, [this](QSystemTrayIcon::ActivationReason reason) {
-            // One click is the popover: everything a person wants most of the
-            // time is in it, and it costs no window. Two clicks are for the
+            // One click, either button, is the popover. Two clicks are for the
             // window itself.
             if (reason == QSystemTrayIcon::Trigger
+                || reason == QSystemTrayIcon::Context
                 || reason == QSystemTrayIcon::MiddleClick) {
                 emit popoverToggleRequested();
             } else if (reason == QSystemTrayIcon::DoubleClick) {
@@ -1611,12 +1608,13 @@ void VpnController::createTrayIcon()
         });
 
     updateTrayIcon();
-    updateTrayMenu();
     m_trayIcon->show();
 }
 
 bool VpnController::eventFilter(QObject* watched, QEvent* event)
 {
+    // The notification area icon has no hover signal; the only sign that the
+    // pointer is resting on it is the tooltip the system asks for.
     if (watched == m_trayIcon && event->type() == QEvent::ToolTip) {
         emit popoverPeekRequested();
     }
@@ -1654,24 +1652,6 @@ void VpnController::updateTrayIcon()
     }
 }
 
-void VpnController::updateTrayMenu()
-{
-    if (m_trayIcon == nullptr) {
-        return;
-    }
-
-    m_trayProfilesMenu->clear();
-    for (const auto& profile : m_profiles) {
-        QAction* action = m_trayProfilesMenu->addAction(profile);
-        connect(action, &QAction::triggered,
-            this, [this, profile]() { connectToProfile(profile); });
-    }
-
-    const bool idle = (m_status == StatusDisconnected);
-    m_trayProfilesMenu->setEnabled(idle && m_profiles.isEmpty() == false);
-    m_trayProfilesMenu->setTitle(m_profiles.isEmpty() ? tr("(no servers to connect)") : tr("Connect to..."));
-    m_trayDisconnectAction->setEnabled(idle == false);
-}
 
 void VpnController::tryCheckLatestVersion()
 {
@@ -1869,6 +1849,7 @@ void VpnController::readSettings()
     m_logLevel = settings.value("logLevel", PRG_INFO).toInt();
     m_theme = settings.value("theme", ThemeOcelot).toInt();
     m_language = settings.value("language", LanguageSystem).toInt();
+    m_windowStyle = settings.value("windowStyle", WindowStyleOcelot).toInt();
     m_connectOnStart = settings.value("connectOnStart", false).toBool();
     m_connectOnLogon = settings.value("connectOnLogon", false).toBool();
     m_reconnectOnDrop = settings.value("reconnectOnDrop", true).toBool();
@@ -1883,6 +1864,10 @@ void VpnController::readSettings()
 
     if (m_language < LanguageSystem || m_language > LanguageRussian) {
         m_language = LanguageSystem;
+    }
+
+    if (m_windowStyle < WindowStyleOcelot || m_windowStyle > WindowStyleSystem) {
+        m_windowStyle = WindowStyleOcelot;
     }
     applyLanguage();
 
@@ -1908,6 +1893,7 @@ void VpnController::writeSettings()
     settings.setValue("logLevel", m_logLevel);
     settings.setValue("theme", m_theme);
     settings.setValue("language", m_language);
+    settings.setValue("windowStyle", m_windowStyle);
     settings.setValue("connectOnStart", m_connectOnStart);
     settings.setValue("connectOnLogon", m_connectOnLogon);
     settings.setValue("reconnectOnDrop", m_reconnectOnDrop);
