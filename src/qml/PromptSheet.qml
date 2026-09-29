@@ -38,6 +38,7 @@ Popup {
         root.promptType = type;
         root.request = request;
         root.detailsExpanded = false;
+        rememberToggle.checked = false;
         field.text = "";
         choices.currentIndex = 0;
         root.open();
@@ -53,8 +54,11 @@ Popup {
             else if (promptType === promptInput || promptType === promptPassword)
                 text = field.text;
         }
+
+        const remember = accepted && root.promptType === root.promptPassword
+            && rememberToggle.checked;
         root.close();
-        controller.answerPrompt(accepted, text);
+        controller.answerPrompt(accepted, text, remember);
     }
 
     anchors.centerIn: Overlay.overlay
@@ -136,6 +140,28 @@ Popup {
                 visible: root.promptType === root.promptInput || root.promptType === root.promptPassword
                 echoMode: root.promptType === root.promptPassword ? TextInput.Password : TextInput.Normal
                 onAccepted: root.answer(true)
+            }
+
+            AppToggle {
+                id: rememberToggle
+
+                Layout.fillWidth: true
+                Layout.topMargin: 2
+                // Shown only where remembering means something: the question
+                // for the account's own password, not for a code that is new
+                // every time.
+                visible: root.promptType === root.promptPassword
+                    && root.request.canRemember === true
+                text: qsTr("Remember this password")
+                // Only Windows can seal a password so that nothing else on the
+                // machine can read it. Saying otherwise elsewhere would be a
+                // promise the program cannot keep.
+                description: Qt.platform.os === "windows"
+                    ? qsTr("Kept by Windows for this account alone, and used next time "
+                    + "without asking. It can be forgotten again in the profile.")
+                    : qsTr("Kept in this account's settings. This system gives the program "
+                    + "nothing to seal it with, so it is stored as it is - not something "
+                    + "to turn on for a machine you share.")
             }
 
             AppComboBox {

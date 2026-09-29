@@ -253,495 +253,353 @@ Popup {
         }
 
         ScrollView {
+            id: sheetScroll
+
             ScrollBar.vertical: AppScrollBar {}
             Layout.fillWidth: true
             Layout.fillHeight: true
+            contentWidth: availableWidth
             clip: true
 
-            // Connection
-            GridLayout {
-                id: connectionGrid
+            // One child, because a scroll view measures the first one and
+            // ignores the rest: with the three tabs side by side, everything
+            // below the fold was unreachable.
+            Item {
+                width: sheetScroll.availableWidth
+                implicitHeight: (connectionGrid.visible ? connectionGrid.implicitHeight
+                    : certificatesColumn.visible ? certificatesColumn.implicitHeight
+                    : advancedGrid.implicitHeight) + Math.round(34 * Theme.scale)
 
-                width: root.width - Math.round(40 * Theme.scale)
-                x: Math.round(20 * Theme.scale)
-                y: Math.round(16 * Theme.scale)
-                visible: root.tab === 0
-                // the two-column form collapses to one column in a narrow window
-                columns: root.width < Theme.narrowWidth ? 1 : 2
-                columnSpacing: Math.round(14 * Theme.scale)
-                rowSpacing: Math.round(10 * Theme.scale)
 
-                Field {
-                    FieldLabel {
-                        text: qsTr("Name")
+                // Connection
+                GridLayout {
+                    id: connectionGrid
+
+                    width: parent.width - Math.round(40 * Theme.scale)
+                    x: Math.round(20 * Theme.scale)
+                    y: Math.round(16 * Theme.scale)
+                    visible: root.tab === 0
+                    // the two-column form collapses to one column in a narrow window
+                    columns: root.width < Theme.narrowWidth ? 1 : 2
+                    columnSpacing: Math.round(14 * Theme.scale)
+                    rowSpacing: Math.round(10 * Theme.scale)
+
+                    Field {
+                        FieldLabel {
+                            text: qsTr("Name")
+                        }
+
+                        AppField {
+                            id: nameField
+                            Layout.fillWidth: true
+                            Layout.minimumWidth: 0
+                        }
                     }
 
-                    AppField {
-                        id: nameField
-                        Layout.fillWidth: true
-                        Layout.minimumWidth: 0
-                    }
-                }
+                    Field {
+                        FieldLabel {
+                            text: qsTr("Character")
+                        }
 
-                Field {
-                    FieldLabel {
-                        text: qsTr("Character")
-                    }
+                        // A picture for the profile without a picture to find: the
+                        // lists show this, and one glance tells them apart.
+                        Flow {
+                            Layout.fillWidth: true
+                            spacing: 2
 
-                    // A picture for the profile without a picture to find: the
-                    // lists show this, and one glance tells them apart.
-                    Flow {
-                        Layout.fillWidth: true
-                        spacing: 2
+                            Repeater {
+                                model: controller.emojiChoices()
 
-                        Repeater {
-                            model: controller.emojiChoices()
+                                delegate: AbstractButton {
+                                    id: emojiButton
 
-                            delegate: AbstractButton {
-                                id: emojiButton
+                                    required property string modelData
 
-                                required property string modelData
+                                    implicitWidth: Math.round(30 * Theme.scale)
+                                    implicitHeight: Math.round(30 * Theme.scale)
+                                    onClicked: root.emoji = modelData
 
-                                implicitWidth: Math.round(30 * Theme.scale)
-                                implicitHeight: Math.round(30 * Theme.scale)
-                                onClicked: root.emoji = modelData
+                                    background: Rectangle {
+                                        radius: Theme.radiusSmall
+                                        color: root.emoji === emojiButton.modelData
+                                            ? Theme.accentSoft : "transparent"
+                                        border.width: root.emoji === emojiButton.modelData ? 1 : 0
+                                        border.color: Theme.accent
+                                    }
 
-                                background: Rectangle {
-                                    radius: Theme.radiusSmall
-                                    color: root.emoji === emojiButton.modelData
-                                        ? Theme.accentSoft : "transparent"
-                                    border.width: root.emoji === emojiButton.modelData ? 1 : 0
-                                    border.color: Theme.accent
-                                }
-
-                                contentItem: Text {
-                                    text: emojiButton.modelData
-                                    font.pixelSize: Math.round(16 * Theme.scale)
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
+                                    contentItem: Text {
+                                        text: emojiButton.modelData
+                                        font.pixelSize: Math.round(16 * Theme.scale)
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                Field {
-                    FieldLabel {
-                        text: qsTr("VPN protocol")
-                    }
+                    Field {
+                        FieldLabel {
+                            text: qsTr("VPN protocol")
+                        }
 
-                    AppComboBox {
-                        id: protocolBox
-                        Layout.fillWidth: true
-                        Layout.minimumWidth: 0
-                        model: controller.protocols()
-                        textRole: "label"
-                        valueRole: "name"
-                    }
-                }
-
-                Field {
-                    Layout.columnSpan: connectionGrid.columns
-
-                    FieldLabel {
-                        text: qsTr("Gateway")
-                    }
-
-                    AppField {
-                        id: gatewayField
-                        Layout.fillWidth: true
-                        Layout.minimumWidth: 0
-                        mono: true
-                        placeholderText: "https://my_server[:443]/[usergroup]"
-                    }
-
-                    Text {
-                        id: errorText
-                        Layout.fillWidth: true
-                        visible: text.length > 0
-                        color: Theme.danger
-                        font.pixelSize: Theme.fontSmall
-                        wrapMode: Text.WordWrap
-                    }
-                }
-
-                Field {
-                    FieldLabel {
-                        text: qsTr("Username")
-                    }
-
-                    AppField {
-                        id: usernameField
-                        Layout.fillWidth: true
-                        Layout.minimumWidth: 0
-                    }
-                }
-
-                Field {
-                    Layout.columnSpan: connectionGrid.columns
-
-                    FieldLabel {
-                        text: qsTr("Password")
-                    }
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 10
-
-                        AppField {
-                            id: passwordField
+                        AppComboBox {
+                            id: protocolBox
                             Layout.fillWidth: true
                             Layout.minimumWidth: 0
-                            enabled: batchToggle.checked
-                            echoMode: TextInput.Password
-                            placeholderText: batchToggle.checked
-                                ? qsTr("The password for this server")
-                                : qsTr("Asked for at every connection")
-                        }
-
-                        AppToggle {
-                            id: batchToggle
-                            Layout.preferredWidth: Math.round(190 * Theme.scale)
-                            text: qsTr("Remember it")
+                            model: controller.protocols()
+                            textRole: "label"
+                            valueRole: "name"
                         }
                     }
 
-                    Text {
-                        Layout.fillWidth: true
-                        text: qsTr("Windows seals a remembered password to this account on this "
-                            + "computer, so it cannot be read anywhere else — and turning this "
-                            + "off deletes it.")
-                        color: Theme.faint
-                        font.pixelSize: Theme.fontSmall
-                        wrapMode: Text.WordWrap
-                    }
-                }
+                    Field {
+                        Layout.columnSpan: connectionGrid.columns
 
-                Field {
-                    FieldLabel {
-                        text: qsTr("Group name")
-                    }
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 8
+                        FieldLabel {
+                            text: qsTr("Gateway")
+                        }
 
                         AppField {
-                            id: groupnameField
-                            Layout.fillWidth: true
-                            Layout.minimumWidth: 0
-                        }
-
-                        AppButton {
-                            text: qsTr("Clear")
-                            enabled: groupnameField.text.length > 0
-                            onClicked: groupnameField.text = ""
-                        }
-                    }
-                }
-
-                Field {
-                    FieldLabel {
-                        text: qsTr("OTP token")
-                    }
-
-                    AppComboBox {
-                        id: tokenBox
-                        Layout.fillWidth: true
-                        Layout.minimumWidth: 0
-                        model: controller.tokenModes()
-                        textRole: "label"
-                        valueRole: "value"
-                    }
-                }
-
-                Field {
-                    FieldLabel {
-                        text: qsTr("Token secret")
-                    }
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 8
-
-                        AppField {
-                            id: tokenField
+                            id: gatewayField
                             Layout.fillWidth: true
                             Layout.minimumWidth: 0
                             mono: true
-                            placeholderText: qsTr("0x... or base32:...")
+                            placeholderText: "https://my_server[:443]/[usergroup]"
                         }
 
-                        AppButton {
-                            text: qsTr("Clear")
-                            enabled: tokenField.text.length > 0
-                            onClicked: {
-                                tokenField.text = "";
-                                tokenBox.currentIndex = tokenBox.indexOfValue(-1);
+                        Text {
+                            id: errorText
+                            Layout.fillWidth: true
+                            visible: text.length > 0
+                            color: Theme.danger
+                            font.pixelSize: Theme.fontSmall
+                            wrapMode: Text.WordWrap
+                        }
+                    }
+
+                    Field {
+                        FieldLabel {
+                            text: qsTr("Username")
+                        }
+
+                        AppField {
+                            id: usernameField
+                            Layout.fillWidth: true
+                            Layout.minimumWidth: 0
+                        }
+                    }
+
+                    Field {
+                        Layout.columnSpan: connectionGrid.columns
+
+                        FieldLabel {
+                            text: qsTr("Password")
+                        }
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 10
+
+                            AppField {
+                                id: passwordField
+                                Layout.fillWidth: true
+                                Layout.minimumWidth: 0
+                                enabled: batchToggle.checked
+                                echoMode: TextInput.Password
+                                placeholderText: batchToggle.checked
+                                    ? qsTr("The password for this server")
+                                    : qsTr("Asked for at every connection")
+                            }
+
+                            AppToggle {
+                                id: batchToggle
+                                Layout.preferredWidth: Math.round(190 * Theme.scale)
+                                text: qsTr("Remember it")
+                            }
+                        }
+
+                        Text {
+                            Layout.fillWidth: true
+                            // Only Windows can seal a password so that nothing else on
+                            // the machine can read it. Saying otherwise elsewhere would
+                            // be a promise the program cannot keep.
+                            text: Qt.platform.os === "windows"
+                                ? qsTr("Windows seals a remembered password to this account "
+                                    + "on this computer, so it cannot be read anywhere else "
+                                    + "— and turning this off deletes it.")
+                                : qsTr("A remembered password is kept in this account's "
+                                    + "settings as it is: this system gives the program nothing "
+                                    + "to seal it with. Turning this off deletes it.")
+                            color: Theme.faint
+                            font.pixelSize: Theme.fontSmall
+                            wrapMode: Text.WordWrap
+                        }
+                    }
+
+                    Field {
+                        FieldLabel {
+                            text: qsTr("Group name")
+                        }
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 8
+
+                            AppField {
+                                id: groupnameField
+                                Layout.fillWidth: true
+                                Layout.minimumWidth: 0
+                            }
+
+                            AppButton {
+                                text: qsTr("Clear")
+                                enabled: groupnameField.text.length > 0
+                                onClicked: groupnameField.text = ""
+                            }
+                        }
+                    }
+
+                    Field {
+                        FieldLabel {
+                            text: qsTr("OTP token")
+                        }
+
+                        AppComboBox {
+                            id: tokenBox
+                            Layout.fillWidth: true
+                            Layout.minimumWidth: 0
+                            model: controller.tokenModes()
+                            textRole: "label"
+                            valueRole: "value"
+                        }
+                    }
+
+                    Field {
+                        FieldLabel {
+                            text: qsTr("Token secret")
+                        }
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 8
+
+                            AppField {
+                                id: tokenField
+                                Layout.fillWidth: true
+                                Layout.minimumWidth: 0
+                                mono: true
+                                placeholderText: qsTr("0x... or base32:...")
+                            }
+
+                            AppButton {
+                                text: qsTr("Clear")
+                                enabled: tokenField.text.length > 0
+                                onClicked: {
+                                    tokenField.text = "";
+                                    tokenBox.currentIndex = tokenBox.indexOfValue(-1);
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            // Certificates
-            ColumnLayout {
-                width: root.width - Math.round(40 * Theme.scale)
-                x: Math.round(20 * Theme.scale)
-                y: Math.round(16 * Theme.scale)
-                visible: root.tab === 1
-                spacing: Math.round(6 * Theme.scale)
+                // Certificates
+                ColumnLayout {
+                    id: certificatesColumn
 
-                FieldLabel {
-                    text: qsTr("CA certificate")
-                }
+                    width: parent.width - Math.round(40 * Theme.scale)
+                    x: Math.round(20 * Theme.scale)
+                    y: Math.round(16 * Theme.scale)
+                    visible: root.tab === 1
+                    spacing: Math.round(6 * Theme.scale)
 
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 8
+                    FieldLabel {
+                        text: qsTr("CA certificate")
+                    }
 
-                    AppField {
-                        id: caCertField
+                    RowLayout {
                         Layout.fillWidth: true
-                        Layout.minimumWidth: 0
-                        mono: true
-                        placeholderText: qsTr("System trust store")
-                    }
+                        spacing: 8
 
-                    AppButton {
-                        text: qsTr("Browse...")
-                        onClicked: {
-                            certDialog.target = caCertField;
-                            certDialog.open();
+                        AppField {
+                            id: caCertField
+                            Layout.fillWidth: true
+                            Layout.minimumWidth: 0
+                            mono: true
+                            placeholderText: qsTr("System trust store")
+                        }
+
+                        AppButton {
+                            text: qsTr("Browse...")
+                            onClicked: {
+                                certDialog.target = caCertField;
+                                certDialog.open();
+                            }
+                        }
+
+                        AppButton {
+                            text: qsTr("Clear")
+                            enabled: caPinText.text.length > 0 || caCertField.text.length > 0
+                            onClicked: {
+                                caCertField.text = "";
+                                caPinText.text = "";
+                                root.clearCaCert = true;
+                            }
                         }
                     }
-
-                    AppButton {
-                        text: qsTr("Clear")
-                        enabled: caPinText.text.length > 0 || caCertField.text.length > 0
-                        onClicked: {
-                            caCertField.text = "";
-                            caPinText.text = "";
-                            root.clearCaCert = true;
-                        }
-                    }
-                }
-
-                Text {
-                    id: caPinText
-                    Layout.fillWidth: true
-                    visible: text.length > 0
-                    color: Theme.faint
-                    font.pixelSize: Theme.fontSmall
-                    font.family: Theme.monoFamily
-                    wrapMode: Text.WrapAnywhere
-                }
-
-                FieldLabel {
-                    Layout.topMargin: 10
-                    text: qsTr("Trusted server certificate")
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 8
 
                     Text {
-                        id: serverPinText
+                        id: caPinText
                         Layout.fillWidth: true
-                        Layout.minimumWidth: 0
-                        text: ""
-                        color: text.length > 0 ? Theme.ink : Theme.faint
+                        visible: text.length > 0
+                        color: Theme.faint
                         font.pixelSize: Theme.fontSmall
                         font.family: Theme.monoFamily
                         wrapMode: Text.WrapAnywhere
                     }
 
-                    AppButton {
-                        text: qsTr("Forget")
-                        enabled: serverPinText.text.length > 0
-                        onClicked: {
-                            serverPinText.text = "";
-                            root.clearServerPin = true;
-                        }
+                    FieldLabel {
+                        Layout.topMargin: 10
+                        text: qsTr("Trusted server certificate")
                     }
-                }
 
-                Text {
-                    Layout.fillWidth: true
-                    text: qsTr("Saved the first time you accepted this server. Forget it if the server's certificate changed.")
-                    color: Theme.faint
-                    font.pixelSize: Theme.fontSmall
-                    wrapMode: Text.WordWrap
-                }
-
-                FieldLabel {
-                    Layout.topMargin: 10
-                    text: qsTr("User certificate")
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 8
-
-                    AppField {
-                        id: userCertField
+                    RowLayout {
                         Layout.fillWidth: true
-                        Layout.minimumWidth: 0
-                        mono: true
-                        placeholderText: clientPinText.text.length > 0 ? qsTr("Stored in the profile") : qsTr("None")
-                    }
+                        spacing: 8
 
-                    AppButton {
-                        text: qsTr("Browse...")
-                        onClicked: {
-                            certDialog.target = userCertField;
-                            certDialog.open();
-                        }
-                    }
-
-                    AppButton {
-                        text: qsTr("Clear")
-                        enabled: clientPinText.text.length > 0 || userCertField.text.length > 0
-                        onClicked: {
-                            userCertField.text = "";
-                            clientPinText.text = "";
-                            root.clearClientCert = true;
-                        }
-                    }
-                }
-
-                Text {
-                    id: clientPinText
-                    Layout.fillWidth: true
-                    visible: text.length > 0
-                    color: Theme.faint
-                    font.pixelSize: Theme.fontSmall
-                    font.family: Theme.monoFamily
-                    wrapMode: Text.WrapAnywhere
-                }
-
-                FieldLabel {
-                    Layout.topMargin: 10
-                    text: qsTr("User key")
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 8
-
-                    AppField {
-                        id: userKeyField
-                        Layout.fillWidth: true
-                        Layout.minimumWidth: 0
-                        mono: true
-                        placeholderText: qsTr("None")
-                    }
-
-                    AppButton {
-                        text: qsTr("Browse...")
-                        onClicked: keyDialog.open()
-                    }
-
-                    AppButton {
-                        text: qsTr("Clear")
-                        enabled: userKeyField.text.length > 0
-                        onClicked: {
-                            userKeyField.text = "";
-                            root.clearClientKey = true;
-                        }
-                    }
-                }
-
-                FieldLabel {
-                    Layout.topMargin: 10
-                    text: qsTr("Certificate from the system store")
-                    visible: systemCerts.count > 0
-                }
-
-                ListView {
-                    id: systemCerts
-
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: Math.min(contentHeight, Math.round(120 * Theme.scale))
-                    visible: count > 0
-                    clip: true
-                    model: controller.systemCertificates()
-
-                    delegate: AbstractButton {
-                        id: certItem
-
-                        required property var modelData
-
-                        width: systemCerts.width
-                        height: Math.round(28 * Theme.scale)
-                        onClicked: {
-                            userCertField.text = certItem.modelData.certUrl;
-                            userKeyField.text = certItem.modelData.keyUrl;
-                        }
-
-                        contentItem: Text {
-                            text: certItem.modelData.label
-                            color: Theme.ink
+                        Text {
+                            id: serverPinText
+                            Layout.fillWidth: true
+                            Layout.minimumWidth: 0
+                            text: ""
+                            color: text.length > 0 ? Theme.ink : Theme.faint
                             font.pixelSize: Theme.fontSmall
-                            verticalAlignment: Text.AlignVCenter
-                            elide: Text.ElideRight
+                            font.family: Theme.monoFamily
+                            wrapMode: Text.WrapAnywhere
                         }
 
-                        background: Rectangle {
-                            radius: Theme.radius
-                            color: certItem.hovered ? Theme.sunken : "transparent"
+                        AppButton {
+                            text: qsTr("Forget")
+                            enabled: serverPinText.text.length > 0
+                            onClicked: {
+                                serverPinText.text = "";
+                                root.clearServerPin = true;
+                            }
                         }
                     }
-                }
-            }
 
-            // Advanced
-            GridLayout {
-                id: advancedGrid
-
-                width: root.width - Math.round(40 * Theme.scale)
-                x: Math.round(20 * Theme.scale)
-                y: Math.round(16 * Theme.scale)
-                visible: root.tab === 2
-                columns: root.width < Theme.narrowWidth ? 1 : 2
-                columnSpacing: Math.round(14 * Theme.scale)
-                rowSpacing: Math.round(10 * Theme.scale)
-
-                Field {
-                    FieldLabel {
-                        text: qsTr("Interface name")
-                    }
-
-                    AppField {
-                        id: interfaceField
+                    Text {
                         Layout.fillWidth: true
-                        Layout.minimumWidth: 0
-                        mono: true
-                        placeholderText: qsTr("Automatic")
+                        text: qsTr("Saved the first time you accepted this server. Forget it if the server's certificate changed.")
+                        color: Theme.faint
+                        font.pixelSize: Theme.fontSmall
+                        wrapMode: Text.WordWrap
                     }
-                }
-
-                Field {
-                    FieldLabel {
-                        text: qsTr("Log level")
-                    }
-
-                    AppComboBox {
-                        id: logLevelBox
-                        Layout.fillWidth: true
-                        Layout.minimumWidth: 0
-                        model: [{ "value": -1, "label": qsTr("Application default") }].concat(controller.logLevels())
-                        textRole: "label"
-                        valueRole: "value"
-                    }
-                }
-
-                Field {
-                    Layout.columnSpan: advancedGrid.columns
 
                     FieldLabel {
-                        text: qsTr("vpnc-script")
+                        Layout.topMargin: 10
+                        text: qsTr("User certificate")
                     }
 
                     RowLayout {
@@ -749,98 +607,263 @@ Popup {
                         spacing: 8
 
                         AppField {
-                            id: vpncField
+                            id: userCertField
                             Layout.fillWidth: true
                             Layout.minimumWidth: 0
                             mono: true
-                            placeholderText: qsTr("Bundled vpnc-script")
+                            placeholderText: clientPinText.text.length > 0 ? qsTr("Stored in the profile") : qsTr("None")
                         }
 
                         AppButton {
                             text: qsTr("Browse...")
-                            onClicked: scriptDialog.open()
+                            onClicked: {
+                                certDialog.target = userCertField;
+                                certDialog.open();
+                            }
+                        }
+
+                        AppButton {
+                            text: qsTr("Clear")
+                            enabled: clientPinText.text.length > 0 || userCertField.text.length > 0
+                            onClicked: {
+                                userCertField.text = "";
+                                clientPinText.text = "";
+                                root.clearClientCert = true;
+                            }
+                        }
+                    }
+
+                    Text {
+                        id: clientPinText
+                        Layout.fillWidth: true
+                        visible: text.length > 0
+                        color: Theme.faint
+                        font.pixelSize: Theme.fontSmall
+                        font.family: Theme.monoFamily
+                        wrapMode: Text.WrapAnywhere
+                    }
+
+                    FieldLabel {
+                        Layout.topMargin: 10
+                        text: qsTr("User key")
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 8
+
+                        AppField {
+                            id: userKeyField
+                            Layout.fillWidth: true
+                            Layout.minimumWidth: 0
+                            mono: true
+                            placeholderText: qsTr("None")
+                        }
+
+                        AppButton {
+                            text: qsTr("Browse...")
+                            onClicked: keyDialog.open()
+                        }
+
+                        AppButton {
+                            text: qsTr("Clear")
+                            enabled: userKeyField.text.length > 0
+                            onClicked: {
+                                userKeyField.text = "";
+                                root.clearClientKey = true;
+                            }
+                        }
+                    }
+
+                    FieldLabel {
+                        Layout.topMargin: 10
+                        text: qsTr("Certificate from the system store")
+                        visible: systemCerts.count > 0
+                    }
+
+                    ListView {
+                        id: systemCerts
+
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: Math.min(contentHeight, Math.round(120 * Theme.scale))
+                        visible: count > 0
+                        clip: true
+                        model: controller.systemCertificates()
+
+                        delegate: AbstractButton {
+                            id: certItem
+
+                            required property var modelData
+
+                            width: systemCerts.width
+                            height: Math.round(28 * Theme.scale)
+                            onClicked: {
+                                userCertField.text = certItem.modelData.certUrl;
+                                userKeyField.text = certItem.modelData.keyUrl;
+                            }
+
+                            contentItem: Text {
+                                text: certItem.modelData.label
+                                color: Theme.ink
+                                font.pixelSize: Theme.fontSmall
+                                verticalAlignment: Text.AlignVCenter
+                                elide: Text.ElideRight
+                            }
+
+                            background: Rectangle {
+                                radius: Theme.radius
+                                color: certItem.hovered ? Theme.sunken : "transparent"
+                            }
                         }
                     }
                 }
 
-                Field {
-                    FieldLabel {
-                        text: qsTr("Reconnect timeout, s")
+                // Advanced
+                GridLayout {
+                    id: advancedGrid
+
+                    width: parent.width - Math.round(40 * Theme.scale)
+                    x: Math.round(20 * Theme.scale)
+                    y: Math.round(16 * Theme.scale)
+                    visible: root.tab === 2
+                    columns: root.width < Theme.narrowWidth ? 1 : 2
+                    columnSpacing: Math.round(14 * Theme.scale)
+                    rowSpacing: Math.round(10 * Theme.scale)
+
+                    Field {
+                        FieldLabel {
+                            text: qsTr("Interface name")
+                        }
+
+                        AppField {
+                            id: interfaceField
+                            Layout.fillWidth: true
+                            Layout.minimumWidth: 0
+                            mono: true
+                            placeholderText: qsTr("Automatic")
+                        }
                     }
 
-                    AppField {
-                        id: reconnectField
+                    Field {
+                        FieldLabel {
+                            text: qsTr("Log level")
+                        }
+
+                        AppComboBox {
+                            id: logLevelBox
+                            Layout.fillWidth: true
+                            Layout.minimumWidth: 0
+                            model: [{ "value": -1, "label": qsTr("Application default") }].concat(controller.logLevels())
+                            textRole: "label"
+                            valueRole: "value"
+                        }
+                    }
+
+                    Field {
+                        Layout.columnSpan: advancedGrid.columns
+
+                        FieldLabel {
+                            text: qsTr("vpnc-script")
+                        }
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 8
+
+                            AppField {
+                                id: vpncField
+                                Layout.fillWidth: true
+                                Layout.minimumWidth: 0
+                                mono: true
+                                placeholderText: qsTr("Bundled vpnc-script")
+                            }
+
+                            AppButton {
+                                text: qsTr("Browse...")
+                                onClicked: scriptDialog.open()
+                            }
+                        }
+                    }
+
+                    Field {
+                        FieldLabel {
+                            text: qsTr("Reconnect timeout, s")
+                        }
+
+                        AppField {
+                            id: reconnectField
+                            Layout.fillWidth: true
+                            Layout.minimumWidth: 0
+                            mono: true
+                            inputMethodHints: Qt.ImhDigitsOnly
+                            validator: IntValidator { bottom: 0; top: 100000 }
+                        }
+                    }
+
+                    Field {
+                        FieldLabel {
+                            text: qsTr("DTLS attempt period, s")
+                        }
+
+                        AppField {
+                            id: dtlsField
+                            Layout.fillWidth: true
+                            Layout.minimumWidth: 0
+                            mono: true
+                            inputMethodHints: Qt.ImhDigitsOnly
+                            validator: IntValidator { bottom: 0; top: 100000 }
+                        }
+                    }
+
+                    AppToggle {
+                        id: minimizeToggle
+                        Layout.columnSpan: advancedGrid.columns
                         Layout.fillWidth: true
-                        Layout.minimumWidth: 0
-                        mono: true
-                        inputMethodHints: Qt.ImhDigitsOnly
-                        validator: IntValidator { bottom: 0; top: 100000 }
-                    }
-                }
-
-                Field {
-                    FieldLabel {
-                        text: qsTr("DTLS attempt period, s")
+                        Layout.topMargin: Math.round(8 * Theme.scale)
+                        text: qsTr("Minimize on connect")
                     }
 
-                    AppField {
-                        id: dtlsField
+                    Field {
+                        Layout.columnSpan: advancedGrid.columns
+
+                        FieldLabel {
+                            text: qsTr("Name resolution")
+                        }
+
+                        AppComboBox {
+                            id: dnsModeBox
+                            Layout.fillWidth: true
+                            Layout.minimumWidth: 0
+                            model: [qsTr("As the server asks (split)"),
+                                qsTr("Everything through the VPN")]
+                        }
+
+                        Text {
+                            Layout.fillWidth: true
+                            text: Qt.platform.os === "windows"
+                                ? qsTr("Split sends only the domains the server named through the "
+                                    + "tunnel, and leaves the rest to your usual resolvers.")
+                                : qsTr("Only Windows honours this; elsewhere the vpnc script decides.")
+                            color: Theme.faint
+                            font.pixelSize: Theme.fontSmall
+                            wrapMode: Text.WordWrap
+                        }
+                    }
+
+                    AppToggle {
+                        id: disableUdpToggle
+                        Layout.columnSpan: advancedGrid.columns
                         Layout.fillWidth: true
-                        Layout.minimumWidth: 0
-                        mono: true
-                        inputMethodHints: Qt.ImhDigitsOnly
-                        validator: IntValidator { bottom: 0; top: 100000 }
-                    }
-                }
-
-                AppToggle {
-                    id: minimizeToggle
-                    Layout.columnSpan: advancedGrid.columns
-                    Layout.fillWidth: true
-                    Layout.topMargin: Math.round(8 * Theme.scale)
-                    text: qsTr("Minimize on connect")
-                }
-
-                Field {
-                    Layout.columnSpan: advancedGrid.columns
-
-                    FieldLabel {
-                        text: qsTr("Name resolution")
+                        text: qsTr("Disable UDP")
+                        description: qsTr("Use only TLS; skips DTLS.")
                     }
 
-                    AppComboBox {
-                        id: dnsModeBox
+                    AppToggle {
+                        id: proxyToggle
+                        Layout.columnSpan: advancedGrid.columns
                         Layout.fillWidth: true
-                        Layout.minimumWidth: 0
-                        model: [qsTr("As the server asks (split)"),
-                            qsTr("Everything through the VPN")]
+                        text: qsTr("Use system proxy")
                     }
-
-                    Text {
-                        Layout.fillWidth: true
-                        text: Qt.platform.os === "windows"
-                            ? qsTr("Split sends only the domains the server named through the "
-                                + "tunnel, and leaves the rest to your usual resolvers.")
-                            : qsTr("Only Windows honours this; elsewhere the vpnc script decides.")
-                        color: Theme.faint
-                        font.pixelSize: Theme.fontSmall
-                        wrapMode: Text.WordWrap
-                    }
-                }
-
-                AppToggle {
-                    id: disableUdpToggle
-                    Layout.columnSpan: advancedGrid.columns
-                    Layout.fillWidth: true
-                    text: qsTr("Disable UDP")
-                    description: qsTr("Use only TLS; skips DTLS.")
-                }
-
-                AppToggle {
-                    id: proxyToggle
-                    Layout.columnSpan: advancedGrid.columns
-                    Layout.fillWidth: true
-                    text: qsTr("Use system proxy")
                 }
             }
         }

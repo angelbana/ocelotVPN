@@ -233,6 +233,7 @@ VpnController::VpnController(bool useTray, QObject* parent)
     , m_reconnectAttempts(0)
     , m_reconnectTimer(new QTimer(this))
     , m_promptLoop(nullptr)
+    , m_promptRemember(false)
     , m_promptAccepted(false)
     , m_promptAnswered(false)
 {
@@ -1161,6 +1162,12 @@ void VpnController::setTunnelInfo(const QString& dns, const QString& ip, const Q
         Qt::QueuedConnection);
 }
 
+bool VpnController::rememberRequested() const
+{
+    QMutexLocker lock(&m_promptMutex);
+    return m_promptRemember;
+}
+
 void VpnController::updateStats(const struct oc_stats* stats, const QString& dtlsCipher)
 {
     const QString received = normalize_byte_size(stats->rx_bytes);
@@ -1222,6 +1229,7 @@ bool VpnController::askPrompt(PromptType type, const QVariantMap& request, QStri
         QMutexLocker lock(&m_promptMutex);
         m_promptAnswered = false;
         m_promptAccepted = false;
+        m_promptRemember = false;
         m_promptText.clear();
     }
 
@@ -1244,12 +1252,13 @@ bool VpnController::askPrompt(PromptType type, const QVariantMap& request, QStri
     return m_promptAccepted;
 }
 
-void VpnController::answerPrompt(bool accepted, const QString& text)
+void VpnController::answerPrompt(bool accepted, const QString& text, bool remember)
 {
     {
         QMutexLocker lock(&m_promptMutex);
         m_promptAccepted = accepted;
         m_promptText = text;
+        m_promptRemember = remember;
         m_promptAnswered = true;
     }
     m_promptCondition.wakeAll();

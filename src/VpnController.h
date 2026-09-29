@@ -241,7 +241,12 @@ public:
     // server or a variant of the same connection.
     Q_INVOKABLE QString duplicateProfile(const QString& name);
 
-    Q_INVOKABLE void answerPrompt(bool accepted, const QString& text = QString());
+    // The answer to whatever the server asked. When the question was for a
+    // password, remember says the person ticked the box beside it.
+    Q_INVOKABLE void answerPrompt(bool accepted, const QString& text = QString(),
+        bool remember = false);
+    // Read from the connecting thread, right after its question was answered.
+    bool rememberRequested() const;
 
     Q_INVOKABLE void checkForUpdates();
     Q_INVOKABLE QString downloadUrl() const;
@@ -389,6 +394,7 @@ private:
     QWaitCondition m_promptCondition;
     QEventLoop* m_promptLoop;
     QString m_promptText;
+    bool m_promptRemember;
     bool m_promptAccepted;
     bool m_promptAnswered;
 };

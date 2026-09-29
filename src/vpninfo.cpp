@@ -227,20 +227,36 @@ static int process_auth_form(void* privdata, struct oc_auth_form* form)
                 continue;
             }
 
+            // Only the account's own password is worth keeping. The other
+            // fields a server asks for in the same shape - a code from an app,
+            // a one-time token - are different every time, and a remembered
+            // one would only be sent back wrong.
+            const bool storable = vpn->is_password_form_option(form, opt)
+                && (vpn->password_set == 0 || vpn->form_pass_attempt != 0);
+
             QVariantMap request;
             request["title"] = QObject::tr("Password input");
             request["label"] = QString::fromUtf8(opt->label);
             request["banner"] = QString::fromUtf8(form->banner).trimmed();
             request["message"] = QString::fromUtf8(form->message).trimmed();
+            request["canRemember"] = storable;
             ok = vpn->m->askPrompt(VpnController::PromptPassword, request, text);
 
             if (!ok)
                 goto fail;
 
-            if (vpn->is_password_form_option(form, opt)
-                && (vpn->password_set == 0 || vpn->form_pass_attempt != 0)) {
+            if (storable == true) {
                 vpn->ss->set_password(text);
                 vpn->password_set = 1;
+
+                // Ticked beside the question. The profile is saved at the end
+                // of a successful connection, and only a profile in batch mode
+                // keeps a password, so this is what makes it stick.
+                if (vpn->m->rememberRequested() == true) {
+                    vpn->ss->set_batch_mode(true);
+                    Logger::instance().addMessage(
+                        QObject::tr("The password will be remembered for this profile"));
+                }
             }
             openconnect_set_option_value(opt, text.toUtf8().data());
             vpn->form_pass_attempt++;
@@ -761,7 +777,14 @@ void VpnInfo::logVpncScriptOutput()
             }
         }
     } else {
-        Logger::instance().addMessage(QLatin1String("Could not open ") + QDir::toNativeSeparators(tfile) + ": " + file.errorString());
+#ifdef Q_OS_WIN
+        // Only the script shipped with the Windows build writes this file, so
+        // its absence is worth reporting there and nowhere else: on Linux the
+        // distribution's own script writes nothing, and saying so at every
+        // connection was noise in the log.
+        Logger::instance().addMessage(QLatin1String("Could not open ")
+            + QDir::toNativeSeparators(tfile) + ": " + file.errorString());
+#endif
     }
 }
 

@@ -8,7 +8,29 @@ option(PROJ_ADMIN_PRIV_ELEVATION "Admin privileges elevation; don't turn it off 
 if(MINGW)
     set(DEFAULT_VPNC_SCRIPT "vpnc-script.js")
 else()
-    set(DEFAULT_VPNC_SCRIPT "vpnc-script")
+    # Distributions disagree about where the script lives, and the name alone
+    # only works when it is on the path - which it is not on Debian or Ubuntu,
+    # where the package drops it under /usr/share. Look for it at configure
+    # time and write down what was actually found; a profile can still name its
+    # own, which is what that field in the editor is for.
+    find_program(VPNC_SCRIPT
+        NAMES vpnc-script
+        PATHS /etc/vpnc /usr/share/vpnc-scripts /usr/libexec /usr/lib/vpnc
+              /usr/local/etc/vpnc /usr/local/share/vpnc-scripts
+        NO_DEFAULT_PATH
+    )
+    if(NOT VPNC_SCRIPT)
+        find_program(VPNC_SCRIPT NAMES vpnc-script)
+    endif()
+
+    if(VPNC_SCRIPT)
+        message(STATUS "Found vpnc-script at ${VPNC_SCRIPT}")
+        set(DEFAULT_VPNC_SCRIPT "${VPNC_SCRIPT}")
+    else()
+        message(WARNING "No vpnc-script found; the tunnel will come up without "
+            "routes or name servers unless a profile names one")
+        set(DEFAULT_VPNC_SCRIPT "vpnc-script")
+    endif()
     set(DEFAULT_VPNC_SCRIPT_FALLBACK "/etc/vpnc/vpnc-script")
 endif()
 option(PROJ_PKCS11 "Enable PKCS11" ON)
