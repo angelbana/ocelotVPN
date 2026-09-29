@@ -3,7 +3,7 @@ History of user-visible changes.
 Ocelot grew out of openconnect-gui. That project's own history stays with it
 upstream; this file begins with the first Ocelot release.
 
-## Unreleased
+## 1.0.0 - 2026-09-30
 
 The first Ocelot release. What it does that openconnect-gui did not:
 
