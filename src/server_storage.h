@@ -21,6 +21,15 @@
 
 #include "keypair.h"
 
+// The character a profile wears when it was never given one: a paw. Written as
+// its bytes rather than as itself, because a paw sitting in the middle of a
+// source file is one careless re-encoding away from becoming four characters of
+// rubbish - which is exactly what happened to it once.
+inline QString defaultProfileEmoji()
+{
+    return QString::fromUtf8("\xF0\x9F\x90\xBE");
+}
+
 class StoredServer {
 public:
     StoredServer();

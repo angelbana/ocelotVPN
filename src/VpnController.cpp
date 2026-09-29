@@ -395,7 +395,7 @@ void VpnController::loadCurrentProfileInfo()
     OcSettings settings;
     settings.beginGroup(PREFIX + m_currentProfile);
     m_gateway = settings.value("server").toString();
-    m_profileEmoji = settings.value("emoji", QString::fromUtf8("\xF0\x9F\x90\xBE")).toString();
+    m_profileEmoji = settings.value("emoji", defaultProfileEmoji()).toString();
     const QString protocol = settings.value("protocol-name").toString();
     settings.endGroup();
 
@@ -443,7 +443,7 @@ QVariantList VpnController::profileEntries() const
         entry["name"] = name;
         entry["gateway"] = settings.value("server").toString();
         entry["lastConnected"] = settings.value("last-connected", 0).toLongLong();
-        entry["emoji"] = settings.value("emoji", QString::fromUtf8("\xF0\x9F\x90\xBE")).toString();
+        entry["emoji"] = settings.value("emoji", defaultProfileEmoji()).toString();
         settings.endGroup();
         entries.append(entry);
     }
@@ -1548,7 +1548,7 @@ QString VpnController::saveProfile(const QVariantMap& profile)
         ss.clear_password();
     }
     ss.set_emoji(profile.value("emoji").toString().isEmpty()
-            ? QString::fromUtf8("ð¾")
+            ? defaultProfileEmoji()
             : profile.value("emoji").toString());
     ss.set_minimize(profile.value("minimizeOnConnect").toBool());
     ss.set_disable_udp(profile.value("disableUdp").toBool());

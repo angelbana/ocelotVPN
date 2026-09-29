@@ -35,7 +35,7 @@ StoredServer::StoredServer()
     , m_reconnect_timeout{ 300 }
     , m_dtls_attempt_period{ 25 }
     , m_server_pin_algo(0)
-    , m_emoji{ QString::fromUtf8("\xF0\x9F\x90\xBE") }
+    , m_emoji{ defaultProfileEmoji() }
     , m_log_level (-1)
 {
 }
@@ -249,7 +249,7 @@ int StoredServer::load(QString& name)
     m_interface_name.truncate(OC_IFNAME_MAX_LENGTH);
 #endif
     m_vpnc_script_filename = settings.value("vpnc-script").toString();
-    m_emoji = settings.value("emoji", QString::fromUtf8("\xF0\x9F\x90\xBE")).toString();
+    m_emoji = settings.value("emoji", defaultProfileEmoji()).toString();
 
     m_log_level = settings.value("log-level", -1).toInt();
 
