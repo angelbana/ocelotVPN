@@ -38,11 +38,13 @@ echo "======================================================================="
 echo " Installing Signing dependencies..."
 echo "======================================================================="
 
+# jq is asked for by its plain name: MSYS2 no longer builds a mingw-w64 one,
+# and the copy in the msys repository is what the signing script runs anyway.
 pacman --needed --noconfirm -S \
 	zip \
 	unzip \
 	coreutils \
-	mingw-w64-x86_64-jq \
+	jq \
 	mingw-w64-x86_64-curl
 
 if [ -z "$QT6" ];then

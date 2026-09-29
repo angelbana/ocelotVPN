@@ -67,14 +67,16 @@ echo "======================================================================="
 
 set -e
 
+# jq is asked for by its plain name: MSYS2 no longer builds a mingw-w64 one,
+# and the copy in the msys repository is what the signing script runs anyway.
 pacman --needed --noconfirm -S \
     git \
     unzip \
     p7zip \
+    jq \
     base-devel \
     autotools \
     mingw-w64-x86_64-toolchain \
-    mingw-w64-x86_64-jq \
     mingw-w64-${BUILD_ARCH}-gcc \
     mingw-w64-${BUILD_ARCH}-make \
     mingw-w64-${BUILD_ARCH}-gnutls \
