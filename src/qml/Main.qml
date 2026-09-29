@@ -170,6 +170,13 @@ ApplicationWindow {
                 Telemetry.clear();
         }
 
+        function onInstallFinished() {
+            installedDialog.show(qsTr("Ocelot is installed"),
+                qsTr("It is in %1 and in the Start menu. This folder can stay where it is, "
+                    + "as a copy to carry around, or be deleted.")
+                    .arg(controller.installLocation));
+        }
+
         function onLatestVersionChanged() {
             if (!mainWindow.updateCheckPending)
                 return;
@@ -377,6 +384,11 @@ ApplicationWindow {
                     mainWindow.updateCheckPending = true;
                     controller.checkForUpdates();
                 }
+                onRemoveRequested: removeProgramDialog.show(
+                    qsTr("Remove Ocelot from this computer?"),
+                    qsTr("The program in %1 is deleted, along with its shortcut and its entry "
+                        + "in Programs and Features. Ocelot closes to do it.")
+                        .arg(controller.installLocation))
             }
 
             AboutPane {
@@ -427,6 +439,25 @@ ApplicationWindow {
 
     AppDialog {
         id: messageDialog
+    }
+
+    AppDialog {
+        id: installedDialog
+
+        acceptText: qsTr("Start it")
+        cancelText: qsTr("Later")
+        cancellable: true
+
+        onAccepted: controller.launchInstalledCopy()
+    }
+
+    AppDialog {
+        id: removeProgramDialog
+
+        acceptText: qsTr("Remove")
+        destructive: true
+
+        onAccepted: controller.uninstallProgram()
     }
 
     AppDialog {

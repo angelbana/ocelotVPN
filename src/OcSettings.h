@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Portable.h"
 #include "config.h"
 
 #include <QObject>
@@ -9,11 +10,17 @@
 // Where everything the program remembers is kept: the profiles and the
 // settings, under this program's own name.
 //
+// A portable copy keeps them in a file beside itself instead of where the system
+// keeps settings; that is the only difference, and Portable::prepare() has
+// already said where that file is.
+//
 // Modify it when settings should become intentionally incompatible.
 class OcSettings : public QSettings {
 public:
     OcSettings()
-        : QSettings(QLatin1String(PRODUCT_NAME_COMPANY), QLatin1String(PRODUCT_NAME_SHORT)) {};
+        : QSettings(Portable::isActive() ? QSettings::IniFormat : QSettings::NativeFormat,
+            QSettings::UserScope,
+            QLatin1String(PRODUCT_NAME_COMPANY), QLatin1String(PRODUCT_NAME_SHORT)) {};
 };
 
 // The program used to keep all of this under the name of the project it grew
@@ -25,6 +32,12 @@ public:
 // readable by the account that saved it.
 inline void ocMigrateSettings()
 {
+    // Not into a portable copy: it may be running on someone else's computer,
+    // and it would be carrying that person's profiles away on the stick.
+    if (Portable::isActive() == true) {
+        return;
+    }
+
     OcSettings current;
     if (current.allKeys().isEmpty() == false) {
         return;

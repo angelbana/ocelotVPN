@@ -5,9 +5,10 @@
 
 A release is made by
 [.github/workflows/release.yml](../.github/workflows/release.yml). Push a tag
-of the form `vX.Y.Z` and the run builds the Windows installer and the Linux
-app image, signs the installer and the program inside it, and attaches both
-to the release page together with their checksums.
+of the form `vX.Y.Z` and the run builds the Windows installer, the portable
+archive it is assembled from, and the Linux app image; signs the installer and
+the program inside it; and attaches all three to the release page together with
+their checksums.
 
 ## Version scheme
 

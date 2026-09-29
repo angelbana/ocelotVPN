@@ -23,6 +23,7 @@ Item {
     id: root
 
     signal updatesRequested()
+    signal removeRequested()
 
     readonly property bool onWindows: Qt.platform.os === "windows"
 
@@ -240,6 +241,66 @@ Item {
                         + "opening a second one.")
                     checked: controller.singleInstance
                     onSwitched: checked => controller.singleInstance = checked
+                }
+            }
+
+            // ----------------------------------------------- carried or installed
+            // Only where it means something: a copy running from a folder of its
+            // own can be installed, and one this program installed can be taken
+            // back out. A copy that arrived by way of the installer is that
+            // installer's business, and says nothing here.
+            Card {
+                Layout.fillWidth: true
+                Layout.leftMargin: Theme.padding
+                Layout.rightMargin: Theme.padding
+                padding: Math.round(14 * Theme.scale)
+                columnSpacing: Math.round(11 * Theme.scale)
+                visible: controller.installSupported
+                    && (controller.portableMode || controller.installedCopy)
+
+                SectionLabel {
+                    Layout.fillWidth: true
+                    text: qsTr("This copy of Ocelot")
+                }
+
+                Text {
+                    Layout.fillWidth: true
+                    text: controller.portableMode
+                        ? qsTr("It runs from the folder it was unpacked into and keeps everything "
+                            + "beside itself, in %1.").arg(controller.dataLocation)
+                        : qsTr("It is installed in %1.").arg(controller.installLocation)
+                    color: Theme.muted
+                    font.family: Theme.fontFamily
+                    font.pixelSize: Theme.fontCaption
+                    wrapMode: Text.WordWrap
+                }
+
+                SettingRow {
+                    visible: controller.portableMode
+                    label: qsTr("Install on this computer")
+                    hint: qsTr("A copy goes to %1, a shortcut into the Start menu, and the "
+                        + "profiles and settings travel with it. This folder is left as it is.")
+                        .arg(controller.installLocation)
+
+                    GhostButton {
+                        glyph: "arrowDown"
+                        text: qsTr("Install")
+                        onClicked: controller.installProgram()
+                    }
+                }
+
+                SettingRow {
+                    visible: controller.installedCopy
+                    label: qsTr("Remove from this computer")
+                    hint: qsTr("The profiles and the passwords saved with them stay, so installing "
+                        + "Ocelot again finds them where they were.")
+
+                    GhostButton {
+                        glyph: "trash"
+                        text: qsTr("Remove")
+                        tint: Theme.danger
+                        onClicked: root.removeRequested()
+                    }
                 }
             }
 

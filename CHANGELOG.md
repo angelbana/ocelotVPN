@@ -27,6 +27,12 @@ The first Ocelot release. What it does that openconnect-gui did not:
   name through the tunnel.
 - **Says when a tunnel comes up or goes down**, and looks for new versions -
   both switchable.
+- **Runs from a folder, or installs itself.** Unpacked anywhere it can write,
+  it keeps its settings, profiles and log beside it and touches nothing else; a
+  button in the settings installs it into Program Files, with a shortcut and an
+  entry in Programs and Features, and carries the profiles across. The same
+  place in an installed copy removes it. Published as a portable archive next to
+  the installer.
 
 macOS is no longer built here; that client is its own project,
 [ocelotVPN](https://github.com/mraliscoder/ocelotVPN).

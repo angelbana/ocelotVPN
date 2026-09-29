@@ -19,7 +19,12 @@ Artifacts of a run are listed at the bottom of its page under
 | Artifact            | Contents                                        | Signed |
 |---------------------|-------------------------------------------------|--------|
 | `windows-installer` | an installer and its SHA-512 checksum           | yes    |
+| `windows-portable`  | a folder to unpack anywhere, and its checksum   | yes    |
 | `linux-appimage`    | an app image and its SHA-512 checksum           | no     |
+
+The program inside the portable archive is the same signed executable the
+installer carries; the archive itself is not signed, which is why it has a
+checksum.
 
 Verify the checksum against the `.sha512` file next to each file if it was
 passed around outside the workflow run.
@@ -27,7 +32,13 @@ passed around outside the workflow run.
 
 ## Windows
 
-Download `windows-installer`, unpack the archive and run the installer.
+There are two ways to have it, and the program knows which one it is in.
+
+### Installed
+
+Download `windows-installer`, unpack the archive and run the installer. The
+program goes to `C:\Program Files\Ocelot`, and the settings and the profiles
+go where Windows keeps such things, under the current user.
 
 The installer and the program inside it are both Authenticode-signed and
 timestamped, so Windows names the publisher instead of warning about an
@@ -35,13 +46,49 @@ unknown one. To check before installing:
 
     Get-AuthenticodeSignature .\ocelot-<version>-win64.exe
 
+### Carried around
+
+Download `windows-portable` and unpack the `Ocelot` folder wherever it should
+live: a memory stick, a downloads folder, a second drive. There is nothing to
+install and nothing to agree to. Such a copy keeps its settings, its profiles
+and its log in a `data` folder beside the program, and leaves nothing anywhere
+else on the machine.
+
+Which of the two it is, is decided from where the program sits. Under
+`Program Files`, `ProgramData` or `%LOCALAPPDATA%\Programs` it behaves as an
+installed program; anywhere else it can write to, it keeps everything beside
+itself. Nothing has to be set, and no marker file has to be put in the folder.
+
+**Installing a carried copy.** Settings, "This copy of Ocelot", Install: the
+program copies itself to `C:\Program Files\Ocelot`, puts a shortcut in the
+Start menu and an entry in Programs and Features, and carries the settings and
+profiles across, so the installed copy opens on the same profiles. The folder it
+was started from is left exactly as it was and can go back on the stick. The
+same thing without a window:
+
+    .\ocelot.exe --install
+
+**Taking it back out.** In the installed copy: Settings, "This copy of Ocelot",
+Remove. Or the entry in Programs and Features, which runs
+
+    "C:\Program Files\Ocelot\ocelot.exe" --uninstall
+
+Either way the program, the shortcut, the entry and the sign-in task go, and the
+profiles and the passwords saved with them stay - installing again finds them
+where they were.
+
+A saved password is sealed by Windows for the account that saved it on the
+computer that saved it. A folder carried to another machine therefore carries
+the profiles, but not the passwords stored with them.
+
 The program requires administrator privileges and asks for them on every
 start: creating the Wintun adapter is impossible without them, and the
 connection is dropped right after the tunnel is negotiated if they are
 missing. This is the intended behaviour, not a prompt to dismiss.
 
-Everything the program needs is installed with it: the Qt runtime, the
-openconnect libraries, `wintun.dll` and `vpnc-script.js`.
+Everything the program needs is beside it either way: the Qt runtime, the
+openconnect libraries, `wintun.dll` and `vpnc-script.js`. Nothing is looked for
+in a system folder, which is what lets the same files work from a stick.
 
 
 ## Linux

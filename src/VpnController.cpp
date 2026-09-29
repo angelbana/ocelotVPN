@@ -19,6 +19,7 @@
 
 #include "VpnController.h"
 #include "Autostart.h"
+#include "Portable.h"
 #include "config.h"
 #include "logger.h"
 #include "server_storage.h"
@@ -195,6 +196,68 @@ void VpnController::repairDns()
 {
     Logger::instance().addMessage(tr("Clearing the split DNS rules left behind by the program"));
     cleanupNrptRules(true);
+}
+
+bool VpnController::portableMode() const
+{
+    return Portable::isActive();
+}
+
+bool VpnController::installSupported() const
+{
+    return Portable::canInstall();
+}
+
+bool VpnController::installedCopy() const
+{
+    return Portable::isInstalledCopy();
+}
+
+QString VpnController::installLocation() const
+{
+    return QDir::toNativeSeparators(Portable::isInstalledCopy() == true
+            ? QCoreApplication::applicationDirPath()
+            : Portable::installDirectory());
+}
+
+QString VpnController::dataLocation() const
+{
+    return QDir::toNativeSeparators(Portable::isActive() == true
+            ? Portable::dataDirectory()
+            : QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation));
+}
+
+void VpnController::installProgram()
+{
+    QString error;
+    if (Portable::install(error) == false) {
+        emit errorOccurred(tr("Install Ocelot"), error);
+        return;
+    }
+
+    emit installFinished();
+}
+
+void VpnController::uninstallProgram()
+{
+    QString error;
+    if (Portable::uninstall(error) == false) {
+        emit errorOccurred(tr("Remove Ocelot"), error);
+        return;
+    }
+
+    quit();
+}
+
+void VpnController::launchInstalledCopy()
+{
+    QString error;
+    if (Portable::launchInstalledAfterExit(error) == false) {
+        emit errorOccurred(tr("Install Ocelot"), error);
+        return;
+    }
+
+    quit();
 }
 
 VpnController::VpnController(bool useTray, QObject* parent)

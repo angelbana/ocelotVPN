@@ -111,6 +111,18 @@ class VpnController : public QObject {
     // Asking GitHub, at most every few days, whether a newer release exists.
     Q_PROPERTY(bool checkUpdates READ checkUpdates WRITE setCheckUpdates NOTIFY settingsChanged)
 
+    // Which of the two lives this copy leads: unpacked into a folder of its own,
+    // keeping its settings beside it, or installed. Neither changes while the
+    // program is running - installing makes a second copy, it does not turn this
+    // one into it.
+    Q_PROPERTY(bool portableMode READ portableMode CONSTANT)
+    Q_PROPERTY(bool installSupported READ installSupported CONSTANT)
+    Q_PROPERTY(bool installedCopy READ installedCopy CONSTANT)
+    // Where an installed copy is, or would be, and where the settings and the
+    // log are kept.
+    Q_PROPERTY(QString installLocation READ installLocation CONSTANT)
+    Q_PROPERTY(QString dataLocation READ dataLocation CONSTANT)
+
 public:
     enum Status {
         StatusDisconnecting,
@@ -221,6 +233,11 @@ public:
     void setNotifyOnChange(bool value);
     bool checkUpdates() const;
     void setCheckUpdates(bool value);
+    bool portableMode() const;
+    bool installSupported() const;
+    bool installedCopy() const;
+    QString installLocation() const;
+    QString dataLocation() const;
 
     Q_INVOKABLE void connectVpn();
     Q_INVOKABLE void disconnectVpn();
@@ -247,6 +264,14 @@ public:
         bool remember = false);
     // Read from the connecting thread, right after its question was answered.
     bool rememberRequested() const;
+
+    // Copying this program into the folder programs live in, and taking it back
+    // out again. Both are only offered where they mean something.
+    Q_INVOKABLE void installProgram();
+    Q_INVOKABLE void uninstallProgram();
+    // Hands over to the copy that was just installed: it starts as this one ends,
+    // because the two are the same program to "one Ocelot at a time".
+    Q_INVOKABLE void launchInstalledCopy();
 
     Q_INVOKABLE void checkForUpdates();
     Q_INVOKABLE QString downloadUrl() const;
@@ -291,6 +316,8 @@ signals:
     void latestVersionChanged();
     void checkingForUpdatesChanged();
     void settingsChanged();
+    // This copy was installed; the interface offers to hand over to it.
+    void installFinished();
 
     void promptRequested(int type, const QVariantMap& request);
     void errorOccurred(const QString& title, const QString& message);

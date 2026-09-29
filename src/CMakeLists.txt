@@ -15,6 +15,8 @@ set(${PROJECT_NAME}_SRCS
     key.cpp
     keypair.cpp
     main.cpp
+    Portable.cpp
+    Portable.h
     server_storage.cpp
 
     timestamp.cpp

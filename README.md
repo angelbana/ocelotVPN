@@ -36,6 +36,15 @@ to.
  - starting on its own, as a scheduled task, so Windows does not ask for
    permission at every sign-in.
 
+### Installed, or carried around
+
+Unpacked into a folder of its own it is a portable program: the settings, the
+profiles and the log stay in that folder and nothing is written anywhere else,
+so it can live on a memory stick. One button in the settings installs it
+properly - into Program Files, with a Start menu shortcut and an entry in
+Programs and Features - and takes the profiles with it. The same button in an
+installed copy removes it again.
+
 It also lives in the notification area: one click opens a small window with the
 state, one button and the profiles, which is all an ordinary day needs.
 
@@ -66,7 +75,7 @@ infrastructure of the internet. So the program:
 
 | System               | Deliverable                                      | Signed |
 |----------------------|--------------------------------------------------|--------|
-| Windows 10 and newer | an installer                                     | yes    |
+| Windows 10 and newer | an installer, and a folder to unpack anywhere    | yes    |
 | Linux, x86-64        | an app image: one file carrying Qt with it       | no     |
 
 The Windows installer and the program inside it are both Authenticode-signed

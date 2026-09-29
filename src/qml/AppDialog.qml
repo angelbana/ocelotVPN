@@ -28,6 +28,10 @@ Popup {
     property string message: ""
     property string acceptText: qsTr("Close")
     property bool destructive: false
+    // Whether there is a way out besides agreeing. Anything destructive has one;
+    // a question that is not a warning can ask for one too.
+    property bool cancellable: destructive
+    property string cancelText: qsTr("Cancel")
 
     signal accepted()
 
@@ -97,8 +101,8 @@ Popup {
             }
 
             AppButton {
-                text: qsTr("Cancel")
-                visible: root.destructive
+                text: root.cancelText
+                visible: root.cancellable
                 onClicked: root.close()
             }
 

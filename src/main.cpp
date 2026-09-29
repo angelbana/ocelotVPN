@@ -19,6 +19,7 @@
 
 #include "Autostart.h"
 #include "LogModel.h"
+#include "Portable.h"
 #include "VpnController.h"
 #include "common.h"
 #include "config.h"
@@ -104,8 +105,38 @@ int main(int argc, char* argv[])
 
     QtSingleApplication app(argc, argv);
 
-    // Before anything reads a setting: what the program kept under its former
-    // name is brought across the first time this one runs.
+    // Which of the two lives this copy leads - carried around in its own folder,
+    // or installed - has to be settled before anything reads a setting, because
+    // it says where the settings are.
+    Portable::prepare();
+
+    // Installing and removing are answered here, at the top, and without a
+    // window. A copy that is already running must not simply be raised: the
+    // point of such a run is the copy on disk, not the one on screen.
+    if (app.arguments().contains(QLatin1String(Portable::installFlag())) == true) {
+        QString error;
+        if (Portable::install(error) == false) {
+            fprintf(stderr, "%s\n", qPrintable(error));
+            return 1;
+        }
+        return 0;
+    }
+
+    if (app.arguments().contains(QLatin1String(Portable::uninstallFlag())) == true) {
+        if (app.isRunning() == true) {
+            app.sendMessage(QStringLiteral("quit"));
+        }
+
+        QString error;
+        if (Portable::uninstall(error) == false) {
+            fprintf(stderr, "%s\n", qPrintable(error));
+            return 1;
+        }
+        return 0;
+    }
+
+    // What the program kept under its former name is brought across the first
+    // time this one runs.
     ocMigrateSettings();
     if (app.isRunning()) {
         OcSettings settings;
@@ -122,7 +153,11 @@ int main(int argc, char* argv[])
     }
 
 
-    auto fileLog = std::make_unique<FileLogger>();
+    // A portable copy writes its log beside itself, next to the settings it also
+    // keeps there; an installed one writes where the system keeps such things.
+    auto fileLog = Portable::isActive()
+        ? std::make_unique<FileLogger>(nullptr, Portable::dataDirectory() + QStringLiteral("/logs"))
+        : std::make_unique<FileLogger>();
     Logger::instance().addMessage(QString("%1 (%2) logging started...").arg(app.applicationDisplayName()).arg(app.applicationVersion()));
 
     gnutls_global_init();
@@ -148,6 +183,11 @@ int main(int argc, char* argv[])
     // "connect when the program starts".
     parser.addOption({ QStringLiteral("logon"),
         QObject::tr("started by the sign-in task") });
+    // Both are handled long before this, and named here so that --help lists them.
+    parser.addOption({ QStringLiteral("install"),
+        QObject::tr("install this copy and exit") });
+    parser.addOption({ QStringLiteral("uninstall"),
+        QObject::tr("remove an installed copy of Ocelot") });
 
     parser.process(app);
 
@@ -192,6 +232,12 @@ int main(int argc, char* argv[])
     QObject::connect(&app, &QtSingleApplication::messageReceived,
         [&controller](const QString& message) {
             Logger::instance().addMessage(message);
+            // Sent by a copy that is being uninstalled: this one is in the way,
+            // and leaves rather than coming forward.
+            if (message == QStringLiteral("quit")) {
+                controller.quit();
+                return;
+            }
             controller.showWindow();
         });
 

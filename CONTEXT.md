@@ -97,3 +97,19 @@ the program's own words.
 A copy of a profile under a new name, certificates, pinned key and saved
 password included. A duplicate has never connected, so it starts with no
 last-connected time of its own.
+
+## Portable copy
+
+A copy of the program that keeps its settings, its profiles and its log in a
+folder beside itself and writes nothing anywhere else on the machine. Which copy
+is portable is not a setting and not a marker file: a copy sitting where programs
+are installed is installed, and any other copy that can write to its own folder
+is portable.
+
+## Install
+
+The program copying itself into the folder programs live in, and putting a
+shortcut and an entry in Programs and Features there with it. Something a
+portable copy does to itself, from its own settings screen; it is not the
+installer, which is a separate deliverable that does the same job before the
+program has ever run.
