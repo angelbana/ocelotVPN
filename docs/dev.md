@@ -63,8 +63,26 @@ comes with the `vpnc-scripts` package:
 
     sudo ./build/bin/ocelot
 
-Building the app image on top of that is what the workflow's Linux job does,
-with `linuxdeploy`; the steps are there if you need one locally.
+### The app image
+
+Built from the installed tree, not from the build directory: the desktop entry,
+the icon and the metadata only exist after the install step.
+
+    cmake --install build --prefix "$PWD/AppDir/usr"
+
+    base=https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous
+    wget "$base/linuxdeploy-x86_64.AppImage"
+    wget "${base%/linuxdeploy/*}/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage"
+    chmod +x linuxdeploy*.AppImage
+
+    QMAKE=/usr/bin/qmake6     OUTPUT=ocelot-x86_64.AppImage     NO_STRIP=true     QML_SOURCES_PATHS="$PWD/src/qml"         ./linuxdeploy-x86_64.AppImage --appdir AppDir --plugin qt --output appimage
+
+Two of those variables are not optional. `NO_STRIP` is there because the strip
+inside linuxdeploy is older than the compilers in current distributions and
+rejects every library they build. `QML_SOURCES_PATHS` is there because this
+program's QML is compiled into the executable as a resource: with nothing to
+scan, the plugin deploys none of Qt's own QML modules, and the result stops at
+"module QtQuick is not installed".
 
 
 ## The Russian translation

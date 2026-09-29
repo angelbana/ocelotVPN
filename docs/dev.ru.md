@@ -64,8 +64,26 @@ spdlog и потом отказывается запускаться там, г�
 
     sudo ./build/bin/ocelot
 
-Образ приложения собирается поверх этого через `linuxdeploy` — как именно,
-видно в задаче Linux рабочего процесса.
+### Образ приложения
+
+Собирается из установленного дерева, а не из каталога сборки: ярлык, значок и
+метаданные появляются только на шаге установки.
+
+    cmake --install build --prefix "$PWD/AppDir/usr"
+
+    base=https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous
+    wget "$base/linuxdeploy-x86_64.AppImage"
+    wget "${base%/linuxdeploy/*}/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage"
+    chmod +x linuxdeploy*.AppImage
+
+    QMAKE=/usr/bin/qmake6     OUTPUT=ocelot-x86_64.AppImage     NO_STRIP=true     QML_SOURCES_PATHS="$PWD/src/qml"         ./linuxdeploy-x86_64.AppImage --appdir AppDir --plugin qt --output appimage
+
+Две из этих переменных обязательны. `NO_STRIP` — потому что strip внутри
+linuxdeploy старше нынешних компиляторов и отвергает любую собранную ими
+библиотеку. `QML_SOURCES_PATHS` — потому что QML этой программы вкомпилирован
+в исполняемый файл как ресурс: сканировать плагину нечего, он не кладёт внутрь
+ни одного модуля QML самой Qt, и запуск обрывается на «module QtQuick is not
+installed».
 
 
 ## Перевод на русский
