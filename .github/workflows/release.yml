@@ -217,6 +217,11 @@ jobs:
     runs-on: ubuntu-latest
     container: fedora:41
 
+    # to attach the app image to the release of the tag it was built from - and
+    # to create that release, since this job can finish first
+    permissions:
+      contents: write
+
     steps:
       # Deliberately without spdlog-devel: the project falls back to building
       # and statically linking its own copy when the system one is missing,
