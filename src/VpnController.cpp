@@ -56,6 +56,7 @@ extern "C" {
 #include <QFileInfo>
 #include <QNetworkRequest>
 #include <QProcess>
+#include <QRegularExpression>
 #include <QStandardPaths>
 #include <QSysInfo>
 #include <QQmlEngine>
@@ -1716,10 +1717,18 @@ void VpnController::gotLatestVersion(QNetworkReply* reply)
     Logger::instance().addMessage(QObject::tr("Version location: %1").arg(location));
 
     if (location.isEmpty() == false) {
-        const qsizetype n = location.lastIndexOf("/");
-        if (n != -1) {
-            // skip '/v'
-            m_latestVersion = location.mid(n + 2);
+        // Asking for the latest release is answered with a redirect to the tag
+        // it points at:
+        //     https://github.com/<owner>/<repo>/releases/tag/v1.2.3
+        // A repository with no releases yet redirects to the releases page
+        // instead, which names no version at all. Reading the tail of that
+        // address as one is how this came to announce "eleases" as a newer
+        // release than the program itself.
+        static const QRegularExpression tag(QStringLiteral("/releases/tag/v?([^/]+)/?$"));
+        const QRegularExpressionMatch found = tag.match(location);
+
+        if (found.hasMatch() == true) {
+            m_latestVersion = found.captured(1);
             Logger::instance().addMessage(QObject::tr("Latest available version is %1, current %2")
                                               .arg(m_latestVersion)
                                               .arg(INTERNAL_PROJECT_VERSION));
@@ -1730,7 +1739,8 @@ void VpnController::gotLatestVersion(QNetworkReply* reply)
                     tr("%1 version %2 is available!").arg(QLatin1String(PRODUCT_NAME_SHORT)).arg(m_latestVersion));
             }
         } else {
-            Logger::instance().addMessage(QObject::tr("Unable to identify current version from %1").arg(location));
+            Logger::instance().addMessage(
+                QObject::tr("No release has been published yet, so there is nothing newer"));
         }
     } else {
         Logger::instance().addMessage(QObject::tr("Unable to identify current version: %1").arg(reply->errorString()));
