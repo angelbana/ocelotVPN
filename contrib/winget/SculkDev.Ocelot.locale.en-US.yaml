@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.6.0.schema.json
+
+PackageIdentifier: SculkDev.Ocelot
+PackageVersion: 1.0.0
+PackageLocale: en-US
+Publisher: SculkDev
+PublisherUrl: https://github.com/angelbana/ocelotVPN
+PublisherSupportUrl: https://github.com/angelbana/ocelotVPN/issues
+PackageName: Ocelot
+PackageUrl: https://github.com/angelbana/ocelotVPN
+License: GPL-2.0-or-later
+LicenseUrl: https://github.com/angelbana/ocelotVPN/blob/main/LICENSE.txt
+ShortDescription: A VPN client for servers that speak the Cisco AnyConnect protocol, built on OpenConnect.
+Description: |-
+  Ocelot connects to VPN servers that speak the Cisco AnyConnect protocol. It remembers
+  the password for a profile, can dial on its own when the program starts, when you sign
+  in to Windows and again after a connection drops, and lives in the notification area.
+  Unpacked into a folder of its own it runs as a portable copy and keeps its settings
+  beside it; installed, it behaves like any other installed program.
+Moniker: ocelot
+Tags:
+  - vpn
+  - openconnect
+  - anyconnect
+  - cisco
+ReleaseNotesUrl: https://github.com/angelbana/ocelotVPN/releases/tag/v1.0.0
+ManifestType: defaultLocale
+ManifestVersion: 1.6.0

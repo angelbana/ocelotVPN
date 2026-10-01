@@ -45,3 +45,34 @@ purpose.
 
 Only the x86-64 build is signed. There is no 32-bit build, and if one ever
 appears it stays unsigned.
+
+## After the release: winget
+
+The manifests that let anyone install the program with
+
+    winget install SculkDev.Ocelot
+
+live in [contrib/winget](../contrib/winget). They are not read from here by
+anything - Microsoft's own repository holds the copy winget uses - so each
+release updates these three files and then sends them on:
+
+ 1. set `PackageVersion` in all three files to the version going out;
+ 2. in the installer manifest, point `InstallerUrl` at the new file and put the
+    new `InstallerSha256` beside it (the release page carries a `.sha512` for
+    people; winget wants SHA-256, which `sha256sum` prints);
+ 3. set `ReleaseDate` and `ReleaseNotesUrl`;
+ 4. submit them, either as a pull request to `microsoft/winget-pkgs` under
+    `manifests/s/SculkDev/Ocelot/<version>/`, or with `wingetcreate update
+    SculkDev.Ocelot --version <version> --urls <installer url>`.
+
+A submission is reviewed by Microsoft's own automation before it appears, and
+the installer has to stay downloadable at that address for as long as the
+version is listed.
+
+## When a push breaks the build
+
+[.github/workflows/check.yml](../.github/workflows/check.yml) builds every push
+and pull request on Linux and does nothing else - no packaging, no signing, no
+Windows runner. It is there so that a mistake is found in the minute after it is
+made rather than in the middle of a release, and it is kept to Linux because a
+Windows runner minute costs twice as much.

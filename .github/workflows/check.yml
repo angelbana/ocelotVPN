@@ -1,0 +1,57 @@
+# Does the tree still build?
+#
+# Only Linux, and only the build: a runner minute on Windows costs twice a
+# Linux one, and the thing that breaks a push is almost never the half that
+# differs between the two. The release workflow builds everything for real;
+# this one is here so that a mistake is caught in the minute after it is pushed
+# rather than in the middle of making a release.
+
+name: Check
+
+on:
+  push:
+    branches: ['**']
+    # A tag is built in full by the release workflow; building it twice would
+    # only spend the quota.
+    tags-ignore: ['**']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: fedora:41
+
+    steps:
+      # The same list the release workflow installs, and deliberately without
+      # spdlog-devel: without it the project builds its own copy, which is what
+      # the published builds do.
+      - name: Install the dependencies
+        run: |
+          dnf -y install --setopt=install_weak_deps=False \
+              gcc-c++ cmake git patch pkgconf-pkg-config \
+              qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qttools-devel \
+              openconnect-devel gnutls-devel libxml2-devel \
+              qt6-qtdeclarative qt6-qtbase-gui
+
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0    # the version comes from git describe
+
+      - name: Allow git to read the checkout
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build -j$(nproc)
+
+      # What the AppImage is assembled from. It costs seconds and catches a
+      # missing icon or desktop entry before a release does.
+      - name: Install into a staging tree
+        run: |
+          cmake --install build --prefix "$PWD/AppDir/usr"
+          test -x AppDir/usr/bin/ocelot
+          test -f AppDir/usr/share/applications/ocelot.desktop
+          test -f AppDir/usr/share/icons/hicolor/256x256/apps/ocelot.png
