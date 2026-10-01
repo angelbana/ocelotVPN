@@ -73,6 +73,12 @@ QString installedProgram();
 // this one is still running, the new copy would only raise this window.
 bool launchInstalledAfterExit(QString& error);
 
+// Replaces the files of this folder with the ones in source, once this program
+// has quit, and starts the new copy. What the portable copy keeps beside itself
+// - its settings, its log - is not in the source and so is left alone. The
+// leftovers folder is deleted afterwards.
+bool replaceWith(const QString& source, const QString& leftovers, QString& error);
+
 // Takes out everything install() put in. The folder itself is deleted last, by
 // someone else: a program cannot remove the file it is running from.
 bool uninstall(QString& error);

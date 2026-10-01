@@ -81,6 +81,14 @@ A saved password is sealed by Windows for the account that saved it on the
 computer that saved it. A folder carried to another machine therefore carries
 the profiles, but not the passwords stored with them.
 
+**Updating.** Settings, Maintenance, Updates: the program asks GitHub what the
+latest release is, and where it can replace itself it offers to. What it
+downloads is the installer for an installed copy and the archive for a carried
+one. Before anything is run, the file is measured against the SHA-512 published
+beside it, and an installer that carries no signature Windows accepts is deleted
+rather than started - the name it is signed with is shown before you agree. A
+carried copy is replaced in place, keeping its `data` folder, and started again.
+
 The program requires administrator privileges and asks for them on every
 start: creating the Wintun adapter is impossible without them, and the
 connection is dropped right after the tunnel is negotiated if they are

@@ -36,6 +36,7 @@ class QQmlEngine;
 class QSystemTrayIcon;
 class QTimer;
 class QTranslator;
+class Updater;
 
 class VpnController : public QObject {
     Q_OBJECT
@@ -80,6 +81,13 @@ class VpnController : public QObject {
     Q_PROPERTY(QString latestVersion READ latestVersion NOTIFY latestVersionChanged)
     Q_PROPERTY(bool updateAvailable READ updateAvailable NOTIFY latestVersionChanged)
     Q_PROPERTY(bool checkingForUpdates READ checkingForUpdates NOTIFY checkingForUpdatesChanged)
+    // Fetching the new version, and how far that has got (0 to 1).
+    Q_PROPERTY(bool downloadingUpdate READ downloadingUpdate NOTIFY updateProgressChanged)
+    Q_PROPERTY(double updateProgress READ updateProgress NOTIFY updateProgressChanged)
+    // Whether a build this program can install is downloaded and checked.
+    Q_PROPERTY(bool updateDownloaded READ updateDownloaded NOTIFY updateProgressChanged)
+    // Whether fetching and installing it is something this build can do at all.
+    Q_PROPERTY(bool canInstallUpdate READ canInstallUpdate CONSTANT)
     Q_PROPERTY(bool hasTray READ hasTray CONSTANT)
 
     Q_PROPERTY(int theme READ theme WRITE setTheme NOTIFY settingsChanged)
@@ -199,6 +207,10 @@ public:
     QString latestVersion() const;
     bool updateAvailable() const;
     bool checkingForUpdates() const;
+    bool downloadingUpdate() const;
+    double updateProgress() const;
+    bool updateDownloaded() const;
+    bool canInstallUpdate() const;
     bool hasTray() const;
 
     int theme() const;
@@ -287,6 +299,12 @@ public:
     Q_INVOKABLE void launchInstalledCopy();
 
     Q_INVOKABLE void checkForUpdates();
+    // Fetches the new version and checks it against the checksum published
+    // with it and, on Windows, against the signature on it. Answers with
+    // updateReady, or with errorOccurred when something did not add up.
+    Q_INVOKABLE void downloadUpdate();
+    // Puts what was downloaded in place. The program quits to let it finish.
+    Q_INVOKABLE void applyUpdate();
     Q_INVOKABLE QString downloadUrl() const;
     Q_INVOKABLE QString aboutText() const;
     Q_INVOKABLE QString licenseText() const;
@@ -328,6 +346,10 @@ signals:
     void statsChanged();
     void latestVersionChanged();
     void checkingForUpdatesChanged();
+    void updateProgressChanged();
+    // The new version is downloaded and checked; signer is the name it was
+    // signed with, empty where there are no signatures.
+    void updateReady(const QString& version, const QString& signer);
     void settingsChanged();
     // This copy was installed; the interface offers to hand over to it.
     void installFinished();
@@ -403,6 +425,7 @@ private:
     bool m_checkingForUpdates;
     qint64 m_lastCheckTime;
     QNetworkAccessManager* m_network;
+    Updater* m_updater;
 
     QSystemTrayIcon* m_trayIcon;
 

@@ -170,6 +170,16 @@ ApplicationWindow {
                 Telemetry.clear();
         }
 
+        function onUpdateReady(version, signer) {
+            updateDialog.show(qsTr("Ocelot %1 is ready to install").arg(version),
+                signer.length > 0
+                    ? qsTr("It was downloaded, measured against the checksum published with it, "
+                        + "and is signed by:<br><br>%1<br><br>Installing it closes Ocelot.")
+                        .arg(signer)
+                    : qsTr("It was downloaded and measured against the checksum published with "
+                        + "it. Installing it closes Ocelot."));
+        }
+
         function onInstallFinished() {
             installedDialog.show(qsTr("Ocelot is installed"),
                 qsTr("It is in %1 and in the Start menu. This folder can stay where it is, "
@@ -454,6 +464,16 @@ ApplicationWindow {
 
     AppDialog {
         id: messageDialog
+    }
+
+    AppDialog {
+        id: updateDialog
+
+        acceptText: qsTr("Install")
+        cancelText: qsTr("Later")
+        cancellable: true
+
+        onAccepted: controller.applyUpdate()
     }
 
     AppDialog {

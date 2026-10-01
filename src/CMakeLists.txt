@@ -17,6 +17,8 @@ set(${PROJECT_NAME}_SRCS
     main.cpp
     Portable.cpp
     Portable.h
+    Updater.cpp
+    Updater.h
     server_storage.cpp
 
     timestamp.cpp

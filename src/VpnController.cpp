@@ -20,6 +20,7 @@
 #include "VpnController.h"
 #include "Autostart.h"
 #include "Portable.h"
+#include "Updater.h"
 #include "config.h"
 #include "logger.h"
 #include "server_storage.h"
@@ -283,6 +284,7 @@ VpnController::VpnController(bool useTray, QObject* parent)
     , m_checkingForUpdates(false)
     , m_lastCheckTime(0)
     , m_network(new QNetworkAccessManager(this))
+    , m_updater(new Updater(this))
     , m_trayIcon(nullptr)
     , m_theme(ThemeOcelot)
     , m_windowStyle(WindowStyleOcelot)
@@ -343,6 +345,12 @@ VpnController::VpnController(bool useTray, QObject* parent)
     }
 
     QTimer::singleShot(4000, this, &VpnController::tryCheckLatestVersion);
+
+    connect(m_updater, &Updater::progressChanged, this, &VpnController::updateProgressChanged);
+    connect(m_updater, &Updater::ready, this, &VpnController::updateReady);
+    connect(m_updater, &Updater::failed, this, [this](const QString& message) {
+        emit errorOccurred(tr("Update Ocelot"), message);
+    });
 }
 
 VpnController::~VpnController()
@@ -1931,6 +1939,54 @@ void VpnController::startVersionRequest()
     m_network->get(request);
 }
 
+bool VpnController::downloadingUpdate() const
+{
+    return m_updater->busy();
+}
+
+double VpnController::updateProgress() const
+{
+    return m_updater->progress();
+}
+
+bool VpnController::updateDownloaded() const
+{
+    return m_updater->file().isEmpty() == false;
+}
+
+bool VpnController::canInstallUpdate() const
+{
+#ifdef Q_OS_WIN
+    return true;
+#else
+    // The app image is one file that whoever runs it keeps where they like;
+    // replacing it is not this program's business.
+    return false;
+#endif
+}
+
+void VpnController::downloadUpdate()
+{
+    if (updateAvailable() == false) {
+        emit errorOccurred(tr("Update Ocelot"), tr("There is nothing newer to install."));
+        return;
+    }
+
+    m_updater->start(m_latestVersion);
+    emit updateProgressChanged();
+}
+
+void VpnController::applyUpdate()
+{
+    QString error;
+    if (m_updater->apply(error) == false) {
+        emit errorOccurred(tr("Update Ocelot"), error);
+        return;
+    }
+
+    quit();
+}
+
 QString VpnController::downloadUrl() const
 {
     // The installer's file name carries the openconnect version as well as
@@ -1972,7 +2028,7 @@ void VpnController::gotLatestVersion(QNetworkReply* reply)
                                               .arg(INTERNAL_PROJECT_VERSION));
 
             if (m_trayIcon != nullptr && m_trayIcon->supportsMessages()
-                && m_latestVersion.compare(INTERNAL_PROJECT_VERSION) != 0) {
+                && updateAvailable() == true) {
                 m_trayIcon->showMessage(tr("New version available"),
                     tr("%1 version %2 is available!").arg(QLatin1String(PRODUCT_NAME_SHORT)).arg(m_latestVersion));
             }

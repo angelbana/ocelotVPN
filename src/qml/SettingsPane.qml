@@ -482,25 +482,36 @@ Item {
 
                 SettingRow {
                     label: qsTr("Updates")
-                    hint: controller.checkingForUpdates
-                        ? qsTr("Checking…")
-                        : controller.latestVersion.length === 0
-                            ? qsTr("Version %1 is installed.").arg(controller.appVersion)
-                            : controller.updateAvailable
-                                ? qsTr("Version %1 is out; you have %2.")
-                                    .arg(controller.latestVersion).arg(controller.releaseVersion)
-                                : qsTr("Version %1 is installed, which is the latest.")
-                                    .arg(controller.appVersion)
+                    hint: controller.downloadingUpdate
+                        ? qsTr("Downloading… %1%").arg(Math.round(controller.updateProgress * 100))
+                        : controller.checkingForUpdates
+                            ? qsTr("Checking…")
+                            : controller.latestVersion.length === 0
+                                ? qsTr("Version %1 is installed.").arg(controller.appVersion)
+                                : controller.updateAvailable
+                                    ? qsTr("Version %1 is out; you have %2.")
+                                        .arg(controller.latestVersion).arg(controller.releaseVersion)
+                                    : qsTr("Version %1 is installed, which is the latest.")
+                                        .arg(controller.appVersion)
 
                     GhostButton {
                         glyph: controller.updateAvailable ? "arrowDown" : "refresh"
-                        text: controller.updateAvailable ? qsTr("Download") : qsTr("Check now")
-                        enabled: !controller.checkingForUpdates
+                        // Where the program can replace itself it offers to; where
+                        // it cannot - the app image is one file its owner keeps
+                        // where they like - it points at the page instead.
+                        text: !controller.updateAvailable
+                            ? qsTr("Check now")
+                            : controller.canInstallUpdate
+                                ? qsTr("Download and install")
+                                : qsTr("Download")
+                        enabled: !controller.checkingForUpdates && !controller.downloadingUpdate
                         onClicked: {
-                            if (controller.updateAvailable)
-                                Qt.openUrlExternally(controller.downloadUrl());
-                            else
+                            if (!controller.updateAvailable)
                                 root.updatesRequested();
+                            else if (controller.canInstallUpdate)
+                                controller.downloadUpdate();
+                            else
+                                Qt.openUrlExternally(controller.downloadUrl());
                         }
                     }
                 }

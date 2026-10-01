@@ -424,6 +424,42 @@ bool launchInstalledAfterExit(QString& error)
     return runDetachedScript(QStringLiteral("ocelot-start-installed.cmd"), body, error);
 }
 
+bool replaceWith(const QString& source, const QString& leftovers, QString& error)
+{
+    error.clear();
+
+    const QString here = QDir::cleanPath(QCoreApplication::applicationDirPath());
+
+    // robocopy rather than copy: it walks the folders itself, and it adds and
+    // replaces without removing what it did not bring - which is what leaves the
+    // data folder beside the program alone.
+    const QString body = QStringLiteral(
+        "@echo off\r\n"
+        "for /l %%i in (1,1,60) do (\r\n"
+        "  tasklist /fi \"PID eq %1\" | find \"%1\" >nul\r\n"
+        "  if errorlevel 1 goto swap\r\n"
+        "  ping -n 2 127.0.0.1 >nul\r\n"
+        ")\r\n"
+        ":swap\r\n"
+        "robocopy \"%2\" \"%3\" /E /NFL /NDL /NJH /NJS /NC /NS /NP >nul\r\n"
+        "start \"\" \"%3\\%4\"\r\n"
+        "rd /s /q \"%5\" 2>nul\r\n"
+        "(goto) 2>nul & del \"%~f0\"\r\n")
+                             .arg(QString::number(QCoreApplication::applicationPid()),
+                                 QDir::toNativeSeparators(source),
+                                 QDir::toNativeSeparators(here),
+                                 programName(),
+                                 QDir::toNativeSeparators(leftovers));
+
+    if (runDetachedScript(QStringLiteral("ocelot-replace.cmd"), body, error) == false) {
+        return false;
+    }
+
+    Logger::instance().addMessage(
+        QObject::tr("Ocelot is replacing itself in %1").arg(QDir::toNativeSeparators(here)));
+    return true;
+}
+
 bool uninstall(QString& error)
 {
     error.clear();
@@ -500,6 +536,14 @@ bool install(QString& error)
 
 bool launchInstalledAfterExit(QString& error)
 {
+    error = QObject::tr("Installing itself is something only the Windows build does.");
+    return false;
+}
+
+bool replaceWith(const QString& source, const QString& leftovers, QString& error)
+{
+    Q_UNUSED(source)
+    Q_UNUSED(leftovers)
     error = QObject::tr("Installing itself is something only the Windows build does.");
     return false;
 }
