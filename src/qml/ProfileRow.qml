@@ -39,6 +39,7 @@ AbstractButton {
     signal editRequested()
     signal removeRequested()
     signal duplicateRequested()
+    signal exportRequested()
 
     property string lastConnected: ""
 
@@ -161,6 +162,11 @@ AbstractButton {
         AppMenuItem {
             text: qsTr("Duplicate")
             onTriggered: root.duplicateRequested()
+        }
+
+        AppMenuItem {
+            text: qsTr("Save to a file…")
+            onTriggered: root.exportRequested()
         }
 
         AppMenuItem {

@@ -258,6 +258,19 @@ public:
     // server or a variant of the same connection.
     Q_INVOKABLE QString duplicateProfile(const QString& name);
 
+    // A profile as a file, to hand to someone else or to carry to another
+    // computer. What makes it a secret stays behind: the password belongs to
+    // this account on this machine, and the one-time-code seed is the second
+    // factor itself. Both ask where to put the file, and answer with an error
+    // to show or nothing at all.
+    Q_INVOKABLE QString exportProfile(const QString& name);
+    Q_INVOKABLE QString importProfile();
+    // Deletes every remembered password at once, and stops the profiles asking
+    // to remember them again.
+    Q_INVOKABLE int forgetAllPasswords();
+    // The log as it stands, written where the person chooses - for sending on.
+    Q_INVOKABLE QString saveLog(const QString& text);
+
     // The answer to whatever the server asked. When the question was for a
     // password, remember says the person ticked the box beside it.
     Q_INVOKABLE void answerPrompt(bool accepted, const QString& text = QString(),

@@ -25,6 +25,8 @@ import QtQuick.Layouts
 Item {
     id: root
 
+    signal saveFailed(string message)
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: Theme.padding
@@ -50,6 +52,16 @@ Item {
                 glyph: "copy"
                 text: qsTr("Copy all")
                 onClicked: controller.copyToClipboard(logModel.text())
+            }
+
+            GhostButton {
+                glyph: "arrowDown"
+                text: qsTr("Save…")
+                onClicked: {
+                    const failure = controller.saveLog(logModel.text());
+                    if (failure.length > 0)
+                        root.saveFailed(failure);
+                }
             }
 
             GhostButton {

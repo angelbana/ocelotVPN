@@ -53,6 +53,12 @@ extern "C" {
 #include <QNetworkReply>
 #include <QCryptographicHash>
 #include <QDir>
+#include <QFileDialog>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonParseError>
+#include <QTextStream>
+#include <QVersionNumber>
 #include <QFile>
 #include <QFileInfo>
 #include <QNetworkRequest>
@@ -69,6 +75,7 @@ extern "C" {
 #include <QtConcurrent/QtConcurrentRun>
 #include <OcSettings.h>
 
+#include <algorithm>
 #include <cmath>
 
 #ifdef _WIN32
@@ -562,8 +569,11 @@ QString VpnController::latestVersion() const
 
 bool VpnController::updateAvailable() const
 {
-    return m_latestVersion.isEmpty() == false
-        && m_latestVersion.compare(QLatin1String(INTERNAL_PROJECT_VERSION)) != 0;
+    // Compared as numbers: read as text, 1.0.10 looks older than 1.0.9, and a
+    // build made here that runs ahead of the published one would be told to
+    // downgrade itself.
+    return QVersionNumber::fromString(m_latestVersion)
+        > QVersionNumber::fromString(QLatin1String(INTERNAL_PROJECT_VERSION));
 }
 
 bool VpnController::checkingForUpdates() const
@@ -1612,6 +1622,156 @@ QString VpnController::duplicateProfile(const QString& name)
     return copy;
 }
 
+QString VpnController::exportProfile(const QString& name)
+{
+    if (m_profiles.contains(name) == false) {
+        return tr("There is no profile called '%1'.").arg(name);
+    }
+
+    const QString suggested = QDir::toNativeSeparators(
+        QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)
+        + QLatin1Char('/') + name + QStringLiteral(".json"));
+    const QString path = QFileDialog::getSaveFileName(nullptr,
+        tr("Save the profile '%1'").arg(name), suggested, tr("Ocelot profile (*.json)"));
+    if (path.isEmpty() == true) {
+        return QString();
+    }
+
+    QVariantMap profile = loadProfile(name);
+    // The file travels; these stay behind. A remembered password is sealed to
+    // this account on this computer and could not be read anywhere else anyway,
+    // and the seed of a one-time code is the second factor itself.
+    profile.remove(QStringLiteral("password"));
+    profile.remove(QStringLiteral("tokenStr"));
+    profile.remove(QStringLiteral("originalName"));
+    profile.remove(QStringLiteral("interfaceNameMaxLength"));
+    // Whether to trust a server's certificate is something each computer
+    // decides for itself, the first time it connects.
+    profile.remove(QStringLiteral("serverCertPin"));
+    profile.remove(QStringLiteral("caCertPin"));
+    profile.remove(QStringLiteral("clientCertPin"));
+    profile[QStringLiteral("batchMode")] = false;
+    profile[QStringLiteral("tokenType")] = -1;
+
+    QFile file(path);
+    if (file.open(QIODevice::WriteOnly | QIODevice::Truncate) == false) {
+        return tr("The file %1 could not be written.").arg(QDir::toNativeSeparators(path));
+    }
+    file.write(QJsonDocument::fromVariant(profile).toJson(QJsonDocument::Indented));
+    file.close();
+
+    Logger::instance().addMessage(
+        tr("The profile '%1' was written to %2").arg(name, QDir::toNativeSeparators(path)));
+    return QString();
+}
+
+QString VpnController::importProfile()
+{
+    const QString path = QFileDialog::getOpenFileName(nullptr, tr("Open a profile"),
+        QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation),
+        tr("Ocelot profile (*.json)"));
+    if (path.isEmpty() == true) {
+        return QString();
+    }
+
+    QFile file(path);
+    if (file.open(QIODevice::ReadOnly) == false) {
+        return tr("The file %1 could not be read.").arg(QDir::toNativeSeparators(path));
+    }
+
+    QJsonParseError problem;
+    const QJsonDocument document = QJsonDocument::fromJson(file.readAll(), &problem);
+    file.close();
+
+    if (document.isObject() == false) {
+        return tr("%1 does not hold a profile: %2")
+            .arg(QDir::toNativeSeparators(path), problem.errorString());
+    }
+
+    QVariantMap profile = document.object().toVariantMap();
+    if (profile.value(QStringLiteral("gateway")).toString().trimmed().isEmpty() == true) {
+        return tr("%1 does not hold a profile: there is no gateway in it.")
+            .arg(QDir::toNativeSeparators(path));
+    }
+
+    QString name = profile.value(QStringLiteral("name")).toString().trimmed();
+    if (name.isEmpty() == true) {
+        name = profile.value(QStringLiteral("gateway")).toString().trimmed();
+    }
+
+    // A profile brought from elsewhere must not quietly take the place of one
+    // that is already here under the same name.
+    QString unique = name;
+    for (int n = 2; m_profiles.contains(unique) == true; n++) {
+        unique = tr("%1 (%2)").arg(name).arg(n);
+    }
+
+    profile[QStringLiteral("name")] = unique;
+    profile[QStringLiteral("originalName")] = QString();
+    profile.remove(QStringLiteral("password"));
+    profile.remove(QStringLiteral("tokenStr"));
+
+    const QString failure = saveProfile(profile);
+    if (failure.isEmpty() == false) {
+        return failure;
+    }
+
+    setCurrentProfile(unique);
+    Logger::instance().addMessage(
+        tr("The profile '%1' was read from %2").arg(unique, QDir::toNativeSeparators(path)));
+    return QString();
+}
+
+int VpnController::forgetAllPasswords()
+{
+    OcSettings settings;
+    int forgotten = 0;
+
+    for (const QString& name : m_profiles) {
+        const QString group = QLatin1String(PREFIX) + name + QLatin1Char('/');
+        if (settings.value(group + QStringLiteral("password")).toByteArray().isEmpty() == false) {
+            forgotten++;
+        }
+        settings.remove(group + QStringLiteral("password"));
+        // Left on, the profile would save the next password it is given.
+        settings.setValue(group + QStringLiteral("batch"), false);
+    }
+    settings.sync();
+
+    Logger::instance().addMessage(tr("Passwords deleted: %1").arg(forgotten));
+    emit profilesChanged();
+    return forgotten;
+}
+
+QString VpnController::saveLog(const QString& text)
+{
+    const QString suggested = QDir::toNativeSeparators(
+        QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)
+        + QStringLiteral("/ocelot-log-")
+        + QDateTime::currentDateTime().toString(QStringLiteral("yyyy-MM-dd-HHmm"))
+        + QStringLiteral(".txt"));
+    const QString path = QFileDialog::getSaveFileName(nullptr, tr("Save the log"), suggested,
+        tr("Text file (*.txt)"));
+    if (path.isEmpty() == true) {
+        return QString();
+    }
+
+    QFile file(path);
+    if (file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text) == false) {
+        return tr("The file %1 could not be written.").arg(QDir::toNativeSeparators(path));
+    }
+    {
+        QTextStream stream(&file);
+        stream.setEncoding(QStringConverter::Utf8);
+        stream << text;
+    }
+    file.close();
+
+    Logger::instance().addMessage(
+        tr("The log was written to %1").arg(QDir::toNativeSeparators(path)));
+    return QString();
+}
+
 void VpnController::removeProfile(const QString& name)
 {
     OcSettings settings;
@@ -1642,6 +1802,21 @@ void VpnController::reloadProfiles()
             profiles.append(str);
         }
     }
+
+    // The one used last is the one most likely wanted next, so it comes first.
+    // Profiles that have never connected keep to the end, in their own order by
+    // name.
+    std::sort(profiles.begin(), profiles.end(),
+        [&settings](const QString& left, const QString& right) {
+            const qint64 lastLeft = settings.value(QLatin1String(PREFIX) + left
+                + QStringLiteral("/last-connected"), 0).toLongLong();
+            const qint64 lastRight = settings.value(QLatin1String(PREFIX) + right
+                + QStringLiteral("/last-connected"), 0).toLongLong();
+            if (lastLeft != lastRight) {
+                return lastLeft > lastRight;
+            }
+            return QString::localeAwareCompare(left, right) < 0;
+        });
 
     if (profiles != m_profiles) {
         m_profiles = profiles;

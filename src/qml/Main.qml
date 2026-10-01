@@ -305,6 +305,11 @@ ApplicationWindow {
                                 onEditRequested: profileEditor.edit(modelData.name)
                                 onRemoveRequested: removeDialog.ask(modelData.name)
                                 onDuplicateRequested: controller.duplicateProfile(modelData.name)
+                                onExportRequested: {
+                                    const failure = controller.exportProfile(modelData.name);
+                                    if (failure.length > 0)
+                                        messageDialog.show(qsTr("Save the profile"), failure);
+                                }
                             }
                         }
 
@@ -375,6 +380,7 @@ ApplicationWindow {
             LogPane {
                 anchors.fill: parent
                 visible: mainWindow.tab === "log"
+                onSaveFailed: message => messageDialog.show(qsTr("Save the log"), message)
             }
 
             SettingsPane {
@@ -384,6 +390,15 @@ ApplicationWindow {
                     mainWindow.updateCheckPending = true;
                     controller.checkForUpdates();
                 }
+                onImportRequested: {
+                    const failure = controller.importProfile();
+                    if (failure.length > 0)
+                        messageDialog.show(qsTr("Open a profile"), failure);
+                }
+                onPasswordsForgotten: count => messageDialog.show(qsTr("Saved passwords"),
+                    count > 0
+                        ? qsTr("Deleted: %1. The profiles will ask for a password again.").arg(count)
+                        : qsTr("There was nothing to delete."))
                 onRemoveRequested: removeProgramDialog.show(
                     qsTr("Remove Ocelot from this computer?"),
                     qsTr("The program in %1 is deleted, along with its shortcut and its entry "

@@ -24,6 +24,8 @@ Item {
 
     signal updatesRequested()
     signal removeRequested()
+    signal importRequested()
+    signal passwordsForgotten(int count)
 
     readonly property bool onWindows: Qt.platform.os === "windows"
 
@@ -75,6 +77,18 @@ Item {
         Layout.fillWidth: true
         implicitHeight: 1
         color: Theme.line
+    }
+
+    AppDialog {
+        id: forgetPasswordsDialog
+
+        acceptText: qsTr("Forget")
+        destructive: true
+        title: qsTr("Forget every saved password?")
+        message: qsTr("The profiles stay; the passwords saved with them are deleted from this "
+            + "computer and have to be typed again at the next connection.")
+
+        onAccepted: root.passwordsForgotten(controller.forgetAllPasswords())
     }
 
     ScrollView {
@@ -508,6 +522,34 @@ Item {
                         glyph: "shield"
                         text: qsTr("Repair")
                         onClicked: controller.repairDns()
+                    }
+                }
+
+                Separator {}
+
+                SettingRow {
+                    label: qsTr("Profiles")
+                    hint: qsTr("A profile saved to a file carries everything but the password and "
+                        + "the one-time-code seed, so it can be handed to someone else.")
+
+                    GhostButton {
+                        glyph: "arrowUp"
+                        text: qsTr("Open a file…")
+                        onClicked: root.importRequested()
+                    }
+                }
+
+                Separator {}
+
+                SettingRow {
+                    label: qsTr("Saved passwords")
+                    hint: qsTr("Deletes every password this computer remembers, for every profile.")
+
+                    GhostButton {
+                        glyph: "trash"
+                        text: qsTr("Forget all")
+                        tint: Theme.danger
+                        onClicked: forgetPasswordsDialog.open()
                     }
                 }
 
