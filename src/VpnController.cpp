@@ -200,6 +200,21 @@ void VpnController::cleanupNrptRules(bool flushCache)
 #endif
 }
 
+void VpnController::signInStarted(const QString& address)
+{
+    Q_UNUSED(address)
+
+    if (m_trayIcon != nullptr && m_trayIcon->supportsMessages() == true) {
+        m_trayIcon->showMessage(tr("Sign in to continue"),
+            tr("A page has opened in your browser; Ocelot is waiting for it."));
+    }
+
+    emit noticeRequested(tr("Sign in to continue"),
+        tr("The server wants this sign-in done in a browser, and a page for it has opened "
+           "in yours. Finish it there and come back - Ocelot carries on by itself once that "
+           "is done."));
+}
+
 void VpnController::repairDns()
 {
     Logger::instance().addMessage(tr("Clearing the split DNS rules left behind by the program"));

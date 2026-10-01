@@ -25,7 +25,9 @@
 #include "server_storage.h"
 
 #include <QCoreApplication>
+#include <QDesktopServices>
 #include <QDir>
+#include <QMetaObject>
 #include <QFile>
 #include <QHash>
 #include <QUrl>
@@ -74,6 +76,54 @@ static void progress_vfn(void* privdata, int level, const char* fmt, ...)
         buf[len - 1] = 0;
     Logger::instance().addMessage(buf);
 }
+
+// Handing the sign-in to a browser arrived in openconnect 9.0; where the library
+// is older than that, the server simply never gets the chance to ask for it.
+#if OPENCONNECT_API_VERSION_MAJOR > 5     || (OPENCONNECT_API_VERSION_MAJOR == 5 && OPENCONNECT_API_VERSION_MINOR >= 8)
+#define OC_HAS_EXTERNAL_BROWSER 1
+#endif
+
+#ifdef OC_HAS_EXTERNAL_BROWSER
+
+// Some servers do not ask for a password at all: they hand out an address and
+// expect the person to sign in there, in a browser, with whatever their company
+// uses - a smart card, a phone, a key. openconnect does the rest itself; all it
+// wants from us is that the address is opened and that someone is looking at it.
+//
+// It waits in the connecting thread while that happens, so the browser is opened
+// from the thread that owns the interface, and the window says what it is
+// waiting for rather than sitting there saying "connecting".
+static int open_browser_for_login(struct openconnect_info* vpninfo, const char* uri,
+    void* privdata)
+{
+    Q_UNUSED(vpninfo)
+
+    VpnInfo* vpn = static_cast<VpnInfo*>(privdata);
+    const QString address = QString::fromUtf8(uri);
+
+    Logger::instance().addMessage(
+        QObject::tr("The server wants this sign-in done in a browser: %1").arg(address));
+
+    bool opened = false;
+    QMetaObject::invokeMethod(
+        vpn->m, [vpn, address]() {
+            vpn->m->signInStarted(address);
+        },
+        Qt::QueuedConnection);
+
+    QMetaObject::invokeMethod(
+        qApp, [address, &opened]() { opened = QDesktopServices::openUrl(QUrl(address)); },
+        Qt::BlockingQueuedConnection);
+
+    if (opened == false) {
+        Logger::instance().addMessage(
+            QObject::tr("The browser could not be opened; the address is in the log above"));
+    }
+
+    return 0;
+}
+
+#endif // OC_HAS_EXTERNAL_BROWSER
 
 static int process_auth_form(void* privdata, struct oc_auth_form* form)
 {
@@ -261,6 +311,12 @@ static int process_auth_form(void* privdata, struct oc_auth_form* form)
             openconnect_set_option_value(opt, text.toUtf8().data());
             vpn->form_pass_attempt++;
             empty = 0;
+#ifdef OC_FORM_OPT_SSO_TOKEN
+        } else if (opt->type == OC_FORM_OPT_SSO_TOKEN || opt->type == OC_FORM_OPT_SSO_USER) {
+            // Filled in by the library once the browser part is over; there is
+            // nothing to ask anyone here.
+            empty = 0;
+#endif
         } else {
             Logger::instance().addMessage(QLatin1String("unknown type ") + QString::number((int)opt->type));
         }
@@ -476,6 +532,10 @@ VpnInfo::VpnInfo(QString name, StoredServer* ss, VpnController* m)
     if (this->vpninfo == nullptr) {
         throw std::runtime_error("initial setup fails");
     }
+
+#ifdef OC_HAS_EXTERNAL_BROWSER
+    openconnect_set_external_browser_callback(this->vpninfo, open_browser_for_login);
+#endif
 
     //get loglevel preference from profile
     int loglevel = ss->get_log_level();

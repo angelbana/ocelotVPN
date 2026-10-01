@@ -141,6 +141,10 @@ ApplicationWindow {
             messageDialog.show(title, message);
         }
 
+        function onNoticeRequested(title, message) {
+            messageDialog.show(title, message);
+        }
+
         function onPromptRequested(type, request) {
             // A question needs somewhere to be answered: the popover closes as
             // soon as anything else is clicked, so the window takes over.

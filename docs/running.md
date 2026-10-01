@@ -81,6 +81,13 @@ A saved password is sealed by Windows for the account that saved it on the
 computer that saved it. A folder carried to another machine therefore carries
 the profiles, but not the passwords stored with them.
 
+**Signing in through a browser.** Where a server does not ask for a password at
+all but hands the sign-in to a browser - a company login page, a smart card, a
+phone - Ocelot opens that page in the browser already on the computer, says so,
+and waits. Nothing else is needed: once the sign-in is done there, the
+connection carries on by itself. This needs openconnect 9.0 or newer, which both
+published builds carry.
+
 **Updating.** Settings, Maintenance, Updates: the program asks GitHub what the
 latest release is, and where it can replace itself it offers to. What it
 downloads is the installer for an installed copy and the archive for a carried

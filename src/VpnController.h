@@ -335,6 +335,10 @@ public:
     void setTunnelInfo(const QString& dns, const QString& ip, const QString& ip6,
         const QString& cstpCipher, const QString& dtlsCipher, const QString& searchDomains);
     bool askPrompt(PromptType type, const QVariantMap& request, QString& text);
+    // Called from the connecting thread when the server hands the sign-in over
+    // to a browser, so the window can say what it is waiting for instead of
+    // sitting on "connecting".
+    void signInStarted(const QString& address);
     int appLogLevel() const;
 
 signals:
@@ -356,6 +360,8 @@ signals:
 
     void promptRequested(int type, const QVariantMap& request);
     void errorOccurred(const QString& title, const QString& message);
+    // Something worth saying that is not a failure.
+    void noticeRequested(const QString& title, const QString& message);
     void windowRequested(bool activate);
     // A click on the notification area icon; the popover decides what to do
     // with it, since only it knows whether it is already showing.
