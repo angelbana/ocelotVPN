@@ -35,6 +35,7 @@ StoredServer::StoredServer()
     , m_reconnect_timeout{ 300 }
     , m_dtls_attempt_period{ 25 }
     , m_server_pin_algo(0)
+    , m_dns_mode{ 0 }
     , m_emoji{ defaultProfileEmoji() }
     , m_log_level (-1)
 {
@@ -252,6 +253,7 @@ int StoredServer::load(QString& name)
     m_emoji = settings.value("emoji", defaultProfileEmoji()).toString();
 
     m_log_level = settings.value("log-level", -1).toInt();
+    m_dns_mode = settings.value("dns-mode", 0).toInt();
 
     settings.endGroup();
     return rval;
