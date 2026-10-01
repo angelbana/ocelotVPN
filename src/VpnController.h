@@ -119,6 +119,13 @@ class VpnController : public QObject {
     // Asking GitHub, at most every few days, whether a newer release exists.
     Q_PROPERTY(bool checkUpdates READ checkUpdates WRITE setCheckUpdates NOTIFY settingsChanged)
 
+    // Holding every other connection on this computer shut while the tunnel is
+    // up, and keeping them shut if it falls over.
+    Q_PROPERTY(bool killSwitch READ killSwitch WRITE setKillSwitch NOTIFY settingsChanged)
+    Q_PROPERTY(bool killSwitchSupported READ killSwitchSupported CONSTANT)
+    // Whether those rules are in place at this moment.
+    Q_PROPERTY(bool killSwitchEngaged READ killSwitchEngaged NOTIFY statusChanged)
+
     // Which of the two lives this copy leads: unpacked into a folder of its own,
     // keeping its settings beside it, or installed. Neither changes while the
     // program is running - installing makes a second copy, it does not turn this
@@ -245,6 +252,10 @@ public:
     void setNotifyOnChange(bool value);
     bool checkUpdates() const;
     void setCheckUpdates(bool value);
+    bool killSwitch() const;
+    void setKillSwitch(bool value);
+    bool killSwitchSupported() const;
+    bool killSwitchEngaged() const;
     bool portableMode() const;
     bool installSupported() const;
     bool installedCopy() const;
@@ -450,6 +461,7 @@ private:
     bool m_reconnectOnDrop;
     bool m_notifyOnChange;
     bool m_checkUpdates;
+    bool m_killSwitch;
     QString m_autoConnectProfile;
 
     // Telling a connection that ended from one that was ended: only the first

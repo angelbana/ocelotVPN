@@ -175,6 +175,42 @@ Item {
                 }
             }
 
+            // ----------------------------------------------------- not leaking
+            Card {
+                Layout.fillWidth: true
+                Layout.leftMargin: Theme.padding
+                Layout.rightMargin: Theme.padding
+                padding: Math.round(14 * Theme.scale)
+                columnSpacing: Math.round(11 * Theme.scale)
+                visible: controller.killSwitchSupported
+
+                SectionLabel {
+                    Layout.fillWidth: true
+                    text: qsTr("Safety")
+                }
+
+                AppToggle {
+                    Layout.fillWidth: true
+                    text: qsTr("Let nothing out except through the tunnel")
+                    description: qsTr("While the tunnel is up nothing else on this computer "
+                        + "reaches the network, and if the tunnel falls over nothing gets out "
+                        + "at all until you disconnect. Another VPN running beside Ocelot "
+                        + "stops working while this is on.")
+                    checked: controller.killSwitch
+                    onSwitched: checked => controller.killSwitch = checked
+                }
+
+                Text {
+                    Layout.fillWidth: true
+                    visible: controller.killSwitchEngaged
+                    text: qsTr("In force right now.")
+                    color: Theme.accent
+                    font.family: Theme.fontFamily
+                    font.pixelSize: Theme.fontCaption
+                    wrapMode: Text.WordWrap
+                }
+            }
+
             // ------------------------------------------------------ the program
             Card {
                 Layout.fillWidth: true

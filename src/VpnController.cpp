@@ -19,6 +19,7 @@
 
 #include "VpnController.h"
 #include "Autostart.h"
+#include "KillSwitch.h"
 #include "Portable.h"
 #include "Updater.h"
 #include "config.h"
@@ -200,6 +201,50 @@ void VpnController::cleanupNrptRules(bool flushCache)
 #endif
 }
 
+bool VpnController::killSwitch() const
+{
+    return m_killSwitch;
+}
+
+bool VpnController::killSwitchSupported() const
+{
+    return KillSwitch::isSupported();
+}
+
+bool VpnController::killSwitchEngaged() const
+{
+    return KillSwitch::engaged();
+}
+
+void VpnController::setKillSwitch(bool value)
+{
+    if (m_killSwitch == value) {
+        return;
+    }
+
+    m_killSwitch = value;
+    writeSettings();
+    emit settingsChanged();
+
+    // Turning it off has to open the door at once - someone who switches it off
+    // is usually staring at a connection that is not working.
+    if (value == false) {
+        KillSwitch::release();
+        emit statusChanged();
+        return;
+    }
+
+    // Turning it on while a tunnel is already up should not wait for the next
+    // connection either.
+    if (m_status == StatusConnected && m_ip.isEmpty() == false) {
+        QString error;
+        if (KillSwitch::engage(m_ip, error) == false) {
+            emit errorOccurred(tr("Nothing outside the tunnel"), error);
+        }
+        emit statusChanged();
+    }
+}
+
 void VpnController::signInStarted(const QString& address)
 {
     Q_UNUSED(address)
@@ -316,6 +361,7 @@ VpnController::VpnController(bool useTray, QObject* parent)
     , m_reconnectOnDrop(true)
     , m_notifyOnChange(true)
     , m_checkUpdates(true)
+    , m_killSwitch(false)
     , m_userAskedToDisconnect(false)
     , m_wasConnected(false)
     , m_reconnectAttempts(0)
@@ -370,6 +416,10 @@ VpnController::VpnController(bool useTray, QObject* parent)
 
 VpnController::~VpnController()
 {
+    // The system would drop these by itself when the program goes, but there is
+    // no reason to leave the door shut for the moment that takes.
+    KillSwitch::release();
+
     int counter = 10;
     m_statsTimer->stop();
 
@@ -1116,6 +1166,7 @@ void VpnController::disconnectVpn()
     cancelReconnect();
 
     m_statsTimer->stop();
+    KillSwitch::release();
     Logger::instance().addMessage(QObject::tr("Disconnecting..."));
     terminateConnection();
 }
@@ -1168,6 +1219,13 @@ void VpnController::setStatus(int status)
                             + QLatin1String("/last-connected"),
                         m_connectedSince);
                     emit profilesChanged();
+                }
+
+                if (m_killSwitch == true && m_ip.isEmpty() == false) {
+                    QString error;
+                    if (KillSwitch::engage(m_ip, error) == false) {
+                        emit errorOccurred(tr("Nothing outside the tunnel"), error);
+                    }
                 }
 
                 const bool hidden = (m_minimizeOnConnect == true && m_trayIcon != nullptr);
@@ -1226,6 +1284,17 @@ void VpnController::setStatus(int status)
                             : tr("The tunnel to %1 went down.").arg(m_currentProfile),
                         QSystemTrayIcon::Information, 6000);
                 }
+                // Left in place when the line dropped on its own: that is the
+                // case this exists for. Someone who wants the computer talking
+                // again presses disconnect, or turns the setting off.
+                if (KillSwitch::engaged() == true && m_userAskedToDisconnect == false
+                    && m_quitWhenDisconnected == false) {
+                    emit noticeRequested(tr("Nothing outside the tunnel"),
+                        tr("The tunnel went down, and nothing on this computer is being let "
+                           "out past it. Press Disconnect to let it through again, or wait "
+                           "while Ocelot dials back."));
+                }
+
                 m_wasConnected = false;
                 break;
 
@@ -2183,6 +2252,7 @@ void VpnController::readSettings()
     m_reconnectOnDrop = settings.value("reconnectOnDrop", true).toBool();
     m_notifyOnChange = settings.value("notifyOnChange", true).toBool();
     m_checkUpdates = settings.value("checkUpdates", true).toBool();
+    m_killSwitch = settings.value("killSwitch", false).toBool();
     m_autoConnectProfile = settings.value("autoConnectProfile").toString();
     settings.endGroup();
 
@@ -2227,6 +2297,7 @@ void VpnController::writeSettings()
     settings.setValue("reconnectOnDrop", m_reconnectOnDrop);
     settings.setValue("notifyOnChange", m_notifyOnChange);
     settings.setValue("checkUpdates", m_checkUpdates);
+    settings.setValue("killSwitch", m_killSwitch);
     settings.setValue("autoConnectProfile", m_autoConnectProfile);
     settings.endGroup();
 

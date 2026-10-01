@@ -98,6 +98,16 @@ A copy of a profile under a new name, certificates, pinned key and saved
 password included. A duplicate has never connected, so it starts with no
 last-connected time of its own.
 
+## Nothing outside the tunnel
+
+The rule that no connection on the computer may go anywhere except through the
+tunnel, kept by the system's own firewall while the tunnel is up and after it
+falls over - until the person disconnects. Four exceptions, and no more: the
+tunnel, the program's own connection to its server, the loopback, and the lease
+that keeps the computer's address on the network it sits on.
+
+Not a setting about *this* program's traffic: it is about everyone else's.
+
 ## Portable copy
 
 A copy of the program that keeps its settings, its profiles and its log in a

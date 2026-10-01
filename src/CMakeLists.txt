@@ -15,6 +15,8 @@ set(${PROJECT_NAME}_SRCS
     key.cpp
     keypair.cpp
     main.cpp
+    KillSwitch.cpp
+    KillSwitch.h
     Portable.cpp
     Portable.h
     Updater.cpp
@@ -168,6 +170,10 @@ if(MINGW)
     target_link_libraries (${PROJECT_NAME} PRIVATE
         # system libraries
         wsock32
+        # keeping traffic inside the tunnel: the filtering platform, and the
+        # interface table the tunnel is found in
+        fwpuclnt
+        iphlpapi
     )
 endif()
 

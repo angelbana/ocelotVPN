@@ -81,6 +81,20 @@ A saved password is sealed by Windows for the account that saved it on the
 computer that saved it. A folder carried to another machine therefore carries
 the profiles, but not the passwords stored with them.
 
+**Letting nothing out except through the tunnel.** Settings, Safety: with this
+on, while the tunnel is up nothing else on the computer reaches the network, and
+if the tunnel falls over nothing gets out at all until you disconnect - which is
+the point, since a tunnel that drops does not take the programs using it with
+it. Four things are still let through: the tunnel itself, Ocelot's own
+connection to the server (otherwise it could not dial back), the computer
+talking to itself, and the lease that keeps its address on the network it is
+plugged into.
+
+The rules live in a session Windows itself tears down when Ocelot goes away, so
+a crash cannot leave a computer that will not talk to anything. Another VPN
+running beside Ocelot stops working while this is on - that is not a fault, it
+is what "nothing outside the tunnel" means.
+
 **Signing in through a browser.** Where a server does not ask for a password at
 all but hands the sign-in to a browser - a company login page, a smart card, a
 phone - Ocelot opens that page in the browser already on the computer, says so,
