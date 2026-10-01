@@ -152,12 +152,15 @@ static void main_loop(VpnInfo* vpninfo, VpnController* controller)
     vpninfo->get_cipher_info(cstp, dtls);
     controller->setTunnelInfo(dns, ip, ip6, cstp, dtls, domains);
     vpninfo->logServerOptions();
+    vpninfo->logSessionExpiry();
     controller->setStatus(VpnController::StatusConnected);
 
+    controller->setAuthenticationRefused(false);
     vpninfo->ss->save();
     vpninfo->mainloop();
 
 fail:
+    controller->setAuthenticationRefused(vpninfo->auth_failed);
     controller->setStatus(VpnController::StatusDisconnected);
 
     delete vpninfo;
@@ -365,6 +368,7 @@ VpnController::VpnController(bool useTray, QObject* parent)
     , m_userAskedToDisconnect(false)
     , m_wasConnected(false)
     , m_reconnectAttempts(0)
+    , m_authenticationRefused(false)
     , m_reconnectTimer(new QTimer(this))
     , m_promptLoop(nullptr)
     , m_promptRemember(false)
@@ -994,6 +998,11 @@ void VpnController::setCheckUpdates(bool value)
     emit settingsChanged();
 }
 
+int VpnController::reconnectAttempt() const
+{
+    return m_reconnectAttempts;
+}
+
 bool VpnController::reconnectPending() const
 {
     return m_reconnectTimer->isActive();
@@ -1004,17 +1013,17 @@ bool VpnController::reconnectPending() const
 // last attempt the program stops and leaves it to the person.
 void VpnController::scheduleReconnect()
 {
-    static const int delays[] = { 5, 10, 20, 30, 60, 60, 120 };
-    const int attempts = int(sizeof(delays) / sizeof(delays[0]));
+    // Quickly at first, because a server that kicked everyone off is usually
+    // taking them back within the minute; then slowly, and then at that slow
+    // pace for as long as it takes. It does not give up: a tunnel that dropped
+    // at three in the morning should be up again by breakfast, and nothing here
+    // is expensive enough to be worth stopping for. Being refused is the one
+    // ending, and that is decided before this is called.
+    static const int ladder[] = { 5, 10, 20, 30, 60, 120 };
+    static const int steady = 300;
+    const int steps = int(sizeof(ladder) / sizeof(ladder[0]));
 
-    if (m_reconnectAttempts >= attempts) {
-        Logger::instance().addMessage(
-            tr("Giving up on dialling again; connect by hand when the server is back"));
-        m_reconnectAttempts = 0;
-        return;
-    }
-
-    const int delay = delays[m_reconnectAttempts];
+    const int delay = m_reconnectAttempts < steps ? ladder[m_reconnectAttempts] : steady;
     m_reconnectAttempts++;
 
     Logger::instance().addMessage(
@@ -1194,6 +1203,11 @@ void VpnController::terminateConnection()
     }
 }
 
+void VpnController::setAuthenticationRefused(bool refused)
+{
+    m_authenticationRefused = refused;
+}
+
 void VpnController::setStatus(int status)
 {
     QMetaObject::invokeMethod(
@@ -1247,7 +1261,7 @@ void VpnController::setStatus(int status)
                 break;
             }
 
-            case StatusDisconnected:
+            case StatusDisconnected: {
                 m_statsTimer->stop();
                 m_cmd_fd = INVALID_SOCKET;
                 m_ip.clear();
@@ -1265,14 +1279,35 @@ void VpnController::setStatus(int status)
                 emit statsChanged();
                 emit readyToShutdown();
 
-                // A connection that was up and is now down without anyone
-                // asking for that is the case worth dialling again. A failure
-                // to connect in the first place is not: it is usually a wrong
-                // password or an unreachable server, and retrying would just
-                // repeat it.
+                // Three cases, and they want different answers.
+                //
+                // A connection that was up and went down without anyone asking
+                // is worth dialling again: a session that ran out its hours, a
+                // server that kicked everyone, a laptop that changed network.
+                //
+                // An attempt that was itself part of dialling again is worth
+                // continuing with - the server may still be refusing everyone
+                // for another minute, and stopping after the first failed try
+                // would make the whole thing pointless.
+                //
+                // Being refused is not worth repeating. A password that the
+                // server rejects now will be rejected in five seconds too, and
+                // some servers lock an account for trying.
+                const bool wasDialling = (m_reconnectAttempts > 0);
                 if (m_reconnectOnDrop == true && m_userAskedToDisconnect == false
-                    && m_quitWhenDisconnected == false && m_wasConnected == true) {
-                    scheduleReconnect();
+                    && m_quitWhenDisconnected == false
+                    && (m_wasConnected == true || wasDialling == true)) {
+                    if (m_authenticationRefused == true) {
+                        m_reconnectAttempts = 0;
+                        Logger::instance().addMessage(
+                            tr("The server refused the sign-in, so Ocelot will not keep trying "
+                               "by itself"));
+                        emit noticeRequested(tr("Signing in failed"),
+                            tr("The server did not accept the sign-in, so Ocelot stopped dialling "
+                               "by itself. Check the password or the profile and connect again."));
+                    } else {
+                        scheduleReconnect();
+                    }
                 }
 
                 if (m_trayIcon != nullptr && m_notifyOnChange == true
@@ -1297,6 +1332,7 @@ void VpnController::setStatus(int status)
 
                 m_wasConnected = false;
                 break;
+            }
 
             default:
                 break;

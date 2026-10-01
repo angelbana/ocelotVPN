@@ -84,7 +84,10 @@ Item {
 
                             Text {
                                 text: controller.reconnectPending
-                                    ? qsTr("The connection dropped — dialling again shortly")
+                                    ? (controller.reconnectAttempt > 1
+                                        ? qsTr("The connection dropped — dialling again (try %1)")
+                                            .arg(controller.reconnectAttempt)
+                                        : qsTr("The connection dropped — dialling again shortly"))
                                     : Theme.statusLabel(root.status)
                                 color: Theme.muted
                                 font.family: Theme.fontFamily

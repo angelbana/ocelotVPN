@@ -40,6 +40,10 @@ public:
     // The address of the profile icon, if the server named one in a header.
     // Empty when it did not; available only once the connection is up.
     void logServerOptions();
+    // What the server said about how long this sign-in is good for. Worth
+    // knowing: a session that runs out is the usual reason a tunnel that was
+    // working all day stops in the evening.
+    void logSessionExpiry();
     SOCKET get_cmd_fd() const;
     void reset_vpn();
     bool get_minimize() const;
@@ -47,6 +51,10 @@ public:
     bool is_password_form_option(struct oc_auth_form* form, struct oc_form_opt* opt);
 
     QString last_err;
+    // Set when the server refused who we said we were, as opposed to not being
+    // reachable at all. The two deserve opposite answers: one is worth trying
+    // again, the other would only lock the account.
+    bool auth_failed = false;
     QUrl mUrl;
     VpnController* m;
     StoredServer* ss;

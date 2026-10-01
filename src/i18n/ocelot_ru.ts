@@ -45,183 +45,188 @@
         <translation>Ocelot</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="87"/>
+        <location filename="../qml/ConnectionPane.qml" line="88"/>
+        <source>The connection dropped — dialling again (try %1)</source>
+        <translation>Связь оборвалась — набираем снова (попытка %1)</translation>
+    </message>
+    <message>
+        <location filename="../qml/ConnectionPane.qml" line="90"/>
         <source>The connection dropped — dialling again shortly</source>
         <translation>Связь оборвалась — скоро наберём снова</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="108"/>
+        <location filename="../qml/ConnectionPane.qml" line="111"/>
         <source>DTLS</source>
         <translation>DTLS</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="126"/>
+        <location filename="../qml/ConnectionPane.qml" line="129"/>
         <source>Add a profile to tell Ocelot which VPN to dial.</source>
         <translation>Добавьте профиль, чтобы Ocelot знал, куда звонить.</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="152"/>
+        <location filename="../qml/ConnectionPane.qml" line="155"/>
         <source>Disconnect</source>
         <translation>Отключиться</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="153"/>
+        <location filename="../qml/ConnectionPane.qml" line="156"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="154"/>
+        <location filename="../qml/ConnectionPane.qml" line="157"/>
         <source>Disconnecting</source>
         <translation>Отключаемся</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="155"/>
+        <location filename="../qml/ConnectionPane.qml" line="158"/>
         <source>Connect</source>
         <translation>Подключиться</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="168"/>
+        <location filename="../qml/ConnectionPane.qml" line="171"/>
         <source>via %1</source>
         <translation>по %1</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="202"/>
+        <location filename="../qml/ConnectionPane.qml" line="205"/>
         <source>Connected, but no DNS servers were applied</source>
         <translation>Подключено, но серверы имён не назначены</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="211"/>
+        <location filename="../qml/ConnectionPane.qml" line="214"/>
         <source>Traffic will route, but names on the VPN will not resolve. Either the server sent no resolvers, or the vpnc script could not apply them.</source>
         <translation>Трафик пойдёт, но имена внутри VPN разрешаться не будут. Либо сервер не прислал серверы имён, либо сценарий vpnc не смог их применить.</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="222"/>
+        <location filename="../qml/ConnectionPane.qml" line="225"/>
         <source>Open the log</source>
         <translation>Открыть журнал</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="239"/>
+        <location filename="../qml/ConnectionPane.qml" line="242"/>
         <source>Throughput</source>
         <translation>Поток</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="251"/>
+        <location filename="../qml/ConnectionPane.qml" line="254"/>
         <source>Download</source>
         <translation>Приём</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="253"/>
-        <location filename="../qml/ConnectionPane.qml" line="262"/>
+        <location filename="../qml/ConnectionPane.qml" line="256"/>
+        <location filename="../qml/ConnectionPane.qml" line="265"/>
         <source>%1 in total</source>
         <translation>всего %1</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="260"/>
+        <location filename="../qml/ConnectionPane.qml" line="263"/>
         <source>Upload</source>
         <translation>Передача</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="269"/>
+        <location filename="../qml/ConnectionPane.qml" line="272"/>
         <source>Uptime</source>
         <translation>На связи</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="304"/>
+        <location filename="../qml/ConnectionPane.qml" line="307"/>
         <source>IPv4 address</source>
         <translation>Адрес IPv4</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="312"/>
+        <location filename="../qml/ConnectionPane.qml" line="315"/>
         <source>IPv6 address</source>
         <translation>Адрес IPv6</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="319"/>
+        <location filename="../qml/ConnectionPane.qml" line="322"/>
         <source>DNS servers</source>
         <translation>Серверы имён</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="320"/>
+        <location filename="../qml/ConnectionPane.qml" line="323"/>
         <source>none applied</source>
         <translation>не назначены</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="327"/>
+        <location filename="../qml/ConnectionPane.qml" line="330"/>
         <source>Search domains</source>
         <translation>Домены поиска</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="333"/>
+        <location filename="../qml/ConnectionPane.qml" line="336"/>
         <source>CSTP cipher</source>
         <translation>Шифр CSTP</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="341"/>
+        <location filename="../qml/ConnectionPane.qml" line="344"/>
         <source>DTLS cipher</source>
         <translation>Шифр DTLS</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="358"/>
+        <location filename="../qml/ConnectionPane.qml" line="361"/>
         <source>This profile</source>
         <translation>Этот профиль</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="396"/>
+        <location filename="../qml/ConnectionPane.qml" line="399"/>
         <source>Edit</source>
         <translation>Изменить</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="409"/>
+        <location filename="../qml/ConnectionPane.qml" line="412"/>
         <source>Protocol</source>
         <translation>Протокол</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="416"/>
+        <location filename="../qml/ConnectionPane.qml" line="419"/>
         <source>Last connected</source>
         <translation>Последнее подключение</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="422"/>
+        <location filename="../qml/ConnectionPane.qml" line="425"/>
         <source>Name resolution</source>
         <translation>Разрешение имён</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="423"/>
+        <location filename="../qml/ConnectionPane.qml" line="426"/>
         <source>everything through the VPN</source>
         <translation>всё через VPN</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="424"/>
+        <location filename="../qml/ConnectionPane.qml" line="427"/>
         <source>as the server asks</source>
         <translation>как просит сервер</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="429"/>
+        <location filename="../qml/ConnectionPane.qml" line="432"/>
         <source>Connects without asking</source>
         <translation>Подключается без вопросов</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="430"/>
+        <location filename="../qml/ConnectionPane.qml" line="433"/>
         <source>yes, the password is remembered</source>
         <translation>да, пароль запомнен</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="431"/>
+        <location filename="../qml/ConnectionPane.qml" line="434"/>
         <source>no, it asks every time</source>
         <translation>нет, спрашивает каждый раз</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="492"/>
+        <location filename="../qml/ConnectionPane.qml" line="495"/>
         <source>No profile yet</source>
         <translation>Профилей пока нет</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="507"/>
+        <location filename="../qml/ConnectionPane.qml" line="510"/>
         <source>A profile is one VPN: its address, who you sign in as, and how.</source>
         <translation>Профиль — это один VPN: его адрес, под кем вы входите и как.</translation>
     </message>
     <message>
-        <location filename="../qml/ConnectionPane.qml" line="520"/>
+        <location filename="../qml/ConnectionPane.qml" line="523"/>
         <source>Add a profile</source>
         <translation>Добавить профиль</translation>
     </message>
@@ -966,53 +971,53 @@
         <translation>Вход с запомненным паролем не удался, пробуем спросить заново</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1170"/>
+        <location filename="../VpnController.cpp" line="1179"/>
         <source>Disconnecting...</source>
         <translation>Отключаемся...</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1188"/>
+        <location filename="../VpnController.cpp" line="1197"/>
         <source>term_thread: IPC error: %1</source>
         <translation>term_thread: ошибка межпроцессного обмена: %1</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="681"/>
-        <location filename="../VpnController.cpp" line="1263"/>
+        <location filename="../vpninfo.cpp" line="684"/>
+        <location filename="../VpnController.cpp" line="1277"/>
         <source>Disconnected</source>
         <translation>Отключено</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1383"/>
+        <location filename="../VpnController.cpp" line="1419"/>
         <source>update_stats: IPC error: %1</source>
         <translation>update_stats: ошибка межпроцессного обмена: %1</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1387"/>
+        <location filename="../VpnController.cpp" line="1423"/>
         <source>update_stats: invalid socket</source>
         <translation>update_stats: недействительный сокет</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="2007"/>
+        <location filename="../VpnController.cpp" line="2043"/>
         <source>Skipping automatic check for current version</source>
         <translation>Автоматическая проверка версии пропущена</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="2019"/>
+        <location filename="../VpnController.cpp" line="2055"/>
         <source>Checking for current version</source>
         <translation>Проверяем, какая версия свежая</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="2095"/>
+        <location filename="../VpnController.cpp" line="2131"/>
         <source>Version location: %1</source>
         <translation>Адрес версии: %1</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="2110"/>
+        <location filename="../VpnController.cpp" line="2146"/>
         <source>Latest available version is %1, current %2</source>
         <translation>Самая свежая версия — %1, текущая — %2</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="2121"/>
+        <location filename="../VpnController.cpp" line="2157"/>
         <source>No release has been published yet, so there is nothing newer</source>
         <translation>Выпусков ещё не было, так что и свежее ничего нет</translation>
     </message>
@@ -1021,173 +1026,178 @@
         <translation type="vanished">Не удалось определить версию по %1</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="2124"/>
+        <location filename="../VpnController.cpp" line="2160"/>
         <source>Unable to identify current version: %1</source>
         <translation>Не удалось определить текущую версию: %1</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="105"/>
+        <location filename="../vpninfo.cpp" line="106"/>
         <source>The server wants this sign-in done in a browser: %1</source>
         <translation>Сервер хочет, чтобы вход прошёл в браузере: %1</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="120"/>
+        <location filename="../vpninfo.cpp" line="121"/>
         <source>The browser could not be opened; the address is in the log above</source>
         <translation>Не удалось открыть браузер; адрес — в строке выше</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="171"/>
+        <location filename="../vpninfo.cpp" line="172"/>
         <source>Auth group selection</source>
         <translation>Выбор группы входа</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="219"/>
+        <location filename="../vpninfo.cpp" line="220"/>
         <source>Form selection</source>
         <translation>Выбор формы</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="250"/>
+        <location filename="../vpninfo.cpp" line="251"/>
         <source>Username input</source>
         <translation>Ввод имени пользователя</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="288"/>
+        <location filename="../vpninfo.cpp" line="289"/>
         <source>Password input</source>
         <translation>Ввод пароля</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="308"/>
+        <location filename="../vpninfo.cpp" line="309"/>
         <source>The password will be remembered for this profile</source>
         <translation>Пароль для этого профиля будет запомнен</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="342"/>
+        <location filename="../vpninfo.cpp" line="343"/>
         <source>Peer&apos;s certificate has invalid size!</source>
         <translation>Сертификат узла неверного размера!</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="348"/>
+        <location filename="../vpninfo.cpp" line="349"/>
         <source>Error getting peer&apos;s certificate hash</source>
         <translation>Не удалось получить отпечаток сертификата узла</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="375"/>
+        <location filename="../vpninfo.cpp" line="376"/>
         <source>peer is unknown</source>
         <translation>узел неизвестен</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="378"/>
+        <location filename="../vpninfo.cpp" line="379"/>
         <source>Unknown server certificate</source>
         <translation>Неизвестный сертификат сервера</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="379"/>
+        <location filename="../vpninfo.cpp" line="380"/>
         <source>This server&apos;s certificate cannot be validated with a trusted authority.&lt;br&gt;&lt;br&gt;&lt;b&gt;There is no guarantee that the server is the computer you think it is.&lt;/b&gt;&lt;br&gt;&lt;br&gt;If the information provided below is valid and you use another way to validate it, hit &apos;Accurate information&apos; to remember it and to carry on connecting.&lt;br&gt;If you cannot validate this information, hit &lt;b&gt;Cancel&lt;/b&gt; to abandon the connection.</source>
         <translation>Сертификат этого сервера не подтверждается доверенным удостоверяющим центром.&lt;br&gt;&lt;br&gt;&lt;b&gt;Нет никакой гарантии, что сервер — тот компьютер, за который вы его принимаете.&lt;/b&gt;&lt;br&gt;&lt;br&gt;Если данные ниже верны и вы проверили их другим способом, нажмите «Данные верны», чтобы запомнить их и продолжить подключение.&lt;br&gt;Если проверить их нечем, нажмите &lt;b&gt;Отмена&lt;/b&gt; и откажитесь от подключения.</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="384"/>
-        <location filename="../vpninfo.cpp" line="403"/>
+        <location filename="../vpninfo.cpp" line="385"/>
+        <location filename="../vpninfo.cpp" line="404"/>
         <source>Host: %1&lt;br&gt;%2</source>
         <translation>Узел: %1&lt;br&gt;%2</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="385"/>
+        <location filename="../vpninfo.cpp" line="386"/>
         <source>Accurate information</source>
         <translation>Данные верны</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="395"/>
+        <location filename="../vpninfo.cpp" line="396"/>
         <source>peer&apos;s key has changed!</source>
         <translation>ключ узла сменился!</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="398"/>
+        <location filename="../vpninfo.cpp" line="399"/>
         <source>The server&apos;s key has changed</source>
         <translation>Ключ сервера сменился</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="399"/>
+        <location filename="../vpninfo.cpp" line="400"/>
         <source>This peer is known and associated with a different key.It may be that the server has multiple keys or you are (or were in the past) under attack. Do you want to proceed?</source>
         <translation>Этот узел известен, но связан с другим ключом. Возможно, у сервера несколько ключей — а возможно, вас атакуют или атаковали раньше. Продолжить?</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="404"/>
+        <location filename="../vpninfo.cpp" line="405"/>
         <source>The key was changed by the administrator</source>
         <translation>Ключ сменил администратор</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="414"/>
+        <location filename="../vpninfo.cpp" line="415"/>
         <source>Could not verify certificate: </source>
         <translation>Не удалось проверить сертификат: </translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="421"/>
+        <location filename="../vpninfo.cpp" line="422"/>
         <source>saving peer&apos;s public key</source>
         <translation>сохраняем открытый ключ узла</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="425"/>
+        <location filename="../vpninfo.cpp" line="426"/>
         <source>Could not store certificate: %1</source>
         <translation>Не удалось сохранить сертификат: %1</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="497"/>
+        <location filename="../vpninfo.cpp" line="498"/>
         <source>Using generated interface name %1</source>
         <translation>Берём выданное имя интерфейса %1</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="511"/>
+        <location filename="../vpninfo.cpp" line="512"/>
         <source>Error setting up the TUN device</source>
         <translation>Не удалось настроить устройство TUN</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="552"/>
+        <location filename="../vpninfo.cpp" line="553"/>
         <source>invalid socket</source>
         <translation>недействительный сокет</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="608"/>
+        <location filename="../vpninfo.cpp" line="610"/>
         <source>Error disabling DTLS (%1)</source>
         <translation>Не удалось выключить DTLS (%1)</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="643"/>
+        <location filename="../vpninfo.cpp" line="645"/>
         <source>Authentication error; cannot obtain cookie</source>
         <translation>Ошибка входа: не удалось получить ключ сеанса</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="649"/>
+        <location filename="../vpninfo.cpp" line="652"/>
         <source>Error establishing the CSTP channel</source>
         <translation>Не удалось установить канал CSTP</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="657"/>
+        <location filename="../vpninfo.cpp" line="660"/>
         <source>Error setting up DTLS (%1)</source>
         <translation>Не удалось настроить DTLS (%1)</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="664"/>
+        <location filename="../vpninfo.cpp" line="667"/>
         <source>. Cannot disable it (%1)</source>
         <translation>. Выключить его не удалось (%1)</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="711"/>
+        <location filename="../vpninfo.cpp" line="702"/>
+        <source>This sign-in is good until %1; after that the server wants it done again</source>
+        <translation>Этот вход действует до %1; после этого сервер попросит войти заново</translation>
+    </message>
+    <message>
+        <location filename="../vpninfo.cpp" line="730"/>
         <source>Server sent %1: %2</source>
         <translation>Сервер прислал %1: %2</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="712"/>
+        <location filename="../vpninfo.cpp" line="731"/>
         <source>&lt;not logged&gt;</source>
         <translation>&lt;в журнал не пишем&gt;</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="830"/>
+        <location filename="../vpninfo.cpp" line="849"/>
         <source>Message from the server</source>
         <translation>Сообщение от сервера</translation>
     </message>
     <message>
-        <location filename="../vpninfo.cpp" line="832"/>
+        <location filename="../vpninfo.cpp" line="851"/>
         <source>Accept</source>
         <translation>Принять</translation>
     </message>
@@ -1938,339 +1948,353 @@
 <context>
     <name>VpnController</name>
     <message>
-        <location filename="../VpnController.cpp" line="184"/>
+        <location filename="../VpnController.cpp" line="187"/>
         <source>Could not clear the split DNS rules (exit code %1)</source>
         <translation>Не удалось убрать правила разделённого DNS (код выхода %1)</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="242"/>
-        <location filename="../VpnController.cpp" line="1227"/>
-        <location filename="../VpnController.cpp" line="1292"/>
+        <location filename="../VpnController.cpp" line="245"/>
+        <location filename="../VpnController.cpp" line="1241"/>
+        <location filename="../VpnController.cpp" line="1327"/>
         <source>Nothing outside the tunnel</source>
         <translation>Ничего мимо туннеля</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="253"/>
-        <location filename="../VpnController.cpp" line="257"/>
+        <location filename="../VpnController.cpp" line="256"/>
+        <location filename="../VpnController.cpp" line="260"/>
         <source>Sign in to continue</source>
         <translation>Войдите, чтобы продолжить</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="254"/>
+        <location filename="../VpnController.cpp" line="257"/>
         <source>A page has opened in your browser; Ocelot is waiting for it.</source>
         <translation>В браузере открылась страница; Ocelot ждёт её.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="258"/>
+        <location filename="../VpnController.cpp" line="261"/>
         <source>The server wants this sign-in done in a browser, and a page for it has opened in yours. Finish it there and come back - Ocelot carries on by itself once that is done.</source>
         <translation>Сервер хочет, чтобы вход прошёл в браузере, и нужная страница там уже открыта. Завершите вход и возвращайтесь — дальше Ocelot продолжит сам.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="265"/>
+        <location filename="../VpnController.cpp" line="268"/>
         <source>Clearing the split DNS rules left behind by the program</source>
         <translation>Убираем правила разделённого DNS, оставшиеся от программы</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="302"/>
-        <location filename="../VpnController.cpp" line="324"/>
+        <location filename="../VpnController.cpp" line="305"/>
+        <location filename="../VpnController.cpp" line="327"/>
         <source>Install Ocelot</source>
         <translation>Установка Ocelot</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="313"/>
+        <location filename="../VpnController.cpp" line="316"/>
         <source>Remove Ocelot</source>
         <translation>Удаление Ocelot</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="384"/>
+        <location filename="../VpnController.cpp" line="388"/>
         <source>Dialling again after the connection was lost (attempt %1)</source>
         <translation>Набираем снова после обрыва связи (попытка %1)</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="413"/>
-        <location filename="../VpnController.cpp" line="2055"/>
-        <location filename="../VpnController.cpp" line="2067"/>
+        <location filename="../VpnController.cpp" line="417"/>
+        <location filename="../VpnController.cpp" line="2091"/>
+        <location filename="../VpnController.cpp" line="2103"/>
         <source>Update Ocelot</source>
         <translation>Обновление Ocelot</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="798"/>
+        <location filename="../VpnController.cpp" line="802"/>
         <source>Same as Windows</source>
         <translation>Как в Windows</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="871"/>
+        <location filename="../VpnController.cpp" line="875"/>
         <source>Starting with Windows</source>
         <translation>Запуск вместе с Windows</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="872"/>
+        <location filename="../VpnController.cpp" line="876"/>
         <source>The scheduled task could not be changed.</source>
         <translation>Не удалось изменить задание планировщика.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="918"/>
+        <location filename="../VpnController.cpp" line="922"/>
         <source>Connecting when you sign in</source>
         <translation>Подключение при входе в систему</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="919"/>
+        <location filename="../VpnController.cpp" line="923"/>
         <source>The scheduled task could not be created.</source>
         <translation>Не удалось создать задание планировщика.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1012"/>
         <source>Giving up on dialling again; connect by hand when the server is back</source>
-        <translation>Больше не набираем: подключитесь вручную, когда сервер вернётся</translation>
+        <translation type="vanished">Больше не набираем: подключитесь вручную, когда сервер вернётся</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1021"/>
+        <location filename="../VpnController.cpp" line="1030"/>
         <source>The connection was lost; dialling again in %1 seconds</source>
         <translation>Связь оборвалась, наберём снова через %1 с</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1047"/>
+        <location filename="../VpnController.cpp" line="1056"/>
         <source>Nothing was connected at start: no profile is named for it</source>
         <translation>При запуске подключаться не к чему: профиль для этого не выбран</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1051"/>
+        <location filename="../VpnController.cpp" line="1060"/>
         <source>Connecting to %1 at start</source>
         <translation>Подключаемся к %1 при запуске</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1071"/>
-        <location filename="../VpnController.cpp" line="1077"/>
+        <location filename="../VpnController.cpp" line="1080"/>
         <location filename="../VpnController.cpp" line="1086"/>
-        <location filename="../VpnController.cpp" line="1104"/>
-        <location filename="../VpnController.cpp" line="1115"/>
+        <location filename="../VpnController.cpp" line="1095"/>
+        <location filename="../VpnController.cpp" line="1113"/>
+        <location filename="../VpnController.cpp" line="1124"/>
         <source>Connection failed</source>
         <translation>Подключиться не удалось</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1072"/>
+        <location filename="../VpnController.cpp" line="1081"/>
         <source>A previous VPN instance is still running.</source>
         <translation>Предыдущее соединение ещё не завершилось.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1078"/>
+        <location filename="../VpnController.cpp" line="1087"/>
         <source>Select a VPN profile to connect to.</source>
         <translation>Выберите профиль, к которому подключаться.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1087"/>
+        <location filename="../VpnController.cpp" line="1096"/>
         <source>Selected VPN profile &apos;%1&apos; does not exist.</source>
         <translation>Выбранного профиля «%1» не существует.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1105"/>
+        <location filename="../VpnController.cpp" line="1114"/>
         <source>There was an issue initializing the VPN (%1).</source>
         <translation>Не удалось подготовить соединение (%1).</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1116"/>
+        <location filename="../VpnController.cpp" line="1125"/>
         <source>There was an issue establishing IPC with openconnect; try restarting the application.</source>
         <translation>Не удалось наладить обмен с openconnect, попробуйте перезапустить программу.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1144"/>
+        <location filename="../VpnController.cpp" line="1153"/>
         <source>Setting proxy to: %1</source>
         <translation>Ставим прокси: %1</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1147"/>
+        <location filename="../VpnController.cpp" line="1156"/>
         <source>Unexpected error setting proxy</source>
         <translation>Неожиданная ошибка при настройке прокси</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1243"/>
+        <location filename="../VpnController.cpp" line="1257"/>
         <source>Connected</source>
         <translation>Подключено</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1244"/>
+        <location filename="../VpnController.cpp" line="1258"/>
         <source>You are connected to %1</source>
         <translation>Вы подключены к %1</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1281"/>
+        <location filename="../VpnController.cpp" line="1303"/>
+        <source>The server refused the sign-in, so Ocelot will not keep trying by itself</source>
+        <translation>Сервер отклонил вход, поэтому Ocelot больше не набирает сам</translation>
+    </message>
+    <message>
+        <location filename="../VpnController.cpp" line="1305"/>
+        <source>Signing in failed</source>
+        <translation>Войти не удалось</translation>
+    </message>
+    <message>
+        <location filename="../VpnController.cpp" line="1306"/>
+        <source>The server did not accept the sign-in, so Ocelot stopped dialling by itself. Check the password or the profile and connect again.</source>
+        <translation>Сервер не принял вход, поэтому Ocelot перестал набирать сам. Проверьте пароль или профиль и подключитесь снова.</translation>
+    </message>
+    <message>
+        <location filename="../VpnController.cpp" line="1316"/>
         <source>The connection dropped</source>
         <translation>Связь оборвалась</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1283"/>
+        <location filename="../VpnController.cpp" line="1318"/>
         <source>The tunnel to %1 is closed.</source>
         <translation>Туннель до %1 закрыт.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1284"/>
+        <location filename="../VpnController.cpp" line="1319"/>
         <source>The tunnel to %1 went down.</source>
         <translation>Туннель до %1 упал.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1293"/>
+        <location filename="../VpnController.cpp" line="1328"/>
         <source>The tunnel went down, and nothing on this computer is being let out past it. Press Disconnect to let it through again, or wait while Ocelot dials back.</source>
         <translation>Туннель оборвался, и наружу мимо него ничего не выпускается. Нажмите «Отключиться», чтобы открыть выход, или подождите, пока Ocelot наберёт снова.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1479"/>
+        <location filename="../VpnController.cpp" line="1515"/>
         <source>Disabled</source>
         <translation>Выключено</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1480"/>
+        <location filename="../VpnController.cpp" line="1516"/>
         <source>STOKEN (RSA)</source>
         <translation>STOKEN (RSA)</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1481"/>
+        <location filename="../VpnController.cpp" line="1517"/>
         <source>TOTP</source>
         <translation>TOTP</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1482"/>
+        <location filename="../VpnController.cpp" line="1518"/>
         <source>HOTP</source>
         <translation>HOTP</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1489"/>
+        <location filename="../VpnController.cpp" line="1525"/>
         <source>Error</source>
         <translation>Ошибки</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1490"/>
+        <location filename="../VpnController.cpp" line="1526"/>
         <source>Info</source>
         <translation>Обычная</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1491"/>
+        <location filename="../VpnController.cpp" line="1527"/>
         <source>Debug</source>
         <translation>Отладка</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1492"/>
+        <location filename="../VpnController.cpp" line="1528"/>
         <source>Trace</source>
         <translation>Трассировка</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1585"/>
+        <location filename="../VpnController.cpp" line="1621"/>
         <source>You need to specify a gateway. E.g. vpn.example.com:443</source>
         <translation>Укажите шлюз, например vpn.example.com:443</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1588"/>
+        <location filename="../VpnController.cpp" line="1624"/>
         <source>You need to specify a name for this connection. E.g. &apos;My company&apos;</source>
         <translation>Дайте соединению название, например «Работа»</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1598"/>
+        <location filename="../VpnController.cpp" line="1634"/>
         <source>Enter password</source>
         <translation>Введите пароль</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1618"/>
+        <location filename="../VpnController.cpp" line="1654"/>
         <source>Cannot import CA certificate.</source>
         <translation>Не удалось прочитать сертификат удостоверяющего центра.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1623"/>
+        <location filename="../VpnController.cpp" line="1659"/>
         <source>Cannot import user key.</source>
         <translation>Не удалось прочитать ключ пользователя.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1628"/>
+        <location filename="../VpnController.cpp" line="1664"/>
         <source>Cannot import user certificate.</source>
         <translation>Не удалось прочитать сертификат пользователя.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1632"/>
+        <location filename="../VpnController.cpp" line="1668"/>
         <source>There is a client certificate specified but no key!</source>
         <translation>Сертификат пользователя указан, а ключ — нет!</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1691"/>
+        <location filename="../VpnController.cpp" line="1727"/>
         <source>%1 (copy)</source>
         <translation>%1 (копия)</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1693"/>
+        <location filename="../VpnController.cpp" line="1729"/>
         <source>%1 (copy %2)</source>
         <translation>%1 (копия %2)</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1720"/>
+        <location filename="../VpnController.cpp" line="1756"/>
         <source>There is no profile called &apos;%1&apos;.</source>
         <translation>Профиля с именем «%1» нет.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1727"/>
+        <location filename="../VpnController.cpp" line="1763"/>
         <source>Save the profile &apos;%1&apos;</source>
         <translation>Сохранение профиля «%1»</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1727"/>
-        <location filename="../VpnController.cpp" line="1764"/>
+        <location filename="../VpnController.cpp" line="1763"/>
+        <location filename="../VpnController.cpp" line="1800"/>
         <source>Ocelot profile (*.json)</source>
         <translation>Профиль Ocelot (*.json)</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1750"/>
-        <location filename="../VpnController.cpp" line="1853"/>
+        <location filename="../VpnController.cpp" line="1786"/>
+        <location filename="../VpnController.cpp" line="1889"/>
         <source>The file %1 could not be written.</source>
         <translation>Не удалось записать файл %1.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1756"/>
+        <location filename="../VpnController.cpp" line="1792"/>
         <source>The profile &apos;%1&apos; was written to %2</source>
         <translation>Профиль «%1» сохранён в %2</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1762"/>
+        <location filename="../VpnController.cpp" line="1798"/>
         <source>Open a profile</source>
         <translation>Открытие профиля</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1771"/>
+        <location filename="../VpnController.cpp" line="1807"/>
         <source>The file %1 could not be read.</source>
         <translation>Не удалось прочитать файл %1.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1779"/>
+        <location filename="../VpnController.cpp" line="1815"/>
         <source>%1 does not hold a profile: %2</source>
         <translation>В %1 нет профиля: %2</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1785"/>
+        <location filename="../VpnController.cpp" line="1821"/>
         <source>%1 does not hold a profile: there is no gateway in it.</source>
         <translation>В %1 нет профиля: в нём не указан шлюз.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1798"/>
+        <location filename="../VpnController.cpp" line="1834"/>
         <source>%1 (%2)</source>
         <translation>%1 (%2)</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1813"/>
+        <location filename="../VpnController.cpp" line="1849"/>
         <source>The profile &apos;%1&apos; was read from %2</source>
         <translation>Профиль «%1» прочитан из %2</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1833"/>
+        <location filename="../VpnController.cpp" line="1869"/>
         <source>Passwords deleted: %1</source>
         <translation>Удалено паролей: %1</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1845"/>
+        <location filename="../VpnController.cpp" line="1881"/>
         <source>Save the log</source>
         <translation>Сохранение журнала</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1846"/>
+        <location filename="../VpnController.cpp" line="1882"/>
         <source>Text file (*.txt)</source>
         <translation>Текстовый файл (*.txt)</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1863"/>
+        <location filename="../VpnController.cpp" line="1899"/>
         <source>The log was written to %1</source>
         <translation>Журнал сохранён в %1</translation>
     </message>
@@ -2291,33 +2315,33 @@
         <translation type="vanished">Выйти</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1981"/>
+        <location filename="../VpnController.cpp" line="2017"/>
         <source>Connected to %1</source>
         <translation>Подключено к %1</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1984"/>
+        <location filename="../VpnController.cpp" line="2020"/>
         <source>Connecting to %1</source>
         <translation>Подключаемся к %1</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1987"/>
+        <location filename="../VpnController.cpp" line="2023"/>
         <source>Disconnecting from %1</source>
         <translation>Отключаемся от %1</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="2055"/>
+        <location filename="../VpnController.cpp" line="2091"/>
         <source>There is nothing newer to install.</source>
         <translation>Ставить нечего — новее ничего нет.</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="2160"/>
+        <location filename="../VpnController.cpp" line="2196"/>
         <source>&lt;br&gt;The two icons in the notification area are by Google, from the Material Design Icons, used under &lt;a href=&quot;https://creativecommons.org/licenses/by/4.0/&quot;&gt;CC BY 4.0&lt;/a&gt;. Everything else here is drawn by this program.&lt;br&gt;</source>
         <translation>&lt;br&gt;Два значка в области уведомлений — от Google, из набора Material Design Icons, по лицензии &lt;a href=&quot;https://creativecommons.org/licenses/by/4.0/&quot;&gt;CC BY 4.0&lt;/a&gt;. Всё остальное здесь программа рисует сама.&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="1281"/>
-        <location filename="../VpnController.cpp" line="1990"/>
+        <location filename="../VpnController.cpp" line="1316"/>
+        <location filename="../VpnController.cpp" line="2026"/>
         <source>Disconnected</source>
         <translation>Отключено</translation>
     </message>
@@ -2326,37 +2350,37 @@
         <translation type="vanished">(подключаться не к чему)</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="2116"/>
+        <location filename="../VpnController.cpp" line="2152"/>
         <source>New version available</source>
         <translation>Вышла новая версия</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="2117"/>
+        <location filename="../VpnController.cpp" line="2153"/>
         <source>%1 version %2 is available!</source>
         <translation>Вышла версия %2 программы %1!</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="2138"/>
+        <location filename="../VpnController.cpp" line="2174"/>
         <source>Development snapshot &lt;i&gt;%1&lt;/i&gt; (%2 bit)&lt;br&gt;</source>
         <translation>Промежуточная сборка &lt;i&gt;%1&lt;/i&gt; (%2 бит)&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="2141"/>
+        <location filename="../VpnController.cpp" line="2177"/>
         <source>Built at &lt;i&gt;%1&lt;/i&gt;&lt;br&gt;</source>
         <translation>Собрана &lt;i&gt;%1&lt;/i&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="2143"/>
+        <location filename="../VpnController.cpp" line="2179"/>
         <source>Version &lt;i&gt;%1&lt;/i&gt; (%2 bit)&lt;br&gt;</source>
         <translation>Версия &lt;i&gt;%1&lt;/i&gt; (%2 бит)&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="2148"/>
+        <location filename="../VpnController.cpp" line="2184"/>
         <source>&lt;br&gt;&lt;i&gt;%1&lt;/i&gt; is free software built on the OpenConnect project. See the license for more information.&lt;br&gt;</source>
         <translation>&lt;br&gt;&lt;i&gt;%1&lt;/i&gt; — свободная программа, построенная на проекте OpenConnect. Подробности — в лицензии.&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="2152"/>
+        <location filename="../VpnController.cpp" line="2188"/>
         <source>&lt;br&gt;For macOS there is a client of its own: &lt;a href=&quot;%1&quot;&gt;%1&lt;/a&gt;.&lt;br&gt;</source>
         <translation>&lt;br&gt;Для macOS есть отдельный клиент: &lt;a href=&quot;%1&quot;&gt;%1&lt;/a&gt;.&lt;br&gt;</translation>
     </message>
@@ -2365,37 +2389,37 @@
         <translation type="vanished">&lt;br&gt;Значок — Google, из набора Material Design Icons, по лицензии &lt;a href=&quot;https://creativecommons.org/licenses/by/4.0/&quot;&gt;CC BY 4.0&lt;/a&gt;.&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="2170"/>
+        <location filename="../VpnController.cpp" line="2206"/>
         <source>Based on</source>
         <translation>Построено на</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="2171"/>
+        <location filename="../VpnController.cpp" line="2207"/>
         <source>&lt;br&gt;- &lt;a href=&quot;https://www.infradead.org/openconnect&quot;&gt;OpenConnect&lt;/a&gt; </source>
         <translation>&lt;br&gt;- &lt;a href=&quot;https://www.infradead.org/openconnect&quot;&gt;OpenConnect&lt;/a&gt; </translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="2172"/>
+        <location filename="../VpnController.cpp" line="2208"/>
         <source>&lt;br&gt;- &lt;a href=&quot;https://www.gnutls.org&quot;&gt;GnuTLS&lt;/a&gt; v</source>
         <translation>&lt;br&gt;- &lt;a href=&quot;https://www.gnutls.org&quot;&gt;GnuTLS&lt;/a&gt; v</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="2173"/>
+        <location filename="../VpnController.cpp" line="2209"/>
         <source>&lt;br&gt;- &lt;a href=&quot;https://github.com/gabime/spdlog&quot;&gt;spdlog&lt;/a&gt; v%1.%2.%3</source>
         <translation>&lt;br&gt;- &lt;a href=&quot;https://github.com/gabime/spdlog&quot;&gt;spdlog&lt;/a&gt; v%1.%2.%3</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="2177"/>
+        <location filename="../VpnController.cpp" line="2213"/>
         <source>&lt;br&gt;- &lt;a href=&quot;https://www.qt.io&quot;&gt;Qt&lt;/a&gt; v%1</source>
         <translation>&lt;br&gt;- &lt;a href=&quot;https://www.qt.io&quot;&gt;Qt&lt;/a&gt; v%1</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="2179"/>
+        <location filename="../VpnController.cpp" line="2215"/>
         <source>&lt;br&gt;&lt;br&gt;%1&lt;br&gt;</source>
         <translation>&lt;br&gt;&lt;br&gt;%1&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../VpnController.cpp" line="2180"/>
+        <location filename="../VpnController.cpp" line="2216"/>
         <source>&lt;br&gt;&lt;i&gt;%1&lt;/i&gt; comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under the conditions of the GNU General Public License version 2.&lt;br&gt;</source>
         <translation>&lt;br&gt;&lt;i&gt;%1&lt;/i&gt; поставляется БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ. Это свободная программа, и вы можете распространять её на условиях GNU General Public License версии 2.&lt;br&gt;</translation>
     </message>

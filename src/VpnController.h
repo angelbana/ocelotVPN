@@ -114,6 +114,9 @@ class VpnController : public QObject {
     // Which profile the two connect-by-itself settings use.
     Q_PROPERTY(QString autoConnectProfile READ autoConnectProfile WRITE setAutoConnectProfile NOTIFY settingsChanged)
     Q_PROPERTY(bool reconnectPending READ reconnectPending NOTIFY reconnectPendingChanged)
+    // Which try this is, so a window that has been saying "dialling again" for
+    // an hour says how long it has been at it.
+    Q_PROPERTY(int reconnectAttempt READ reconnectAttempt NOTIFY reconnectPendingChanged)
     // A short message when the tunnel comes up or goes down.
     Q_PROPERTY(bool notifyOnChange READ notifyOnChange WRITE setNotifyOnChange NOTIFY settingsChanged)
     // Asking GitHub, at most every few days, whether a newer release exists.
@@ -248,6 +251,7 @@ public:
     QString autoConnectProfile() const;
     void setAutoConnectProfile(const QString& name);
     bool reconnectPending() const;
+    int reconnectAttempt() const;
     bool notifyOnChange() const;
     void setNotifyOnChange(bool value);
     bool checkUpdates() const;
@@ -343,6 +347,10 @@ public:
     // Called from the VPN worker thread.
     void updateStats(const struct oc_stats* stats, const QString& dtlsCipher);
     void setStatus(int status);
+    // Told by the connecting thread, before the status goes down, whether the
+    // server refused the credentials. Dialling again after that would only
+    // repeat a rejection, and on some servers lock the account.
+    void setAuthenticationRefused(bool refused);
     void setTunnelInfo(const QString& dns, const QString& ip, const QString& ip6,
         const QString& cstpCipher, const QString& dtlsCipher, const QString& searchDomains);
     bool askPrompt(PromptType type, const QVariantMap& request, QString& text);
@@ -469,6 +477,7 @@ private:
     bool m_userAskedToDisconnect;
     bool m_wasConnected;
     int m_reconnectAttempts;
+    bool m_authenticationRefused;
     QTimer* m_reconnectTimer;
 
     mutable QMutex m_promptMutex;

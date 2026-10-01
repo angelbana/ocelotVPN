@@ -25,6 +25,7 @@
 #include "server_storage.h"
 
 #include <QCoreApplication>
+#include <QDateTime>
 #include <QDesktopServices>
 #include <QDir>
 #include <QMetaObject>
@@ -555,6 +556,7 @@ VpnInfo::VpnInfo(QString name, StoredServer* ss, VpnController* m)
     set_sock_block(this->cmd_fd);
 
     this->last_err = "";
+    this->auth_failed = false;
     this->ss = ss;
     this->m = m;
     authgroup_set = 0;
@@ -641,6 +643,7 @@ int VpnInfo::connect()
     ret = openconnect_obtain_cookie(vpninfo);
     if (ret != 0) {
         this->last_err = QObject::tr("Authentication error; cannot obtain cookie");
+        this->auth_failed = true;
         return ret;
     }
 
@@ -683,6 +686,22 @@ void VpnInfo::mainloop()
             break;
         }
     }
+}
+
+void VpnInfo::logSessionExpiry()
+{
+// Asking how long a sign-in is good for arrived in openconnect 8.20.
+#if OPENCONNECT_API_VERSION_MAJOR > 5     || (OPENCONNECT_API_VERSION_MAJOR == 5 && OPENCONNECT_API_VERSION_MINOR >= 7)
+    const time_t expires = openconnect_get_auth_expiration(vpninfo);
+    if (expires <= 0) {
+        return;
+    }
+
+    const QDateTime when = QDateTime::fromSecsSinceEpoch(qint64(expires));
+    Logger::instance().addMessage(
+        QObject::tr("This sign-in is good until %1; after that the server wants it done again")
+            .arg(when.toString(QStringLiteral("yyyy-MM-dd HH:mm"))));
+#endif
 }
 
 void VpnInfo::logServerOptions()

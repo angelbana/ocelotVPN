@@ -81,6 +81,28 @@ A saved password is sealed by Windows for the account that saved it on the
 computer that saved it. A folder carried to another machine therefore carries
 the profiles, but not the passwords stored with them.
 
+**When the session runs out or the server kicks everyone off.** A tunnel does
+not last for ever: servers hand out a sign-in that is good for so many hours,
+and some drop everyone at a set time. Two different things answer that.
+
+A break in the network - a wireless hop, a cable, a sleeping laptop - is
+openconnect's own business: it keeps the same session and reconnects by itself
+for as long as the profile's "reconnect timeout" allows, five minutes by
+default, and nothing is asked of anyone.
+
+A session that has actually ended cannot be resumed, so Ocelot dials again from
+the beginning, sign-in and all. The first try comes five seconds after the drop,
+then ten, twenty, thirty, a minute, two, and then every five minutes for as long
+as it takes - it does not give up, because a tunnel that dropped at three in the
+morning should be up again by breakfast. A remembered password makes all of that
+happen without anyone there; a second factor from a phone, by its nature, does
+not.
+
+The one ending is being refused: if the server does not accept the sign-in,
+Ocelot stops and says so rather than trying again, because a password that is
+wrong now will be wrong in five seconds, and some servers lock an account for
+asking twice.
+
 **Letting nothing out except through the tunnel.** Settings, Safety: with this
 on, while the tunnel is up nothing else on the computer reaches the network, and
 if the tunnel falls over nothing gets out at all until you disconnect - which is
