@@ -82,15 +82,6 @@ jobs:
       - name: Build the dependencies
         run: ./contrib/build_deps_mingw@msys2.sh
 
-      # NSIS 3.13-1 ships architecture-named plugin directories but still
-      # searches the old name. MSYS2 fixes this in 3.13-2.
-      - name: Make NSIS plugins available
-        run: |
-          plugins="$MINGW_PREFIX/share/nsis/Plugins"
-          if [[ -d "$plugins/amd64-unicode" && ! -d "$plugins/unicode" ]]; then
-              cp -a "$plugins/amd64-unicode" "$plugins/unicode"
-          fi
-
       # openconnect-TAG already defaults to v9.12, which is what the dependency
       # script builds without --head; naming it here too would only be a second
       # place to keep in step with the archives that script leaves in external/
