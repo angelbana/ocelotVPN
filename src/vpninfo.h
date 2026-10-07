@@ -55,6 +55,7 @@ public:
     // reachable at all. The two deserve opposite answers: one is worth trying
     // again, the other would only lock the account.
     bool auth_failed = false;
+    bool auth_cancelled = false;
     QUrl mUrl;
     VpnController* m;
     StoredServer* ss;
@@ -63,6 +64,7 @@ public:
     unsigned int password_set;
     unsigned int form_attempt;
     unsigned int form_pass_attempt;
+    bool last_form_empty = false;
 
     void logVpncScriptOutput();
     QByteArray generateUniqueInterfaceName();

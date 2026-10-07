@@ -39,7 +39,6 @@
 static const char* OCG_PROTO_GLOBALPROTECT = "gp";
 static const char* OCG_PROTO_FORTINET = "fortinet";
 
-static int last_form_empty;
 
 static void stats_vfn(void* privdata, const struct oc_stats* stats)
 {
@@ -228,7 +227,7 @@ static int process_auth_form(void* privdata, struct oc_auth_form* form)
             if (!ok)
                 goto fail;
 
-            idx = ditems.indexOf(text);
+            idx = items.indexOf(text);
             if (idx == -1)
                 goto fail;
 
@@ -269,11 +268,13 @@ static int process_auth_form(void* privdata, struct oc_auth_form* form)
             Logger::instance().addMessage(QString::fromUtf8("Password form: ") + QString::fromUtf8(opt->name));
 
             if (vpn->form_pass_attempt == 0
+                && vpn->password_set == 0
                 && vpn->ss->get_password().isEmpty() == false
                 && vpn->is_password_form_option(form, opt)
                ) {
                 openconnect_set_option_value(opt,
                     vpn->ss->get_password().toUtf8().data());
+                vpn->password_set = 1;
                 empty = 0;
                 continue;
             }
@@ -283,7 +284,8 @@ static int process_auth_form(void* privdata, struct oc_auth_form* form)
             // a one-time token - are different every time, and a remembered
             // one would only be sent back wrong.
             const bool storable = vpn->is_password_form_option(form, opt)
-                && (vpn->password_set == 0 || vpn->form_pass_attempt != 0);
+                && (vpn->password_set == 0
+                    || (vpn->form_pass_attempt == 0 && form->error && *form->error));
 
             QVariantMap request;
             request["title"] = QObject::tr("Password input");
@@ -291,22 +293,27 @@ static int process_auth_form(void* privdata, struct oc_auth_form* form)
             request["banner"] = QString::fromUtf8(form->banner).trimmed();
             request["message"] = QString::fromUtf8(form->message).trimmed();
             request["canRemember"] = storable;
-            ok = vpn->m->askPrompt(VpnController::PromptPassword, request, text);
-
-            if (!ok)
-                goto fail;
+            do {
+                ok = vpn->m->askPrompt(VpnController::PromptPassword, request, text);
+                if (!ok)
+                    goto fail;
+            } while (text.isEmpty());
 
             if (storable == true) {
                 vpn->ss->set_password(text);
                 vpn->password_set = 1;
 
-                // Ticked beside the question. The profile is saved at the end
-                // of a successful connection, and only a profile in batch mode
-                // keeps a password, so this is what makes it stick.
+                // Save before the next question: cancelling a one-time code
+                // must not undo the request to remember the account password.
                 if (vpn->m->rememberRequested() == true) {
                     vpn->ss->set_batch_mode(true);
                     Logger::instance().addMessage(
                         QObject::tr("The password will be remembered for this profile"));
+                }
+                if (vpn->ss->get_batch_mode() == true) {
+                    if (vpn->ss->save() < 0) {
+                        Logger::instance().addMessage(vpn->ss->m_last_err);
+                    }
                 }
             }
             openconnect_set_option_value(opt, text.toUtf8().data());
@@ -324,13 +331,14 @@ static int process_auth_form(void* privdata, struct oc_auth_form* form)
     }
 
     /* prevent infinite loops if the authgroup requires certificate auth only */
-    if (last_form_empty && empty) {
+    if (vpn->last_form_empty && empty) {
         return OC_FORM_RESULT_CANCELLED;
     }
-    last_form_empty = empty;
+    vpn->last_form_empty = empty;
 
     return OC_FORM_RESULT_OK;
 fail:
+    vpn->auth_cancelled = true;
     return OC_FORM_RESULT_CANCELLED;
 }
 
@@ -643,7 +651,7 @@ int VpnInfo::connect()
     ret = openconnect_obtain_cookie(vpninfo);
     if (ret != 0) {
         this->last_err = QObject::tr("Authentication error; cannot obtain cookie");
-        this->auth_failed = true;
+        this->auth_failed = this->auth_cancelled == false;
         return ret;
     }
 
@@ -801,6 +809,9 @@ SOCKET VpnInfo::get_cmd_fd() const
 void VpnInfo::reset_vpn()
 {
     openconnect_reset_ssl(vpninfo);
+    last_form_empty = false;
+    auth_failed = false;
+    auth_cancelled = false;
     form_pass_attempt = 0;
     password_set = 0;
     authgroup_set = 0;

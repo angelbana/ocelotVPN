@@ -123,7 +123,7 @@ bool CryptData::decode(QString& txt, QByteArray _enc, QString& res)
     DATA_BLOB DataIn;
     QByteArray enc{ QByteArray::fromBase64(_enc.mid(4)) };
     DataIn.pbData = (BYTE*)enc.data();
-    DataIn.cbData = enc.size() + 1;
+    DataIn.cbData = enc.size();
 
     DATA_BLOB Entropy;
     QByteArray txtArray{ txt.toUtf8() };

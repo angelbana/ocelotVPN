@@ -142,6 +142,7 @@ private:
     int m_dtls_attempt_period;
     QString m_username;
     QString m_password;
+    bool m_password_decode_failed = false;
     QString m_groupname;
     QString m_server_gateway;
     QString m_token_string;

@@ -104,42 +104,29 @@ static void main_loop(VpnInfo* vpninfo, VpnController* controller)
 {
     controller->setStatus(VpnController::StatusConnecting);
 
-    bool pass_was_empty;
-    bool reset_password = false;
-    pass_was_empty = vpninfo->ss->get_password().isEmpty();
+    const bool pass_was_empty = vpninfo->ss->get_password().isEmpty();
 
     QString ip, ip6, dns, cstp, dtls, domains;
 
     int ret = 0;
     bool retry = false;
-    int retries = 2;
     do {
         retry = false;
         ret = vpninfo->connect();
         if (ret != 0) {
-            if (retries-- <= 0)
+            if (vpninfo->auth_cancelled == true)
                 goto fail;
 
-            QString oldpass, oldgroup;
-            if (pass_was_empty != true) {
+            if (pass_was_empty != true && vpninfo->auth_failed == true
+                && vpninfo->form_pass_attempt == 0) {
                 /* authentication failed in batch mode? switch to non
                  * batch and retry */
-                oldpass = vpninfo->ss->get_password();
-                oldgroup = vpninfo->ss->get_groupname();
-                vpninfo->ss->clear_password();
-                vpninfo->ss->clear_groupname();
                 retry = true;
-                reset_password = true;
                 Logger::instance().addMessage(QObject::tr("Authentication failed in batch mode, retrying with batch mode disabled"));
                 vpninfo->reset_vpn();
+                // Ask again without changing what is saved in the profile.
+                vpninfo->form_pass_attempt = 1;
                 continue;
-            }
-
-            /* if we didn't manage to connect on a retry, the failure reason
-             * may not have been a changed password, reset it */
-            if (reset_password == true) {
-                vpninfo->ss->set_password(oldpass);
-                vpninfo->ss->set_groupname(oldgroup);
             }
 
             Logger::instance().addMessage(vpninfo->last_err);
@@ -1456,6 +1443,11 @@ bool VpnController::askPrompt(PromptType type, const QVariantMap& request, QStri
 
 void VpnController::answerPrompt(bool accepted, const QString& text, bool remember)
 {
+    if (accepted == false) {
+        m_userAskedToDisconnect = true;
+        m_reconnectAttempts = 0;
+        cancelReconnect();
+    }
     {
         QMutexLocker lock(&m_promptMutex);
         m_promptAccepted = accepted;

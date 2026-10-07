@@ -47,6 +47,7 @@ StoredServer::StoredServer()
 void StoredServer::clear_password()
 {
     this->m_password.clear();
+    this->m_password_decode_failed = false;
 }
 
 void StoredServer::clear_groupname()
@@ -193,6 +194,7 @@ int StoredServer::load(QString& name)
         ret = CryptData::decode(this->m_server_gateway,
             settings.value("password").toByteArray(),
             this->m_password);
+        this->m_password_decode_failed = ret == false;
         if (ret == false) {
             m_last_err = "decoding of password failed";
             rval = -1;
@@ -261,6 +263,18 @@ int StoredServer::load(QString& name)
 
 int StoredServer::save()
 {
+    QByteArray password;
+    if (this->m_batch_mode == true) {
+        if (this->m_password_decode_failed == true) {
+            m_last_err = "decoding of password failed";
+            return -1;
+        }
+        password = CryptData::encode(this->m_server_gateway, this->m_password);
+        if (password.isEmpty() == true && this->m_password.isEmpty() == false) {
+            m_last_err = "encoding of password failed";
+            return -1;
+        }
+    }
     OcSettings settings;
     settings.beginGroup(PREFIX + this->m_label);
     settings.setValue("server", this->m_server_gateway);
@@ -273,8 +287,7 @@ int StoredServer::save()
     settings.setValue("username", this->m_username);
 
     if (this->m_batch_mode == true) {
-        settings.setValue("password",
-            CryptData::encode(this->m_server_gateway, this->m_password));
+        settings.setValue("password", password);
         settings.setValue("groupname", this->m_groupname);
     } else {
         // Switching the profile back to asking every time has to take the
@@ -313,6 +326,11 @@ int StoredServer::save()
         settings.setValue("log-level", m_log_level);
 
     settings.endGroup();
+    settings.sync();
+    if (settings.status() != QSettings::NoError) {
+        m_last_err = "saving of profile failed";
+        return -1;
+    }
     return 0;
 }
 
@@ -370,6 +388,7 @@ void StoredServer::set_username(const QString& username)
 void StoredServer::set_password(const QString& password)
 {
     this->m_password = password;
+    this->m_password_decode_failed = false;
 }
 
 void StoredServer::set_groupname(const QString& groupname)
