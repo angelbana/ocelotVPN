@@ -3,6 +3,24 @@ History of user-visible changes.
 Ocelot grew out of openconnect-gui. That project's own history stays with it
 upstream; this file begins with the first Ocelot release.
 
+## 1.1.0 - 2026-10-07
+
+- **Keeps remembered passwords when sign-in is cancelled.** Cancelling a
+  one-time code no longer clears the account password or starts another
+  sign-in attempt. Passwords are saved before the next question, and codes
+  are kept out of the profile. Windows password decoding and write-failure
+  handling have also been corrected.
+- **Keeps reconnecting after a dropped session.** Automatic reconnection
+  continues with increasing delays until the server is available again;
+  cancelling sign-in or rejected credentials stops the retries.
+- **Blocks traffic outside the tunnel on Windows**, when the optional kill
+  switch is enabled, including while reconnecting after a dropped connection.
+- **Supports sign-in through a browser** when the VPN server asks for it.
+- **Downloads and installs updates** from the application's settings.
+- **Shares profiles without passwords** and can forget all saved passwords.
+- Fixes profile DNS-setting loading, server-form selection and Windows
+  installer packaging with newer MSYS2 NSIS packages.
+
 ## 1.0.0 - 2026-09-30
 
 The first Ocelot release. What it does that openconnect-gui did not:
