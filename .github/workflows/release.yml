@@ -82,6 +82,9 @@ jobs:
       - name: Build the dependencies
         run: ./contrib/build_deps_mingw@msys2.sh
 
+      - name: Select the 64-bit installer target
+        run: printf '\nTarget amd64-unicode\n' >> "$MINGW_PREFIX/etc/nsisconf.nsh"
+
       # openconnect-TAG already defaults to v9.12, which is what the dependency
       # script builds without --head; naming it here too would only be a second
       # place to keep in step with the archives that script leaves in external/
