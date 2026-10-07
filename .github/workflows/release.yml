@@ -104,7 +104,12 @@ jobs:
       # written afterwards. Stage first, sign the staged copy, and let NSIS
       # assemble the installer from that tree.
       - name: Stage the installer contents
-        run: cd build && cpack
+        run: |
+          cd build
+          if ! cpack; then
+              cat _CPack_Packages/win64/NSIS/NSISOutput.log
+              exit 1
+          fi
 
       # The staging directory carries the version in its name, and the signing
       # action expands * in the file name only, so the path is resolved here.
