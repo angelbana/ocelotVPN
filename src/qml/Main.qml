@@ -27,6 +27,7 @@ ApplicationWindow {
     // "connection" | "log" | "settings" | "about"
     property string tab: "connection"
     property bool updateCheckPending: false
+    property bool windowReady: false
 
     // What the ocelot's face is doing. Everything that draws it - the window,
     // the popover, the About screen - reads this one value, so they cannot
@@ -53,7 +54,22 @@ ApplicationWindow {
     // is put back by WindowChrome and ResizeEdges below.
     readonly property bool ownChrome: controller.windowStyle === 0
 
-    flags: ownChrome ? (Qt.Window | Qt.FramelessWindowHint) : Qt.Window
+    flags: ownChrome ? (Qt.Window | Qt.FramelessWindowHint)
+        : (Qt.Window | Qt.WindowTitleHint | Qt.WindowSystemMenuHint
+            | Qt.WindowMinMaxButtonsHint | Qt.WindowCloseButtonHint)
+
+    onOwnChromeChanged: {
+        if (windowReady) {
+            // Apply the new decoration when the native window is shown again.
+            Qt.callLater(function() {
+                const state = mainWindow.visibility;
+                if (state !== Window.Hidden) {
+                    mainWindow.hide();
+                    mainWindow.visibility = state;
+                }
+            });
+        }
+    }
 
     header: WindowChrome {
         window: mainWindow
@@ -94,6 +110,7 @@ ApplicationWindow {
             else
                 mainWindow.showMinimized();
         }
+        windowReady = true;
     }
 
     onClosing: function(close) {

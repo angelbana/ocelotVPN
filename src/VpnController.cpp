@@ -337,7 +337,7 @@ VpnController::VpnController(bool useTray, QObject* parent)
     , m_updater(new Updater(this))
     , m_trayIcon(nullptr)
     , m_theme(ThemeOcelot)
-    , m_windowStyle(WindowStyleOcelot)
+    , m_windowStyle(WindowStyleSystem)
     , m_language(LanguageSystem)
     , m_translator(nullptr)
     , m_qmlEngine(nullptr)
@@ -2274,7 +2274,7 @@ void VpnController::readSettings()
     m_logLevel = settings.value("logLevel", PRG_INFO).toInt();
     m_theme = settings.value("theme", ThemeOcelot).toInt();
     m_language = settings.value("language", LanguageSystem).toInt();
-    m_windowStyle = settings.value("windowStyle", WindowStyleOcelot).toInt();
+    m_windowStyle = settings.value("windowStyle", WindowStyleSystem).toInt();
     m_connectOnStart = settings.value("connectOnStart", false).toBool();
     m_connectOnLogon = settings.value("connectOnLogon", false).toBool();
     m_reconnectOnDrop = settings.value("reconnectOnDrop", true).toBool();
@@ -2293,7 +2293,7 @@ void VpnController::readSettings()
     }
 
     if (m_windowStyle < WindowStyleOcelot || m_windowStyle > WindowStyleSystem) {
-        m_windowStyle = WindowStyleOcelot;
+        m_windowStyle = WindowStyleSystem;
     }
     applyLanguage();
 

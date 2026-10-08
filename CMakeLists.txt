@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
 
 project(ocelot
-    VERSION 1.1.0
+    VERSION 1.1.1
     HOMEPAGE_URL https://github.com/angelbana/ocelotVPN
     LANGUAGES CXX
 )

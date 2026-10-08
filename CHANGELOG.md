@@ -3,6 +3,14 @@ History of user-visible changes.
 Ocelot grew out of openconnect-gui. That project's own history stays with it
 upstream; this file begins with the first Ocelot release.
 
+## 1.1.1 - 2026-10-08
+
+- Uses the system window frame by default for new settings, while keeping
+  an existing frame selection.
+- Explicitly restores the system title bar and window buttons when switching
+  away from the Ocelot frame, and reapplies decorations without losing the
+  window's current state.
+
 ## 1.1.0 - 2026-10-07
 
 - **Keeps remembered passwords when sign-in is cancelled.** Cancelling a
