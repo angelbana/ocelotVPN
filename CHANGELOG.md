@@ -5,6 +5,8 @@ upstream; this file begins with the first Ocelot release.
 
 ## 1.1.1 - 2026-10-08
 
+- Manual update checks always ask GitHub again instead of reusing the version
+  found earlier in the same application session.
 - Uses the system window frame by default for new settings, while keeping
   an existing frame selection.
 - Explicitly restores the system title bar and window buttons when switching

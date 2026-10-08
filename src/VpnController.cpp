@@ -2041,11 +2041,17 @@ void VpnController::tryCheckLatestVersion()
 
 void VpnController::startVersionRequest()
 {
+    if (m_checkingForUpdates) {
+        return;
+    }
+
     QNetworkRequest request{ QUrl(QLatin1String(APP_LATEST_RELEASE_URL)) };
     request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
+    request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
 
     Logger::instance().addMessage(QObject::tr("Checking for current version"));
     m_lastCheckTime = QDateTime::currentSecsSinceEpoch();
+    m_latestVersion.clear();
     m_checkingForUpdates = true;
     emit checkingForUpdatesChanged();
     m_network->get(request);
@@ -2109,12 +2115,7 @@ QString VpnController::downloadUrl() const
 
 void VpnController::checkForUpdates()
 {
-    if (m_latestVersion.isEmpty() == true) {
-        startVersionRequest();
-        return;
-    }
-
-    emit latestVersionChanged();
+    startVersionRequest();
 }
 
 void VpnController::gotLatestVersion(QNetworkReply* reply)
