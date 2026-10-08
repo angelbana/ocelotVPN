@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.6.0.schema.json
 
 PackageIdentifier: SculkDev.Ocelot
-PackageVersion: 1.1.0
+PackageVersion: 1.1.1
 PackageLocale: en-US
 Publisher: SculkDev
 PublisherUrl: https://github.com/angelbana/ocelotVPN
@@ -23,6 +23,6 @@ Tags:
   - openconnect
   - anyconnect
   - cisco
-ReleaseNotesUrl: https://github.com/angelbana/ocelotVPN/releases/tag/v1.1.0
+ReleaseNotesUrl: https://github.com/angelbana/ocelotVPN/releases/tag/v1.1.1
 ManifestType: defaultLocale
 ManifestVersion: 1.6.0
