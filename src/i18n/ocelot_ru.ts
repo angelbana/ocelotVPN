@@ -855,6 +855,10 @@
 <context>
     <name>QObject</name>
     <message>
+        <source>The tunnel routes could not be read, so nothing was blocked.</source>
+        <translation>Не удалось прочитать маршруты туннеля, поэтому блокировка не включена.</translation>
+    </message>
+    <message>
         <location filename="../Autostart.cpp" line="66"/>
         <source>The task scheduler could not be started.</source>
         <translation>Не удалось запустить планировщик заданий.</translation>
@@ -1292,8 +1296,8 @@
     </message>
     <message>
         <location filename="../KillSwitch.cpp" line="352"/>
-        <source>Nothing leaves this computer outside the tunnel now</source>
-        <translation>Теперь с этого компьютера ничего не уходит мимо туннеля</translation>
+        <source>The VPN routes are protected outside the tunnel now</source>
+        <translation>Теперь трафик к сетям VPN защищён от выхода мимо туннеля</translation>
     </message>
     <message>
         <location filename="../KillSwitch.cpp" line="372"/>
@@ -1385,13 +1389,13 @@
     </message>
     <message>
         <location filename="../qml/SettingsPane.qml" line="194"/>
-        <source>Let nothing out except through the tunnel</source>
-        <translation>Не выпускать ничего мимо туннеля</translation>
+        <source>Protect traffic to the VPN networks</source>
+        <translation>Защищать трафик к сетям VPN</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPane.qml" line="195"/>
-        <source>While the tunnel is up nothing else on this computer reaches the network, and if the tunnel falls over nothing gets out at all until you disconnect. Another VPN running beside Ocelot stops working while this is on.</source>
-        <translation>Пока туннель поднят, никто больше на этом компьютере в сеть не выходит, а если туннель оборвётся — наружу не уйдёт ничего, пока вы не отключитесь. Другой VPN, работающий рядом с Ocelot, при включённой настройке перестанет работать.</translation>
+        <source>If this tunnel drops, its networks stay blocked until you disconnect or Ocelot reconnects. Other destinations and VPNs keep working with split tunneling. A full-tunnel server still routes all traffic through this VPN.</source>
+        <translation>Если туннель оборвётся, его сети останутся заблокированы до отключения или восстановления Ocelot. При раздельной маршрутизации остальные адреса и VPN продолжают работать. Если сервер направляет весь трафик в туннель, он всё равно пойдёт через этот VPN.</translation>
     </message>
     <message>
         <location filename="../qml/SettingsPane.qml" line="206"/>
@@ -1854,6 +1858,10 @@
 <context>
     <name>Updater</name>
     <message>
+        <source>The latest version could not be determined.</source>
+        <translation>Не удалось узнать, какая версия самая свежая.</translation>
+    </message>
+    <message>
         <location filename="../Updater.cpp" line="131"/>
         <source>Asking what the latest release holds</source>
         <translation>Спрашиваем, что лежит в последнем выпуске</translation>
@@ -1948,6 +1956,10 @@
 <context>
     <name>VpnController</name>
     <message>
+        <source>Could not save the profile.</source>
+        <translation>Не удалось сохранить профиль.</translation>
+    </message>
+    <message>
         <location filename="../VpnController.cpp" line="187"/>
         <source>Could not clear the split DNS rules (exit code %1)</source>
         <translation>Не удалось убрать правила разделённого DNS (код выхода %1)</translation>
@@ -1956,8 +1968,8 @@
         <location filename="../VpnController.cpp" line="245"/>
         <location filename="../VpnController.cpp" line="1241"/>
         <location filename="../VpnController.cpp" line="1327"/>
-        <source>Nothing outside the tunnel</source>
-        <translation>Ничего мимо туннеля</translation>
+        <source>Protect traffic to the VPN networks</source>
+        <translation>Защита трафика к сетям VPN</translation>
     </message>
     <message>
         <location filename="../VpnController.cpp" line="256"/>
@@ -2133,8 +2145,8 @@
     </message>
     <message>
         <location filename="../VpnController.cpp" line="1328"/>
-        <source>The tunnel went down, and nothing on this computer is being let out past it. Press Disconnect to let it through again, or wait while Ocelot dials back.</source>
-        <translation>Туннель оборвался, и наружу мимо него ничего не выпускается. Нажмите «Отключиться», чтобы открыть выход, или подождите, пока Ocelot наберёт снова.</translation>
+        <source>The tunnel went down. Traffic to its VPN networks is blocked until you disconnect or Ocelot reconnects.</source>
+        <translation>Туннель оборвался. Трафик к его сетям VPN заблокирован до отключения или восстановления Ocelot.</translation>
     </message>
     <message>
         <location filename="../VpnController.cpp" line="1515"/>

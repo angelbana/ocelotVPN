@@ -57,6 +57,7 @@ Popup {
 
     anchors.centerIn: Overlay.overlay
     width: Math.min(Math.round(440 * Theme.scale), parent ? parent.width - 32 : Math.round(440 * Theme.scale))
+    height: Math.min(implicitHeight, parent ? parent.height - 32 : implicitHeight)
     modal: true
     focus: true
     padding: 0
@@ -83,169 +84,179 @@ Popup {
         gatewayField.forceActiveFocus();
     }
 
-    contentItem: ColumnLayout {
-        spacing: 0
+    contentItem: ScrollView {
+        id: sheetScroll
+        implicitHeight: sheetContents.implicitHeight
+        contentWidth: availableWidth
+        clip: true
+        ScrollBar.vertical: AppScrollBar {}
 
         ColumnLayout {
-            Layout.fillWidth: true
-            Layout.margins: 20
-            Layout.bottomMargin: 0
-            spacing: 4
-
-            Text {
-                Layout.fillWidth: true
-                text: qsTr("New profile")
-                color: Theme.ink
-                font.pixelSize: 17
-                font.weight: Font.DemiBold
-            }
-
-            Text {
-                Layout.fillWidth: true
-                text: qsTr("You can change every detail later in the profile editor.")
-                color: Theme.muted
-                font.pixelSize: Theme.fontNormal
-                wrapMode: Text.WordWrap
-            }
-        }
-
-        ColumnLayout {
-            Layout.fillWidth: true
-            Layout.margins: 20
-            spacing: 14
+            id: sheetContents
+            width: sheetScroll.availableWidth
+            spacing: 0
 
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 6
+                Layout.margins: 20
+                Layout.bottomMargin: 0
+                spacing: 4
 
                 Text {
-                    text: qsTr("Gateway")
-                    color: Theme.muted
-                    font.pixelSize: Theme.fontSmall
+                    Layout.fillWidth: true
+                    text: qsTr("New profile")
+                    color: Theme.ink
+                    font.pixelSize: 17
                     font.weight: Font.DemiBold
                 }
 
-                AppField {
-                    id: gatewayField
-
+                Text {
                     Layout.fillWidth: true
-                    mono: true
-                    placeholderText: "https://my_server[:443]/[usergroup]"
-                    onTextChanged: {
-                        if (!root.nameEdited)
-                            nameField.text = root.nameFromGateway(text);
-                    }
+                    text: qsTr("You can change every detail later in the profile editor.")
+                    color: Theme.muted
+                    font.pixelSize: Theme.fontNormal
+                    wrapMode: Text.WordWrap
                 }
             }
 
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 6
+                Layout.margins: 20
+                spacing: 14
 
-                Text {
-                    text: qsTr("Name")
-                    color: Theme.muted
-                    font.pixelSize: Theme.fontSmall
-                    font.weight: Font.DemiBold
-                }
-
-                AppField {
-                    id: nameField
-
+                ColumnLayout {
                     Layout.fillWidth: true
-                    placeholderText: qsTr("User friendly unique connection name")
-                    onTextEdited: root.nameEdited = true
-                }
-            }
-
-            ColumnLayout {
-                Layout.fillWidth: true
-                spacing: 6
-
-                Text {
-                    text: qsTr("VPN protocol")
-                    color: Theme.muted
-                    font.pixelSize: Theme.fontSmall
-                    font.weight: Font.DemiBold
-                }
-
-                AppComboBox {
-                    id: protocolBox
-
-                    Layout.fillWidth: true
-                    model: controller.protocols()
-                    textRole: "label"
-                    valueRole: "name"
-                }
-            }
-
-            CheckBox {
-                id: customizeBox
-
-                text: qsTr("Open the full editor after creating")
-
-                indicator: Rectangle {
-                    width: 16
-                    height: 16
-                    y: parent.height / 2 - height / 2
-                    radius: 4
-                    color: customizeBox.checked ? Theme.accent : Theme.surface
-                    border.width: 1
-                    border.color: customizeBox.checked ? Theme.accent : Theme.lineStrong
+                    spacing: 6
 
                     Text {
-                        anchors.centerIn: parent
-                        text: "✓"
-                        color: Theme.accentInk
-                        font.pixelSize: 11
-                        visible: customizeBox.checked
+                        text: qsTr("Gateway")
+                        color: Theme.muted
+                        font.pixelSize: Theme.fontSmall
+                        font.weight: Font.DemiBold
+                    }
+
+                    AppField {
+                        id: gatewayField
+
+                        Layout.fillWidth: true
+                        mono: true
+                        placeholderText: "https://my_server[:443]/[usergroup]"
+                        onTextChanged: {
+                            if (!root.nameEdited)
+                                nameField.text = root.nameFromGateway(text);
+                        }
                     }
                 }
 
-                contentItem: Text {
-                    leftPadding: 22
-                    text: customizeBox.text
-                    color: Theme.ink
-                    font.pixelSize: Theme.fontNormal
-                    verticalAlignment: Text.AlignVCenter
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 6
+
+                    Text {
+                        text: qsTr("Name")
+                        color: Theme.muted
+                        font.pixelSize: Theme.fontSmall
+                        font.weight: Font.DemiBold
+                    }
+
+                    AppField {
+                        id: nameField
+
+                        Layout.fillWidth: true
+                        placeholderText: qsTr("User friendly unique connection name")
+                        onTextEdited: root.nameEdited = true
+                    }
+                }
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 6
+
+                    Text {
+                        text: qsTr("VPN protocol")
+                        color: Theme.muted
+                        font.pixelSize: Theme.fontSmall
+                        font.weight: Font.DemiBold
+                    }
+
+                    AppComboBox {
+                        id: protocolBox
+
+                        Layout.fillWidth: true
+                        model: controller.protocols()
+                        textRole: "label"
+                        valueRole: "name"
+                    }
+                }
+
+                CheckBox {
+                    id: customizeBox
+
+                    text: qsTr("Open the full editor after creating")
+
+                    indicator: Rectangle {
+                        width: 16
+                        height: 16
+                        y: parent.height / 2 - height / 2
+                        radius: 4
+                        color: customizeBox.checked ? Theme.accent : Theme.surface
+                        border.width: 1
+                        border.color: customizeBox.checked ? Theme.accent : Theme.lineStrong
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "✓"
+                            color: Theme.accentInk
+                            font.pixelSize: 11
+                            visible: customizeBox.checked
+                        }
+                    }
+
+                    contentItem: Text {
+                        leftPadding: 22
+                        text: customizeBox.text
+                        color: Theme.ink
+                        font.pixelSize: Theme.fontNormal
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+
+                Text {
+                    id: errorText
+
+                    Layout.fillWidth: true
+                    visible: text.length > 0
+                    color: Theme.danger
+                    font.pixelSize: Theme.fontSmall
+                    wrapMode: Text.WordWrap
                 }
             }
 
-            Text {
-                id: errorText
-
+            Rectangle {
                 Layout.fillWidth: true
-                visible: text.length > 0
-                color: Theme.danger
-                font.pixelSize: Theme.fontSmall
-                wrapMode: Text.WordWrap
+                implicitHeight: 1
+                color: Theme.line
             }
-        }
 
-        Rectangle {
-            Layout.fillWidth: true
-            implicitHeight: 1
-            color: Theme.line
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-            Layout.margins: 16
-            spacing: 8
-
-            Item {
+            RowLayout {
                 Layout.fillWidth: true
-            }
+                Layout.margins: 16
+                spacing: 8
 
-            AppButton {
-                text: qsTr("Cancel")
-                onClicked: root.close()
-            }
+                Item {
+                    Layout.fillWidth: true
+                }
 
-            AppButton {
-                kind: "primary"
-                text: qsTr("Create profile")
-                onClicked: root.save()
+                AppButton {
+                    text: qsTr("Cancel")
+                    onClicked: root.close()
+                }
+
+                AppButton {
+                    kind: "primary"
+                    text: qsTr("Create profile")
+                    onClicked: root.save()
+                }
             }
         }
     }

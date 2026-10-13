@@ -43,6 +43,7 @@ Popup {
 
     anchors.centerIn: Overlay.overlay
     width: Math.min(Math.round(420 * Theme.scale), parent ? parent.width - 32 : Math.round(420 * Theme.scale))
+    height: Math.min(implicitHeight, parent ? parent.height - 32 : implicitHeight)
     modal: true
     focus: true
     padding: 0
@@ -73,16 +74,28 @@ Popup {
             wrapMode: Text.WordWrap
         }
 
-        Text {
+        ScrollView {
+            id: messageScroll
             Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.minimumHeight: 0
+            Layout.preferredHeight: messageText.implicitHeight
             Layout.margins: 20
             Layout.topMargin: 8
-            text: root.message
-            color: Theme.muted
-            font.pixelSize: Theme.fontNormal
-            textFormat: Text.RichText
-            wrapMode: Text.WordWrap
-            onLinkActivated: link => Qt.openUrlExternally(link)
+            contentWidth: availableWidth
+            clip: true
+            ScrollBar.vertical: AppScrollBar {}
+
+            Text {
+                id: messageText
+                width: messageScroll.availableWidth
+                text: root.message
+                color: Theme.muted
+                font.pixelSize: Theme.fontNormal
+                textFormat: Text.RichText
+                wrapMode: Text.WordWrap
+                onLinkActivated: link => Qt.openUrlExternally(link)
+            }
         }
 
         Rectangle {

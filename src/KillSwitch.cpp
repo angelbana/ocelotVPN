@@ -101,7 +101,7 @@ bool interfaceFor(const QString& address, NET_LUID& luid)
     }
 
     bool found = false;
-    for (ULONG i = 0; i < table->NumEntries && found == false; i++) {
+    for (ULONG i = 0; i < table->NumEntries; i++) {
         const MIB_UNICASTIPADDRESS_ROW& row = table->Table[i];
         QHostAddress here;
 
@@ -112,6 +112,10 @@ bool interfaceFor(const QString& address, NET_LUID& luid)
         }
 
         if (here.isNull() == false && here == wanted) {
+            if (found && luid.Value != row.InterfaceLuid.Value) {
+                found = false;
+                break;
+            }
             luid = row.InterfaceLuid;
             found = true;
         }
@@ -144,17 +148,59 @@ bool addFilter(const wchar_t* name, const GUID& layer, FWP_ACTION_TYPE action, U
     return true;
 }
 
-bool blockEverything(QString& error)
+bool blockTunnelRoutes(const NET_LUID& tunnel, QString& error)
 {
-    const GUID layers[] = { kLayerConnectV4, kLayerConnectV6, kLayerAcceptV4, kLayerAcceptV6 };
-    for (const GUID& layer : layers) {
-        if (addFilter(L"Ocelot: nothing leaves outside the tunnel", layer, FWP_ACTION_BLOCK,
-                kWeightBlock, nullptr, 0, error)
-            == false) {
-            return false;
-        }
+    MIB_IPFORWARD_TABLE2* routes = nullptr;
+    if (GetIpForwardTable2(AF_UNSPEC, &routes) != NO_ERROR || routes == nullptr) {
+        error = QObject::tr("The tunnel routes could not be read, so nothing was blocked.");
+        return false;
     }
-    return true;
+
+    bool ok = true;
+    bool found = false;
+    for (ULONG i = 0; i < routes->NumEntries && ok; ++i) {
+        const MIB_IPFORWARD_ROW2& route = routes->Table[i];
+        if (route.InterfaceLuid.Value != tunnel.Value)
+            continue;
+        FWPM_FILTER_CONDITION0 condition;
+        ZeroMemory(&condition, sizeof(condition));
+        condition.fieldKey = kConditionRemoteAddress;
+        condition.matchType = FWP_MATCH_EQUAL;
+        FWP_V4_ADDR_AND_MASK address4;
+        FWP_V6_ADDR_AND_MASK address6;
+        const bool ipv4 = route.DestinationPrefix.Prefix.si_family == AF_INET;
+        if (ipv4) {
+            const UINT8 prefix = route.DestinationPrefix.PrefixLength;
+            address4.addr = ntohl(route.DestinationPrefix.Prefix.Ipv4.sin_addr.s_addr);
+            const QHostAddress network(address4.addr);
+            if (network.isMulticast() || network.isLoopback() || network.isLinkLocal()
+                || address4.addr == 0xffffffffU)
+                continue;
+            address4.mask = prefix == 0 ? 0 : (0xffffffffU << (32 - prefix));
+            condition.conditionValue.type = FWP_V4_ADDR_MASK;
+            condition.conditionValue.v4AddrMask = &address4;
+        } else if (route.DestinationPrefix.Prefix.si_family == AF_INET6) {
+            const QHostAddress network(route.DestinationPrefix.Prefix.Ipv6.sin6_addr.s6_addr);
+            if (network.isMulticast() || network.isLoopback() || network.isLinkLocal())
+                continue;
+            memcpy(address6.addr, route.DestinationPrefix.Prefix.Ipv6.sin6_addr.s6_addr, 16);
+            address6.prefixLength = route.DestinationPrefix.PrefixLength;
+            condition.conditionValue.type = FWP_V6_ADDR_MASK;
+            condition.conditionValue.v6AddrMask = &address6;
+        } else {
+            continue;
+        }
+        found = true;
+        const GUID layers[] = { ipv4 ? kLayerConnectV4 : kLayerConnectV6,
+            ipv4 ? kLayerAcceptV4 : kLayerAcceptV6 };
+        for (const GUID& layer : layers)
+            ok = ok && addFilter(L"Ocelot: protect the tunnel routes", layer, FWP_ACTION_BLOCK,
+                kWeightBlock, &condition, 1, error);
+    }
+    FreeMibTable(routes);
+    if (!found)
+        error = QObject::tr("The tunnel routes could not be read, so nothing was blocked.");
+    return ok && found;
 }
 
 bool allowInterface(const NET_LUID& luid, const wchar_t* name, QString& error)
@@ -297,16 +343,36 @@ bool engage(const QString& tunnelAddress, QString& error)
 {
     error.clear();
 
-    if (g_engine != nullptr) {
-        return true;
-    }
-
     NET_LUID tunnel;
     ZeroMemory(&tunnel, sizeof(tunnel));
     if (interfaceFor(tunnelAddress, tunnel) == false) {
         error = QObject::tr("The tunnel's own interface could not be found, so nothing was "
                             "blocked.");
         return false;
+    }
+
+    if (g_engine != nullptr) {
+        // A new Wintun adapter can have the same IP but a different interface
+        // identifier after reconnection. Keep protecting the old routes too.
+        DWORD status = FwpmTransactionBegin0(g_engine, 0);
+        if (status != ERROR_SUCCESS) {
+            error = QObject::tr("The firewall would not take Ocelot's rules (%1).")
+                        .arg(lastError(status));
+            return false;
+        }
+        if (!blockTunnelRoutes(tunnel, error)
+            || !allowInterface(tunnel, L"Ocelot: the tunnel", error)) {
+            FwpmTransactionAbort0(g_engine);
+            return false;
+        }
+        status = FwpmTransactionCommit0(g_engine);
+        if (status != ERROR_SUCCESS) {
+            FwpmTransactionAbort0(g_engine);
+            error = QObject::tr("The firewall would not take Ocelot's rules (%1).")
+                        .arg(lastError(status));
+            return false;
+        }
+        return true;
     }
 
     FWPM_SESSION0 session;
@@ -341,7 +407,7 @@ bool engage(const QString& tunnelAddress, QString& error)
         return false;
     }
 
-    if (blockEverything(error) == false || allowInterface(tunnel, L"Ocelot: the tunnel", error) == false
+    if (blockTunnelRoutes(tunnel, error) == false || allowInterface(tunnel, L"Ocelot: the tunnel", error) == false
         || allowThisProgram(error) == false || allowLoopback(error) == false
         || allowAddressLeases(error) == false) {
         release();
@@ -349,7 +415,7 @@ bool engage(const QString& tunnelAddress, QString& error)
     }
 
     Logger::instance().addMessage(
-        QObject::tr("Nothing leaves this computer outside the tunnel now"));
+        QObject::tr("The VPN routes are protected outside the tunnel now"));
     return true;
 }
 

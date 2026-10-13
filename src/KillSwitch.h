@@ -22,12 +22,10 @@
 // Keeping traffic from going anywhere but the tunnel.
 //
 // A tunnel that drops does not take the applications with it: they carry on
-// over the ordinary connection, and whatever they were sending through the VPN
-// goes out in the open instead. This shuts that door - while the tunnel is up
-// nothing else gets out, and when it falls over, nothing gets out at all until
-// the person says so.
+// over the ordinary connection. Only the destinations routed through Ocelot
+// are protected; unrelated networks and neighboring VPNs are left alone.
 //
-// Four things are let through, and nothing else: whatever leaves through the
+// Protected destinations are allowed through the
 // tunnel itself, this program's own sockets (otherwise it could not reach the
 // server to reconnect), the loopback, and DHCP, so the computer keeps its
 // address on the network it is sitting on.
@@ -47,7 +45,7 @@ bool isSupported();
 // Whether the rules are in place right now.
 bool engaged();
 
-// Shuts everything but the tunnel the given address belongs to. Returns false
+// Protects the routes of the tunnel the given address belongs to. Returns false
 // and fills in error when the rules could not be written; nothing is left half
 // done in that case.
 bool engage(const QString& tunnelAddress, QString& error);

@@ -32,20 +32,21 @@ Item {
         anchors.margins: Theme.padding
         spacing: Math.round(11 * Theme.scale)
 
-        RowLayout {
+        Flow {
             Layout.fillWidth: true
+            Layout.minimumWidth: 0
+            Layout.preferredWidth: 0
+            Layout.preferredHeight: implicitHeight
             spacing: 8
 
             Text {
+                width: Math.min(implicitWidth, parent.width)
+                wrapMode: Text.WordWrap
                 text: qsTr("Activity log")
                 color: Theme.ink
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontLarge
                 font.weight: Font.Bold
-            }
-
-            Item {
-                Layout.fillWidth: true
             }
 
             GhostButton {

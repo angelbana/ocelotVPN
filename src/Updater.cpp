@@ -35,6 +35,7 @@
 #include <QProcess>
 #include <QStandardPaths>
 #include <QUrl>
+#include <QVersionNumber>
 
 namespace {
 
@@ -125,6 +126,7 @@ void Updater::requestRelease()
 {
     QNetworkRequest request{ QUrl(releaseApiUrl()) };
     request.setRawHeader("Accept", "application/vnd.github+json");
+    request.setTransferTimeout(30000);
     request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
         QNetworkRequest::NoLessSafeRedirectPolicy);
 
@@ -145,6 +147,16 @@ void Updater::gotRelease(QNetworkReply* reply)
 
     const QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
     const QJsonObject release = document.object();
+    QString version = release.value(QStringLiteral("tag_name")).toString();
+    if (version.startsWith(QLatin1Char('v'))) {
+        version.remove(0, 1);
+    }
+    if (QVersionNumber::fromString(version).isNull()
+        || QVersionNumber::fromString(version) < QVersionNumber::fromString(m_version)) {
+        fail(tr("The latest version could not be determined."));
+        return;
+    }
+    m_version = version;
     const QJsonArray assets = release.value(QStringLiteral("assets")).toArray();
     const QString suffix = wantedSuffix();
 
@@ -173,6 +185,7 @@ void Updater::gotRelease(QNetworkReply* reply)
     }
 
     QNetworkRequest request{ QUrl(m_checksumUrl) };
+    request.setTransferTimeout(30000);
     request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
         QNetworkRequest::NoLessSafeRedirectPolicy);
     QNetworkReply* next = m_network->get(request);
@@ -215,6 +228,7 @@ void Updater::startDownload()
     Logger::instance().addMessage(tr("Downloading %1").arg(m_assetName));
 
     QNetworkRequest request{ QUrl(m_assetUrl) };
+    request.setTransferTimeout(30000);
     request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
         QNetworkRequest::NoLessSafeRedirectPolicy);
 
@@ -339,8 +353,17 @@ bool Updater::apply(QString& error)
         return false;
     }
 
+    if (verifyChecksum(m_file, error) == false) {
+        return false;
+    }
+
 #ifdef Q_OS_WIN
     if (Portable::isActive() == false) {
+        if (readSigner(m_file).isEmpty()) {
+            error = tr("The downloaded installer carries no signature Windows accepts, "
+                       "so it will not be run.");
+            return false;
+        }
         // The installer knows how to replace an installed copy; it is started
         // and this program gets out of its way.
         if (QProcess::startDetached(m_file, QStringList()) == false) {
@@ -411,6 +434,7 @@ void Updater::fail(const QString& message)
 void Updater::cleanUp()
 {
     if (m_reply != nullptr) {
+        disconnect(m_reply, nullptr, this, nullptr);
         m_reply->abort();
         m_reply = nullptr;
     }

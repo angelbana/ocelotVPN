@@ -3,6 +3,28 @@ History of user-visible changes.
 Ocelot grew out of openconnect-gui. That project's own history stays with it
 upstream; this file begins with the first Ocelot release.
 
+## 1.1.2 - 2026-10-13
+
+- Keeps a saved password when a later code form reuses the password field
+  with an error, and cancels sign-in when its prompt or main window closes.
+- Preserves an unreadable saved password when editing other profile settings
+  and reports failed profile saves before renaming or deleting the old profile.
+- Honors minimize-to-tray with the system window buttons.
+- Protects only the VPN routes in split-tunnel mode, preserves existing outer
+  routes and removes only routes Ocelot added when disconnecting.
+- Refreshes version metadata on repeated builds and initializes the OTP mode
+  of a new profile consistently.
+- Checks downloaded updates again before installation, uses the version
+  returned by GitHub and limits stalled update requests.
+- Handles empty VPN log messages without reading before the message buffer.
+- Keeps the native client area and the QML layout in sync when switching
+  between the system and Ocelot window frames, so bottom controls stay visible.
+- Remembers the normal window size instead of its maximized size and fits
+  restored windows within the monitor's available area, including the frame.
+- Wraps activity-log actions and About links when the window is narrow.
+- Keeps long messages and sign-in/new-profile forms within the window,
+  with scrolling for content that does not fit.
+
 ## 1.1.1 - 2026-10-08
 
 - Manual update checks always ask GitHub again instead of reusing the version

@@ -34,9 +34,10 @@ StoredServer::StoredServer()
     , m_disable_udp{ false }
     , m_reconnect_timeout{ 300 }
     , m_dtls_attempt_period{ 25 }
+    , m_token_type{ -1 }
     , m_server_pin_algo(0)
-    , m_dns_mode{ 0 }
     , m_emoji{ defaultProfileEmoji() }
+    , m_dns_mode{ 0 }
     , m_log_level (-1)
 {
 }

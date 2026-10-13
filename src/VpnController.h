@@ -33,6 +33,7 @@ class QEventLoop;
 class QNetworkAccessManager;
 class QNetworkReply;
 class QQmlEngine;
+class QWindow;
 class QSystemTrayIcon;
 class QTimer;
 class QTranslator;
@@ -341,6 +342,7 @@ public:
     void setQmlEngine(QQmlEngine* engine);
     Q_INVOKABLE QRect windowGeometry() const;
     Q_INVOKABLE void saveWindowGeometry(const QRect& geometry);
+    Q_INVOKABLE QRect availableWindowGeometry(QWindow* window) const;
     Q_INVOKABLE bool requestWindowClose();
     Q_INVOKABLE void quit();
 

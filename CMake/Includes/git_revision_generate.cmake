@@ -76,8 +76,8 @@ execute_process(
 
 message(STATUS "Processing config.h file...")
 file(READ ${OUTPUT_DIR}/config.h config_temp)
-string(FIND "${config_temp}" "undef PROJECT_VERSION" ALREADY_UPDATED)
-
-if(${ALREADY_UPDATED} LESS 0)
-file(APPEND ${OUTPUT_DIR}/config.h "#undef PROJECT_VERSION\n#define PROJECT_VERSION \"${PROJECT_VERSION}\"\n")
-endif()
+string(REGEX REPLACE "#undef PROJECT_VERSION[\r\n]+#define PROJECT_VERSION[^\r\n]*[\r\n]*" "" config_temp "${config_temp}")
+string(APPEND config_temp "#undef PROJECT_VERSION\n#define PROJECT_VERSION \"${PROJECT_VERSION}\"\n")
+file(WRITE ${OUTPUT_DIR}/config.h.tmp "${config_temp}")
+execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${OUTPUT_DIR}/config.h.tmp ${OUTPUT_DIR}/config.h)

@@ -141,6 +141,53 @@ function flushDnsCache()
     run("ipconfig /flushdns");
 }
 
+// Remember only routes we actually added. Existing routes belong to their
+// creator and must survive Ocelot disconnecting.
+function outerRouteStatePath()
+{
+    var fso = WScript.CreateObject("Scripting.FileSystemObject");
+    return fso.GetSpecialFolder(2) + "\\ocelot-outer-routes-" + env("TUNIDX") + ".json";
+}
+
+function psString(value)
+{
+    return "'" + value.replace(/'/g, "''") + "'";
+}
+
+function addOuterRoute(prefix)
+{
+    var state = psString(outerRouteStatePath());
+    runPowerShell(
+        "$ErrorActionPreference = 'Stop'; $prefix = " + psString(prefix) + "; " +
+        "$state = " + state + "; " +
+        "if (Get-NetRoute -DestinationPrefix $prefix -ErrorAction SilentlyContinue) { return }; " +
+        "$address = $prefix.Split('/')[0]; " +
+        "$best = Find-NetRoute -RemoteIPAddress $address | " +
+        "Where-Object { $_.CimClass.CimClassName -eq 'MSFT_NetRoute' } | Select-Object -First 1; " +
+        "if (!$best) { throw 'No route to the VPN gateway or excluded network' }; " +
+        "$owned = @(); if (Test-Path -LiteralPath $state) { " +
+        "$owned = @(Get-Content -LiteralPath $state -Raw | ConvertFrom-Json) }; " +
+        "$created = New-NetRoute -DestinationPrefix $prefix -InterfaceIndex $best.InterfaceIndex " +
+        "-NextHop $best.NextHop -RouteMetric 1 -PolicyStore ActiveStore; " +
+        "$owned += $created | Select-Object DestinationPrefix, InterfaceIndex, NextHop; " +
+        "try { ConvertTo-Json -InputObject @($owned) | Set-Content -LiteralPath $state } " +
+        "catch { $created | Remove-NetRoute -Confirm:$false; throw }");
+}
+
+function removeOuterRoutes()
+{
+    runPowerShell(
+        "$ErrorActionPreference = 'Stop'; $state = " + psString(outerRouteStatePath()) + "; " +
+        "if (Test-Path -LiteralPath $state) { " +
+        "$owned = @(Get-Content -LiteralPath $state -Raw | ConvertFrom-Json); " +
+        "foreach ($entry in $owned) { " +
+        "Get-NetRoute -DestinationPrefix $entry.DestinationPrefix " +
+        "-InterfaceIndex $entry.InterfaceIndex -NextHop $entry.NextHop " +
+        "-PolicyStore ActiveStore -ErrorAction SilentlyContinue | " +
+        "Remove-NetRoute -Confirm:$false }; " +
+        "Remove-Item -LiteralPath $state }");
+}
+
 function getDefaultGateway4()
 {
     if (run("route print").match(/0\.0\.0\.0 *(0|128)\.0\.0\.0 *([0-9\.]*)/)) {
@@ -222,12 +269,24 @@ case "connect":
     var vpngw = env("VPNGATEWAY");
     if (vpngw.match(/:/g)) {
 	    echo(INFO, "Configuring explicit route to IPv6 VPN gateway " + vpngw);
-	    run("netsh interface ipv6 add route " + vpngw + "/128 " + gw6);
+        addOuterRoute(vpngw + "/128");
     } else {
 	    echo(INFO, "Configuring explicit route to IPv4 VPN gateway " + vpngw);
-	    run("route add " + vpngw + " mask 255.255.255.255 " + gw4);
+        addOuterRoute(vpngw + "/32");
     }
     echo(INFO, "done.");
+
+    // Select excluded paths before the VPN routes change the best route.
+    // Add excluded routes
+    if (env("CISCO_SPLIT_EXC")) {
+        for (var i = 0 ; i < parseInt(env("CISCO_SPLIT_EXC")); i++) {
+            var network = env("CISCO_SPLIT_EXC_" + i + "_ADDR");
+            var netmask = env("CISCO_SPLIT_EXC_" + i + "_MASK");
+            var netmasklen = env("CISCO_SPLIT_EXC_" + i + "_MASKLEN");
+            addOuterRoute(network + "/" + netmasklen);
+            echo(INFO, "Configured Legacy IP split-exclude route: " + network + "/" + netmasklen);
+        }
+    }
 
     echo(INFO, "Configuring \"" + env("TUNDEV") + "\" / " + env("TUNIDX") + " interface for Legacy IP...");
 
@@ -360,16 +419,6 @@ case "connect":
         echo(INFO, "Configured Legacy IP default route pair (0.0.0.0/1, 128.0.0.0/1)");
     }
 
-    // Add excluded routes
-    if (env("CISCO_SPLIT_EXC")) {
-        for (var i = 0 ; i < parseInt(env("CISCO_SPLIT_EXC")); i++) {
-            var network = env("CISCO_SPLIT_EXC_" + i + "_ADDR");
-            var netmask = env("CISCO_SPLIT_EXC_" + i + "_MASK");
-            var netmasklen = env("CISCO_SPLIT_EXC_" + i + "_MASKLEN");
-            run("route add " + network + " mask " + netmask + " " + gw4);
-            echo(INFO, "Configured Legacy IP split-exclude route: " + network + "/" + netmasklen);
-        }
-    }
     echo(INFO, "Legacy IP route configuration done.");
 
     if (env("INTERNAL_IP6_ADDRESS")) {
@@ -415,14 +464,7 @@ case "disconnect":
     flushDnsCache();
 
     // Delete explicit route for the VPN gateway
-    var vpngw = env("VPNGATEWAY");
-    if (vpngw.match(/:/g)) {
-        echo(INFO, "Removing explicit route to IPv6 VPN gateway " + vpngw);
-        run("netsh interface ipv6 delete route " + vpngw + "/128 " + getDefaultGateway6());
-    } else {
-        echo(INFO, "Removing explicit route to IPv4 VPN gateway " + vpngw);
-        run("route delete " + vpngw + " mask 255.255.255.255");
-    }
+    removeOuterRoutes();
 
     // Delete address
     echo(INFO, "Removing" + (env("INTERNAL_IP6_ADDRESS") ? " IPv6 and" : "") + " Legacy IP addresses");
@@ -436,17 +478,6 @@ case "disconnect":
         } else {
             echo(INFO, "Removing default IPv6 route through VPN.");
             run("netsh interface ipv6 delete route 2000::/3 " + env("TUNIDX"));
-        }
-    }
-
-    // Delete Legacy IP split-exclude routes
-    if (env("CISCO_SPLIT_EXC")) {
-        echo(INFO, "Removing Legacy IP split-exclude routes");
-        for (var i = 0 ; i < parseInt(env("CISCO_SPLIT_EXC")); i++) {
-            var network = env("CISCO_SPLIT_EXC_" + i + "_ADDR");
-            var netmask = env("CISCO_SPLIT_EXC_" + i + "_MASK");
-            var netmasklen = env("CISCO_SPLIT_EXC_" + i + "_MASKLEN");
-            run("route delete " + network + " mask " + netmask );
         }
     }
 

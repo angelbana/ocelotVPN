@@ -72,7 +72,7 @@ static void progress_vfn(void* privdata, int level, const char* fmt, ...)
     va_end(args);
 
     len = strlen(buf);
-    if (buf[len - 1] == '\n')
+    if (len > 0 && buf[len - 1] == '\n')
         buf[len - 1] = 0;
     Logger::instance().addMessage(buf);
 }
@@ -275,6 +275,8 @@ static int process_auth_form(void* privdata, struct oc_auth_form* form)
                 openconnect_set_option_value(opt,
                     vpn->ss->get_password().toUtf8().data());
                 vpn->password_set = 1;
+                vpn->account_password_form = QString::fromUtf8(form->auth_id);
+                vpn->account_password_label = QString::fromUtf8(opt->label);
                 empty = 0;
                 continue;
             }
@@ -285,7 +287,10 @@ static int process_auth_form(void* privdata, struct oc_auth_form* form)
             // one would only be sent back wrong.
             const bool storable = vpn->is_password_form_option(form, opt)
                 && (vpn->password_set == 0
-                    || (vpn->form_pass_attempt == 0 && form->error && *form->error));
+                    || (vpn->form_pass_attempt == 0 && form->error && *form->error
+                        && (!vpn->account_password_form.isEmpty() || !vpn->account_password_label.isEmpty())
+                        && vpn->account_password_form == QString::fromUtf8(form->auth_id)
+                        && vpn->account_password_label == QString::fromUtf8(opt->label)));
 
             QVariantMap request;
             request["title"] = QObject::tr("Password input");
@@ -299,9 +304,14 @@ static int process_auth_form(void* privdata, struct oc_auth_form* form)
                     goto fail;
             } while (text.isEmpty());
 
-            if (storable == true) {
+            // An error on a repeated field may refer to a code even when its
+            // identifiers match. Replacing an existing password requires the
+            // explicit remember choice, rather than the profile's old flag.
+            if (storable == true && (vpn->password_set == 0 || vpn->m->rememberRequested())) {
                 vpn->ss->set_password(text);
                 vpn->password_set = 1;
+                vpn->account_password_form = QString::fromUtf8(form->auth_id);
+                vpn->account_password_label = QString::fromUtf8(opt->label);
 
                 // Save before the next question: cancelling a one-time code
                 // must not undo the request to remember the account password.
@@ -815,6 +825,8 @@ void VpnInfo::reset_vpn()
     form_pass_attempt = 0;
     password_set = 0;
     authgroup_set = 0;
+    account_password_form.clear();
+    account_password_label.clear();
     form_attempt = 0;
 }
 
@@ -900,7 +912,7 @@ bool VpnInfo::is_username_form_option(struct oc_auth_form* form, struct oc_form_
 
     if (form && opt && opt->name) {
         if (strcasecmp(OCG_PROTO_GLOBALPROTECT, protocolName.constData()) == 0) {
-            ret = ( (strcasecmp(form->auth_id, "_login") == 0) && (strcasecmp(opt->name, "user") == 0) );
+            ret = ( form->auth_id && (strcasecmp(form->auth_id, "_login") == 0) && (strcasecmp(opt->name, "user") == 0) );
         }
         else {
             ret = ( strcasecmp(opt->name, "username") == 0 );
@@ -917,10 +929,10 @@ bool VpnInfo::is_password_form_option(struct oc_auth_form* form, struct oc_form_
 
     if (form && opt && opt->name) {
         if (strcasecmp(OCG_PROTO_GLOBALPROTECT, protocolName.constData()) == 0) {
-            ret = ( (strcasecmp(form->auth_id, "_login") == 0) && (strcasecmp(opt->name, "passwd") == 0) );
+            ret = ( form->auth_id && (strcasecmp(form->auth_id, "_login") == 0) && (strcasecmp(opt->name, "passwd") == 0) );
         }
         else if (strcasecmp(OCG_PROTO_FORTINET, protocolName.constData()) == 0) {
-            ret = ( (strcasecmp(form->auth_id, "_login") == 0) && (strcasecmp(opt->name, "credential") == 0) );
+            ret = ( form->auth_id && (strcasecmp(form->auth_id, "_login") == 0) && (strcasecmp(opt->name, "credential") == 0) );
         }
         else {
             ret = ( strcasecmp(opt->name, "password") == 0 );

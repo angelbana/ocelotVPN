@@ -82,9 +82,12 @@ Item {
                     }
                 }
 
-                RowLayout {
+                Flow {
                     Layout.fillWidth: true
                     Layout.topMargin: 4
+                    Layout.minimumWidth: 0
+                    Layout.preferredWidth: 0
+                    Layout.preferredHeight: implicitHeight
                     spacing: 6
 
                     GhostButton {
@@ -105,9 +108,6 @@ Item {
                         onClicked: root.licenseRequested()
                     }
 
-                    Item {
-                        Layout.fillWidth: true
-                    }
                 }
             }
 

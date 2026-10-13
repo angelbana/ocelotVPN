@@ -103,19 +103,16 @@ Ocelot stops and says so rather than trying again, because a password that is
 wrong now will be wrong in five seconds, and some servers lock an account for
 asking twice.
 
-**Letting nothing out except through the tunnel.** Settings, Safety: with this
-on, while the tunnel is up nothing else on the computer reaches the network, and
-if the tunnel falls over nothing gets out at all until you disconnect - which is
-the point, since a tunnel that drops does not take the programs using it with
-it. Four things are still let through: the tunnel itself, Ocelot's own
-connection to the server (otherwise it could not dial back), the computer
-talking to itself, and the lease that keeps its address on the network it is
-plugged into.
+**Protecting traffic to the VPN networks.** Settings, Safety: if the tunnel
+drops, its networks remain blocked until you disconnect or Ocelot reconnects.
+With split tunneling, unrelated destinations and other VPNs remain available.
+A server that installs a default route still routes all traffic through Ocelot;
+overlapping routes and DNS namespaces need compatible VPN configurations.
 
-The rules live in a session Windows itself tears down when Ocelot goes away, so
-a crash cannot leave a computer that will not talk to anything. Another VPN
-running beside Ocelot stops working while this is on - that is not a fault, it
-is what "nothing outside the tunnel" means.
+Rules belong to a dynamic Windows session and disappear when Ocelot exits.
+Existing gateway routes are preserved; disconnect removes only the outer routes
+Ocelot added. Wintun adapter changes can still make another VPN client refresh
+its connection in response to Windows network notifications.
 
 **Signing in through a browser.** Where a server does not ask for a password at
 all but hands the sign-in to a browser - a company login page, a smart card, a

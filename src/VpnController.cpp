@@ -18,6 +18,8 @@
  */
 
 #include "VpnController.h"
+#include <QScreen>
+#include <QWindow>
 #include "Autostart.h"
 #include "KillSwitch.h"
 #include "Portable.h"
@@ -229,7 +231,7 @@ void VpnController::setKillSwitch(bool value)
     if (m_status == StatusConnected && m_ip.isEmpty() == false) {
         QString error;
         if (KillSwitch::engage(m_ip, error) == false) {
-            emit errorOccurred(tr("Nothing outside the tunnel"), error);
+            emit errorOccurred(tr("Protect traffic to the VPN networks"), error);
         }
         emit statusChanged();
     }
@@ -1225,7 +1227,7 @@ void VpnController::setStatus(int status)
                 if (m_killSwitch == true && m_ip.isEmpty() == false) {
                     QString error;
                     if (KillSwitch::engage(m_ip, error) == false) {
-                        emit errorOccurred(tr("Nothing outside the tunnel"), error);
+                        emit errorOccurred(tr("Protect traffic to the VPN networks"), error);
                     }
                 }
 
@@ -1311,10 +1313,9 @@ void VpnController::setStatus(int status)
                 // again presses disconnect, or turns the setting off.
                 if (KillSwitch::engaged() == true && m_userAskedToDisconnect == false
                     && m_quitWhenDisconnected == false) {
-                    emit noticeRequested(tr("Nothing outside the tunnel"),
-                        tr("The tunnel went down, and nothing on this computer is being let "
-                           "out past it. Press Disconnect to let it through again, or wait "
-                           "while Ocelot dials back."));
+                    emit noticeRequested(tr("Protect traffic to the VPN networks"),
+                        tr("The tunnel went down. Traffic to its VPN networks is blocked "
+                           "until you disconnect or Ocelot reconnects."));
                 }
 
                 m_wasConnected = false;
@@ -1673,7 +1674,10 @@ QString VpnController::saveProfile(const QVariantMap& profile)
     const bool remember = profile.value("batchMode").toBool();
     ss.set_batch_mode(remember);
     if (remember == true) {
-        ss.set_password(profile.value("password").toString());
+        const QString password = profile.value("password").toString();
+        if (password != ss.get_password()) {
+            ss.set_password(password);
+        }
     } else {
         ss.clear_password();
     }
@@ -1696,7 +1700,9 @@ QString VpnController::saveProfile(const QVariantMap& profile)
         ss.set_token_type(-1);
     }
 
-    ss.save();
+    if (ss.save() < 0) {
+        return ss.m_last_err.isEmpty() ? tr("Could not save the profile.") : ss.m_last_err;
+    }
 
     if (originalName.isEmpty() == false && originalName != name) {
         removeProfile(originalName);
@@ -2048,6 +2054,7 @@ void VpnController::startVersionRequest()
     QNetworkRequest request{ QUrl(QLatin1String(APP_LATEST_RELEASE_URL)) };
     request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
     request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
+    request.setTransferTimeout(30000);
 
     Logger::instance().addMessage(QObject::tr("Checking for current version"));
     m_lastCheckTime = QDateTime::currentSecsSinceEpoch();
@@ -2238,6 +2245,17 @@ void VpnController::saveWindowGeometry(const QRect& geometry)
 {
     OcSettings settings;
     settings.setValue("MainWindow/rect2", geometry);
+}
+
+QRect VpnController::availableWindowGeometry(QWindow* window) const
+{
+    if (window == nullptr || window->screen() == nullptr) {
+        return {};
+    }
+
+    const QMargins frame = window->frameMargins();
+    return window->screen()->availableGeometry().adjusted(
+        frame.left(), frame.top(), -frame.right(), -frame.bottom());
 }
 
 bool VpnController::requestWindowClose()

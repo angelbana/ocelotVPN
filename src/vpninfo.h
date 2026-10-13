@@ -62,6 +62,8 @@ public:
     struct openconnect_info* vpninfo;
     unsigned int authgroup_set;
     unsigned int password_set;
+    QString account_password_form;
+    QString account_password_label;
     unsigned int form_attempt;
     unsigned int form_pass_attempt;
     bool last_form_empty = false;

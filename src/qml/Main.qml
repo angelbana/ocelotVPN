@@ -28,6 +28,10 @@ ApplicationWindow {
     property string tab: "connection"
     property bool updateCheckPending: false
     property bool windowReady: false
+    property bool applyingWindowFrame: false
+    property rect windowedGeometry: Qt.rect(0, 0, 0, 0)
+    property rect availableClientGeometry: Qt.rect(Screen.virtualX, Screen.virtualY,
+        Screen.width, Screen.height)
 
     // What the ocelot's face is doing. Everything that draws it - the window,
     // the popover, the About screen - reads this one value, so they cannot
@@ -44,9 +48,9 @@ ApplicationWindow {
     // monitor the moment a second one is plugged in.
     width: Math.min(Theme.defaultWindowWidth, Screen.width)
     height: Math.min(Theme.defaultWindowHeight, Screen.height)
-    minimumWidth: Math.min(Theme.minWindowWidth, Screen.width)
-    minimumHeight: Math.min(Theme.minWindowHeight, Screen.height)
-    visible: true
+    minimumWidth: Math.min(Theme.minWindowWidth, availableClientGeometry.width)
+    minimumHeight: Math.min(Theme.minWindowHeight, availableClientGeometry.height)
+    visibility: Window.Windowed
     color: Theme.surface
     title: Qt.application.displayName
     // Either the system draws the top of the window or this program does. When
@@ -54,21 +58,81 @@ ApplicationWindow {
     // is put back by WindowChrome and ResizeEdges below.
     readonly property bool ownChrome: controller.windowStyle === 0
 
-    flags: ownChrome ? (Qt.Window | Qt.FramelessWindowHint)
-        : (Qt.Window | Qt.WindowTitleHint | Qt.WindowSystemMenuHint
-            | Qt.WindowMinMaxButtonsHint | Qt.WindowCloseButtonHint)
+    flags: Qt.Window | Qt.WindowTitleHint | Qt.WindowSystemMenuHint
+        | Qt.WindowMinMaxButtonsHint | Qt.WindowCloseButtonHint
 
     onOwnChromeChanged: {
-        if (windowReady) {
-            // Apply the new decoration when the native window is shown again.
+        if (windowReady)
+            applyWindowFrame();
+    }
+
+    function applyWindowFrame() {
+        const state = visibility;
+        const restore = (state === Window.Maximized || state === Window.Minimized)
+            && windowedGeometry.width > 0
+                ? windowedGeometry : Qt.rect(x, y, width, height);
+        const clientWidth = restore.width;
+        const clientHeight = restore.height;
+        applyingWindowFrame = true;
+        hide();
+        flags = ownChrome ? (Qt.Window | Qt.FramelessWindowHint)
+            : (Qt.Window | Qt.WindowTitleHint | Qt.WindowSystemMenuHint
+                | Qt.WindowMinMaxButtonsHint | Qt.WindowCloseButtonHint);
+        // Changing native decorations can leave Qt's cached client size equal
+        // to the old size while Windows has subtracted its frame. Resize while
+        // hidden so both sizes are synchronized before the window is shown.
+        width = clientWidth + 1;
+        height = clientHeight + 1;
+        width = clientWidth;
+        height = clientHeight;
+        x = restore.x;
+        y = restore.y;
+        visibility = state;
+        applyingWindowFrame = false;
+        if (state === Window.Windowed)
+            fitWindowToScreen();
+    }
+
+    function fitWindowToScreen() {
+        if (visibility !== Window.Windowed || applyingWindowFrame)
+            return;
+        const bounds = controller.availableWindowGeometry(mainWindow);
+        if (bounds.width <= 0 || bounds.height <= 0)
+            return;
+        availableClientGeometry = bounds;
+        width = Math.max(minimumWidth, Math.min(width, bounds.width));
+        height = Math.max(minimumHeight, Math.min(height, bounds.height));
+        x = Math.max(bounds.x, Math.min(x, bounds.x + bounds.width - width));
+        y = Math.max(bounds.y, Math.min(y, bounds.y + bounds.height - height));
+        windowedGeometry = Qt.rect(x, y, width, height);
+    }
+
+    function rememberWindowedGeometry() {
+        Qt.callLater(captureWindowedGeometry);
+    }
+
+    function captureWindowedGeometry() {
+        if (windowReady && !applyingWindowFrame && visibility === Window.Windowed)
+            windowedGeometry = Qt.rect(x, y, width, height);
+    }
+
+    onXChanged: rememberWindowedGeometry()
+    onYChanged: rememberWindowedGeometry()
+    onWidthChanged: rememberWindowedGeometry()
+    onHeightChanged: rememberWindowedGeometry()
+    onVisibilityChanged: {
+        rememberWindowedGeometry();
+        if (windowReady && !applyingWindowFrame && visibility === Window.Minimized
+            && controller.hasTray && controller.minimizeToTray) {
             Qt.callLater(function() {
-                const state = mainWindow.visibility;
-                if (state !== Window.Hidden) {
+                if (mainWindow.visibility === Window.Minimized)
                     mainWindow.hide();
-                    mainWindow.visibility = state;
-                }
             });
         }
+    }
+    onScreenChanged: {
+        if (windowReady && visibility === Window.Windowed)
+            Qt.callLater(fitWindowToScreen);
     }
 
     header: WindowChrome {
@@ -83,17 +147,11 @@ ApplicationWindow {
     Component.onCompleted: {
         const saved = controller.windowGeometry();
         if (saved.width > 0 && saved.height > 0) {
-            // A saved size can come from another screen: keep it inside the
-            // current one, and never below the size at which the layout stops
-            // being readable.
-            mainWindow.width = Math.max(mainWindow.minimumWidth,
-                Math.min(saved.width, Screen.width));
-            mainWindow.height = Math.max(mainWindow.minimumHeight,
-                Math.min(saved.height, Screen.height));
-            mainWindow.x = Math.max(Screen.virtualX,
-                Math.min(saved.x, Screen.virtualX + Screen.width - mainWindow.width));
-            mainWindow.y = Math.max(Screen.virtualY,
-                Math.min(saved.y, Screen.virtualY + Screen.height - mainWindow.height));
+            // Move to the saved monitor before fitting its available area.
+            mainWindow.width = Math.max(mainWindow.minimumWidth, saved.width);
+            mainWindow.height = Math.max(mainWindow.minimumHeight, saved.height);
+            mainWindow.x = saved.x;
+            mainWindow.y = saved.y;
         } else {
             // Nothing remembered yet: a window the shape of what it holds, in
             // the middle of the screen it opened on rather than wherever the
@@ -104,18 +162,23 @@ ApplicationWindow {
             mainWindow.y = Screen.virtualY
                 + Math.round((Screen.height - mainWindow.height) / 2.6);
         }
+        windowReady = true;
+        applyWindowFrame();
         if (controller.startMinimized) {
             if (controller.hasTray && controller.minimizeToTray)
                 mainWindow.hide();
             else
                 mainWindow.showMinimized();
         }
-        windowReady = true;
+        if (windowedGeometry.width <= 0)
+            windowedGeometry = Qt.rect(x, y, width, height);
     }
 
     onClosing: function(close) {
-        controller.saveWindowGeometry(Qt.rect(mainWindow.x, mainWindow.y,
-            mainWindow.width, mainWindow.height));
+        if (prompt.opened)
+            prompt.answer(false);
+        controller.saveWindowGeometry(visibility === Window.Windowed
+            ? Qt.rect(x, y, width, height) : windowedGeometry);
         close.accepted = controller.requestWindowClose();
     }
 

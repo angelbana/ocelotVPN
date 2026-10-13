@@ -191,11 +191,11 @@ Item {
 
                 AppToggle {
                     Layout.fillWidth: true
-                    text: qsTr("Let nothing out except through the tunnel")
-                    description: qsTr("While the tunnel is up nothing else on this computer "
-                        + "reaches the network, and if the tunnel falls over nothing gets out "
-                        + "at all until you disconnect. Another VPN running beside Ocelot "
-                        + "stops working while this is on.")
+                    text: qsTr("Protect traffic to the VPN networks")
+                    description: qsTr("If this tunnel drops, its networks stay blocked until "
+                        + "you disconnect or Ocelot reconnects. Other destinations and VPNs "
+                        + "keep working with split tunneling. A full-tunnel server still "
+                        + "routes all traffic through this VPN.")
                     checked: controller.killSwitch
                     onSwitched: checked => controller.killSwitch = checked
                 }
