@@ -85,16 +85,22 @@ Popup {
             contentWidth: availableWidth
             clip: true
             ScrollBar.vertical: AppScrollBar {}
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
             Text {
                 id: messageText
-                width: messageScroll.availableWidth
+                width: Math.max(0, messageScroll.availableWidth - Math.round(15 * Theme.scale))
                 text: root.message
                 color: Theme.muted
+                linkColor: Theme.accent
                 font.pixelSize: Theme.fontNormal
                 textFormat: Text.RichText
                 wrapMode: Text.WordWrap
                 onLinkActivated: link => Qt.openUrlExternally(link)
+
+                HoverHandler {
+                    cursorShape: messageText.hoveredLink.length > 0 ? Qt.PointingHandCursor : Qt.ArrowCursor
+                }
             }
         }
 

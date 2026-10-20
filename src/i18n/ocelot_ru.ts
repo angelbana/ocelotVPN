@@ -267,6 +267,18 @@
 <context>
     <name>Main</name>
     <message>
+        <source>Version %1 is available, you have %2.</source>
+        <translation>Доступна версия %1, у вас %2.</translation>
+    </message>
+    <message>
+        <source>Download and install</source>
+        <translation>Скачать и установить</translation>
+    </message>
+    <message>
+        <source>Open downloads</source>
+        <translation>Открыть загрузки</translation>
+    </message>
+    <message>
         <location filename="../qml/Main.qml" line="63"/>
         <source>Ocelot — connected to %1</source>
         <translation>Ocelot — подключено к %1</translation>
@@ -1313,6 +1325,14 @@
 <context>
     <name>SettingsPane</name>
     <message>
+        <source>An update is ready to install.</source>
+        <translation>Обновление готово к установке.</translation>
+    </message>
+    <message>
+        <source>Install update</source>
+        <translation>Установить обновление</translation>
+    </message>
+    <message>
         <location filename="../qml/SettingsPane.qml" line="85"/>
         <source>Forget</source>
         <translation>Забыть</translation>
@@ -1697,6 +1717,18 @@
         <source>Profiles set to the program default use this. Debug and trace carry protocol details, so share those with care.</source>
         <translation>Это берут профили, где выбрано «как в программе». Отладка и трассировка содержат подробности протокола — делитесь ими осторожно.</translation>
     </message>
+    <message>
+        <source>Checks GitHub daily for a newer release.</source>
+        <translation>Каждый день проверяет, появилась ли новая версия на GitHub.</translation>
+    </message>
+    <message>
+        <source>Download updates in the background</source>
+        <translation>Скачивать обновления в фоне</translation>
+    </message>
+    <message>
+        <source>Downloads and verifies new versions automatically. Installation starts after your confirmation and may ask for administrator rights.</source>
+        <translation>Автоматически скачивает и проверяет новые версии. Установка начинается после вашего подтверждения и может запросить права администратора.</translation>
+    </message>
 </context>
 <context>
     <name>Theme</name>
@@ -1857,6 +1889,10 @@
 </context>
 <context>
     <name>Updater</name>
+    <message>
+        <source>The update helper could not be started.</source>
+        <translation>Не удалось запустить средство установки обновления.</translation>
+    </message>
     <message>
         <source>The latest version could not be determined.</source>
         <translation>Не удалось узнать, какая версия самая свежая.</translation>

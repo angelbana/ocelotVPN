@@ -23,14 +23,20 @@ import QtQuick.Controls.Basic
 ScrollBar {
     id: control
 
-    implicitWidth: Math.round(11 * Theme.scale)
+    implicitWidth: Math.round((orientation === Qt.Vertical ? 11 : 40) * Theme.scale)
+    implicitHeight: Math.round((orientation === Qt.Vertical ? 40 : 11) * Theme.scale)
+    x: orientation === Qt.Vertical && parent ? parent.width - width : 0
+    y: orientation === Qt.Horizontal && parent ? parent.height - height : 0
+    width: orientation === Qt.Horizontal && parent ? parent.width : implicitWidth
+    height: orientation === Qt.Vertical && parent ? parent.height : implicitHeight
+    visible: policy !== ScrollBar.AlwaysOff && (policy === ScrollBar.AlwaysOn || size < 1)
     padding: Math.round(3 * Theme.scale)
 
     background: Item {}
 
     contentItem: Rectangle {
-        implicitWidth: Math.round(5 * Theme.scale)
-        implicitHeight: Math.round(40 * Theme.scale)
+        implicitWidth: Math.round((control.orientation === Qt.Vertical ? 5 : 40) * Theme.scale)
+        implicitHeight: Math.round((control.orientation === Qt.Vertical ? 40 : 5) * Theme.scale)
         radius: width / 2
         color: control.pressed ? Theme.muted : Theme.lineStrong
         opacity: control.policy === ScrollBar.AlwaysOn || control.active ? 0.85 : 0

@@ -55,6 +55,7 @@ public:
     // with - empty where nothing has been downloaded yet.
     QString file() const;
     QString signer() const;
+    QString version() const;
 
     // Looks up the release of that version, downloads the file this copy needs
     // and checks it. Answers through the signals below.
@@ -77,8 +78,10 @@ private:
     void gotChecksum(QNetworkReply* reply);
     void startDownload();
     void gotFile(QNetworkReply* reply);
+    bool acceptPackage(const QString& path, QString& error);
     bool verifyChecksum(const QString& path, QString& error) const;
     QString readSigner(const QString& path) const;
+    bool launchInstallerAfterExit(QString& error);
     void fail(const QString& message);
     void cleanUp();
 

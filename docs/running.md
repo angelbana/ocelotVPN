@@ -32,6 +32,19 @@ passed around outside the workflow run.
 
 ## Windows
 
+### Updates
+
+Ocelot checks for new releases daily and downloads updates in the background
+by default. Settings can disable checking or only background downloads.
+Packages are checked against SHA-512; Windows verifies installer signatures.
+A cached package is checked again and reused after restarting the application.
+
+The Install update button in settings asks for confirmation. Ocelot then exits,
+the installer replaces its files without a wizard, and the application restarts.
+Windows may request administrator rights. A declined or failed installation
+leaves the downloaded package available for retry. Portable copies update in
+place from ZIP; Linux currently opens the AppImage download page.
+
 There are two ways to have it, and the program knows which one it is in.
 
 ### Installed

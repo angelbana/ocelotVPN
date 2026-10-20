@@ -3,6 +3,15 @@ History of user-visible changes.
 Ocelot grew out of openconnect-gui. That project's own history stays with it
 upstream; this file begins with the first Ocelot release.
 
+## 1.1.4 - 2026-10-20
+
+- Downloads Windows updates in the background by default, verifies cached
+  packages before reuse and keeps a ready update available in settings.
+- Offers update downloads directly in the confirmation dialog and installs
+  updates after the old process exits, without the installation wizard.
+- Shares the single-instance identity across installed and portable paths.
+- Positions scrollbars at the content edge and hides them when content fits.
+
 ## 1.1.3 - 2026-10-20
 
 - Verifies effective Windows DNS policy after repair, reports unresolved or

@@ -103,7 +103,8 @@ int main(int argc, char* argv[])
     QCoreApplication::setOrganizationName(PRODUCT_NAME_COMPANY);
     QCoreApplication::setOrganizationDomain(PRODUCT_NAME_COMPANY_DOMAIN);
 
-    QtSingleApplication app(argc, argv);
+    // All installed and portable paths in this session share one instance ID.
+    QtSingleApplication app(QStringLiteral("sculk.ltd.Ocelot"), argc, argv);
 
     // Which of the two lives this copy leads - carried around in its own folder,
     // or installed - has to be settled before anything reads a setting, because

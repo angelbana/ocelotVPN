@@ -407,6 +407,7 @@ VpnController::VpnController(bool useTray, QObject* parent)
     , m_reconnectOnDrop(true)
     , m_notifyOnChange(true)
     , m_checkUpdates(true)
+    , m_autoDownloadUpdates(true)
     , m_killSwitch(false)
     , m_userAskedToDisconnect(false)
     , m_wasConnected(false)
@@ -452,10 +453,22 @@ VpnController::VpnController(bool useTray, QObject* parent)
     }
 
     QTimer::singleShot(4000, this, &VpnController::tryCheckLatestVersion);
+    QTimer* updateCheckTimer = new QTimer(this);
+    connect(updateCheckTimer, &QTimer::timeout, this, &VpnController::tryCheckLatestVersion);
+    updateCheckTimer->start(60 * 60 * 1000);
 
     connect(m_updater, &Updater::progressChanged, this, &VpnController::updateProgressChanged);
-    connect(m_updater, &Updater::ready, this, &VpnController::updateReady);
+    connect(m_updater, &Updater::ready, this, [this](const QString& version, const QString& signer) {
+        emit updateReady(version, signer);
+        m_backgroundUpdate = false;
+        emit updateProgressChanged();
+    });
     connect(m_updater, &Updater::failed, this, [this](const QString& message) {
+        if (m_backgroundUpdate) {
+            m_backgroundUpdate = false;
+            emit updateProgressChanged();
+            return;
+        }
         emit errorOccurred(tr("Update Ocelot"), message);
     });
 }
@@ -1038,6 +1051,28 @@ void VpnController::setCheckUpdates(bool value)
     OcSettings settings;
     settings.setValue("Settings/checkUpdates", value);
     emit settingsChanged();
+    if (value) {
+        tryCheckLatestVersion();
+        maybeDownloadUpdate();
+    }
+}
+
+bool VpnController::autoDownloadUpdates() const
+{
+    return m_autoDownloadUpdates;
+}
+
+void VpnController::setAutoDownloadUpdates(bool value)
+{
+    if (m_autoDownloadUpdates == value) {
+        return;
+    }
+    m_autoDownloadUpdates = value;
+    writeSettings();
+    emit settingsChanged();
+    if (value) {
+        maybeDownloadUpdate();
+    }
 }
 
 int VpnController::reconnectAttempt() const
@@ -2093,10 +2128,10 @@ void VpnController::tryCheckLatestVersion()
 
     const qint64 now = QDateTime::currentSecsSinceEpoch();
 
-    // Check during start up only a time every a few days to avoid
-    // overloading GitHub.
-    if (now - m_lastCheckTime < 5 * 86400) {
+    // The hourly timer also covers an application that stays open for days.
+    if (!m_latestVersion.isEmpty() && m_lastCheckTime <= now && now - m_lastCheckTime < 86400) {
         Logger::instance().addMessage(QObject::tr("Skipping automatic check for current version"));
+        maybeDownloadUpdate();
         return;
     }
 
@@ -2134,7 +2169,7 @@ double VpnController::updateProgress() const
 
 bool VpnController::updateDownloaded() const
 {
-    return m_updater->file().isEmpty() == false;
+    return !m_updater->file().isEmpty() && QFile::exists(m_updater->file());
 }
 
 bool VpnController::canInstallUpdate() const
@@ -2150,11 +2185,15 @@ bool VpnController::canInstallUpdate() const
 
 void VpnController::downloadUpdate()
 {
+    if (m_updater->busy()) {
+        return;
+    }
     if (updateAvailable() == false) {
         emit errorOccurred(tr("Update Ocelot"), tr("There is nothing newer to install."));
         return;
     }
 
+    m_backgroundUpdate = false;
     m_updater->start(m_latestVersion);
     emit updateProgressChanged();
 }
@@ -2221,7 +2260,26 @@ void VpnController::gotLatestVersion(QNetworkReply* reply)
     m_checkingForUpdates = false;
     emit checkingForUpdatesChanged();
     emit latestVersionChanged();
+    if (m_latestVersion.isEmpty()) {
+        m_lastCheckTime = 0;
+    }
+    writeSettings();
+    QTimer::singleShot(0, this, &VpnController::maybeDownloadUpdate);
     reply->deleteLater();
+}
+
+void VpnController::maybeDownloadUpdate()
+{
+    if (!m_checkUpdates || !m_autoDownloadUpdates || !canInstallUpdate()
+        || !updateAvailable() || m_updater->busy()) {
+        return;
+    }
+    if (!m_updater->file().isEmpty() && QFile::exists(m_updater->file())
+        && m_updater->version() == m_latestVersion) {
+        return;
+    }
+    m_backgroundUpdate = true;
+    m_updater->start(m_latestVersion);
 }
 
 QString VpnController::aboutText() const
@@ -2344,6 +2402,7 @@ void VpnController::readSettings()
 
     settings.beginGroup("Settings");
     m_lastCheckTime = settings.value("last-check-time").toLongLong();
+    m_latestVersion = settings.value("latest-version").toString();
     m_minimizeToTray = settings.value("minimizeToTheNotificationArea", true).toBool();
     m_minimizeInsteadOfClose = settings.value("minimizeTheApplicationInsteadOfClosing", true).toBool();
     m_startMinimized = settings.value("startMinimized", false).toBool();
@@ -2357,6 +2416,7 @@ void VpnController::readSettings()
     m_reconnectOnDrop = settings.value("reconnectOnDrop", true).toBool();
     m_notifyOnChange = settings.value("notifyOnChange", true).toBool();
     m_checkUpdates = settings.value("checkUpdates", true).toBool();
+    m_autoDownloadUpdates = settings.value("autoDownloadUpdates", true).toBool();
     m_killSwitch = settings.value("killSwitch", false).toBool();
     m_autoConnectProfile = settings.value("autoConnectProfile").toString();
     settings.endGroup();
@@ -2386,9 +2446,8 @@ void VpnController::writeSettings()
     OcSettings settings;
 
     settings.beginGroup("Settings");
-    if (m_lastCheckTime > 0) {
-        settings.setValue("last-check-time", m_lastCheckTime);
-    }
+    settings.setValue("last-check-time", m_lastCheckTime);
+    settings.setValue("latest-version", m_latestVersion);
     settings.setValue("minimizeToTheNotificationArea", m_minimizeToTray);
     settings.setValue("minimizeTheApplicationInsteadOfClosing", m_minimizeInsteadOfClose);
     settings.setValue("startMinimized", m_startMinimized);
@@ -2402,6 +2461,7 @@ void VpnController::writeSettings()
     settings.setValue("reconnectOnDrop", m_reconnectOnDrop);
     settings.setValue("notifyOnChange", m_notifyOnChange);
     settings.setValue("checkUpdates", m_checkUpdates);
+    settings.setValue("autoDownloadUpdates", m_autoDownloadUpdates);
     settings.setValue("killSwitch", m_killSwitch);
     settings.setValue("autoConnectProfile", m_autoConnectProfile);
     settings.endGroup();

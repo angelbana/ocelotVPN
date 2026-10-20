@@ -65,6 +65,14 @@ QString downloadDirectory()
         + QStringLiteral("/ocelot-update"));
 }
 
+#ifdef Q_OS_WIN
+QString powershellProgram()
+{
+    return qEnvironmentVariable("SystemRoot")
+        + QStringLiteral("/System32/WindowsPowerShell/v1.0/powershell.exe");
+}
+#endif
+
 } // namespace
 
 Updater::Updater(QObject* parent)
@@ -100,6 +108,11 @@ QString Updater::file() const
 QString Updater::signer() const
 {
     return m_signer;
+}
+
+QString Updater::version() const
+{
+    return m_version;
 }
 
 void Updater::start(const QString& version)
@@ -217,6 +230,10 @@ void Updater::startDownload()
     QDir().mkpath(directory);
 
     const QString path = directory + QLatin1Char('/') + m_assetName;
+    QString cachedError;
+    if (QFile::exists(path) && acceptPackage(path, cachedError)) {
+        return;
+    }
     QFile::remove(path);
 
     m_sink = new QFile(path, this);
@@ -266,21 +283,25 @@ void Updater::gotFile(QNetworkReply* reply)
     }
 
     QString problem;
-    if (verifyChecksum(path, problem) == false) {
+    if (acceptPackage(path, problem) == false) {
         QFile::remove(path);
         fail(problem);
-        return;
     }
+}
 
-    m_signer = readSigner(path);
+bool Updater::acceptPackage(const QString& path, QString& error)
+{
+    if (verifyChecksum(path, error) == false) {
+        return false;
+    }
+    m_signer = m_assetName.endsWith(QStringLiteral(".exe")) ? readSigner(path) : QString();
 #ifdef Q_OS_WIN
     // Only the installer is signed; an archive is a container and carries no
     // signature of its own, which is what its checksum is for.
     if (m_assetName.endsWith(QStringLiteral(".exe")) == true && m_signer.isEmpty() == true) {
-        QFile::remove(path);
-        fail(tr("The downloaded installer carries no signature Windows accepts, "
-                "so it will not be run."));
-        return;
+        error = tr("The downloaded installer carries no signature Windows accepts, "
+                   "so it will not be run.");
+        return false;
     }
 #endif
 
@@ -291,6 +312,7 @@ void Updater::gotFile(QNetworkReply* reply)
 
     Logger::instance().addMessage(tr("%1 was downloaded and checked").arg(m_assetName));
     emit ready(m_version, m_signer);
+    return true;
 }
 
 bool Updater::verifyChecksum(const QString& path, QString& error) const
@@ -328,7 +350,7 @@ QString Updater::readSigner(const QString& path) const
                                .arg(quoted);
 
     QProcess shell;
-    shell.start(QStringLiteral("powershell"), QStringList()
+    shell.start(powershellProgram(), QStringList()
             << QStringLiteral("-NoProfile")
             << QStringLiteral("-NonInteractive")
             << QStringLiteral("-ExecutionPolicy") << QStringLiteral("Bypass")
@@ -343,6 +365,67 @@ QString Updater::readSigner(const QString& path) const
 #else
     Q_UNUSED(path)
     return QString();
+#endif
+}
+
+bool Updater::launchInstallerAfterExit(QString& error)
+{
+#ifdef Q_OS_WIN
+    const auto quote = [](const QString& value) {
+        return QString(value).replace(QLatin1Char('\''), QStringLiteral("''"));
+    };
+    // Keep this process alive until the connection has shut down and all Qt
+    // libraries have been released. The user already approved installation.
+    // Recheck the installer immediately before running it, after the wait.
+    const QString script = QStringLiteral(R"PS(
+$ErrorActionPreference = 'Stop'
+$installer = '%2'
+$target = '%4'
+$program = '%5'
+$log = '%6'
+try {
+    $parentProcess = Get-Process -Id %1 -ErrorAction SilentlyContinue
+    if ($parentProcess -and !$parentProcess.WaitForExit(120000)) {
+        throw 'Ocelot did not close in time. The update was not started.'
+    }
+    $otherCopies = @(Get-Process -Name ([IO.Path]::GetFileNameWithoutExtension($program)) -ErrorAction SilentlyContinue |
+        Where-Object { $_.Path -eq $program })
+    if ($otherCopies.Count) { throw 'Another Ocelot instance is using the installation folder. Close it and retry.' }
+    if ((Get-FileHash -LiteralPath $installer -Algorithm SHA512).Hash -ne '%3') {
+        throw 'The installer changed after download. The update was not started.'
+    }
+    if ((Get-AuthenticodeSignature -LiteralPath $installer).Status -ne 'Valid') {
+        throw 'Windows no longer accepts the installer signature. The update was not started.'
+    }
+    # NSIS requires /D to be last and unquoted, including paths with spaces.
+    $setup = Start-Process -FilePath $installer -ArgumentList ('/S /D=' + $target) -PassThru -WindowStyle Hidden
+    if (!$setup.WaitForExit(300000)) { throw 'Installation has not finished. Check the installer before starting Ocelot.' }
+    if ($setup.ExitCode -ne 0) { throw ('Installation failed with exit code ' + $setup.ExitCode) }
+    $null = Start-Process -FilePath $program
+} catch {
+    $failure = $_.Exception.Message
+    try { [IO.File]::WriteAllText($log, $failure) } catch { }
+    Add-Type -AssemblyName System.Windows.Forms
+    $null = [System.Windows.Forms.MessageBox]::Show($failure, 'Ocelot update')
+}
+)PS")
+                               .arg(QString::number(QCoreApplication::applicationPid()),
+                                   quote(QDir::toNativeSeparators(m_file)), m_expectedHash,
+                                   quote(QDir::toNativeSeparators(QCoreApplication::applicationDirPath())),
+                                   quote(QDir::toNativeSeparators(QCoreApplication::applicationFilePath())),
+                                   quote(QDir::toNativeSeparators(downloadDirectory() + QStringLiteral("/install-error.log"))));
+    const QByteArray utf16(reinterpret_cast<const char*>(script.utf16()), script.size() * 2);
+    if (QProcess::startDetached(powershellProgram(), QStringList()
+            << QStringLiteral("-NoProfile") << QStringLiteral("-NonInteractive")
+            << QStringLiteral("-WindowStyle") << QStringLiteral("Hidden")
+            << QStringLiteral("-EncodedCommand") << QString::fromLatin1(utf16.toBase64())) == false) {
+        error = tr("The update helper could not be started.");
+        return false;
+    }
+    return true;
+#else
+    Q_UNUSED(error)
+    return false;
 #endif
 }
 
@@ -364,13 +447,7 @@ bool Updater::apply(QString& error)
                        "so it will not be run.");
             return false;
         }
-        // The installer knows how to replace an installed copy; it is started
-        // and this program gets out of its way.
-        if (QProcess::startDetached(m_file, QStringList()) == false) {
-            error = tr("%1 could not be started.").arg(QDir::toNativeSeparators(m_file));
-            return false;
-        }
-        return true;
+        return launchInstallerAfterExit(error);
     }
 
     // A copy that runs from its own folder is replaced in place: the archive is
@@ -387,7 +464,7 @@ bool Updater::apply(QString& error)
                                        .replace(QLatin1Char('\''), QStringLiteral("''")));
 
     QProcess shell;
-    shell.start(QStringLiteral("powershell"), QStringList()
+    shell.start(powershellProgram(), QStringList()
             << QStringLiteral("-NoProfile")
             << QStringLiteral("-NonInteractive")
             << QStringLiteral("-ExecutionPolicy") << QStringLiteral("Bypass")

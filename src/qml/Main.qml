@@ -255,13 +255,20 @@ ApplicationWindow {
         }
 
         function onUpdateReady(version, signer) {
-            updateDialog.show(qsTr("Ocelot %1 is ready to install").arg(version),
-                signer.length > 0
+            updateDialog.title = qsTr("Ocelot %1 is ready to install").arg(version);
+            updateDialog.message = signer.length > 0
                     ? qsTr("It was downloaded, measured against the checksum published with it, "
                         + "and is signed by:<br><br>%1<br><br>Installing it closes Ocelot.")
                         .arg(signer)
                     : qsTr("It was downloaded and measured against the checksum published with "
-                        + "it. Installing it closes Ocelot."));
+                        + "it. Installing it closes Ocelot.");
+            if (!controller.backgroundUpdate)
+                updateDialog.open();
+        }
+
+        function onUpdateProgressChanged() {
+            if (controller.downloadingUpdate)
+                availableUpdateDialog.close();
         }
 
         function onInstallFinished() {
@@ -284,9 +291,9 @@ ApplicationWindow {
                 messageDialog.show(qsTr("Check for updates"),
                     qsTr("You are up to date. The latest version is %1.").arg(latest));
             else
-                messageDialog.show(qsTr("Check for updates"),
-                    qsTr("Version %1 is available, you have %2.<br><a href=\"%3\">Download it here</a>.")
-                        .arg(latest).arg(controller.releaseVersion).arg(controller.downloadUrl()));
+                availableUpdateDialog.show(qsTr("Check for updates"),
+                    qsTr("Version %1 is available, you have %2.")
+                        .arg(latest).arg(controller.releaseVersion));
         }
     }
 
@@ -484,6 +491,7 @@ ApplicationWindow {
                     mainWindow.updateCheckPending = true;
                     controller.checkForUpdates();
                 }
+                onInstallUpdateRequested: updateDialog.open()
                 onImportRequested: {
                     const failure = controller.importProfile();
                     if (failure.length > 0)
@@ -548,6 +556,20 @@ ApplicationWindow {
 
     AppDialog {
         id: messageDialog
+    }
+
+    AppDialog {
+        id: availableUpdateDialog
+
+        acceptText: controller.canInstallUpdate ? qsTr("Download and install") : qsTr("Open downloads")
+        cancelText: qsTr("Later")
+        cancellable: true
+        onAccepted: {
+            if (controller.canInstallUpdate)
+                controller.downloadUpdate();
+            else
+                Qt.openUrlExternally(controller.downloadUrl());
+        }
     }
 
     AppDialog {

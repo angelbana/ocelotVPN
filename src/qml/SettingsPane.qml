@@ -23,6 +23,7 @@ Item {
     id: root
 
     signal updatesRequested()
+    signal installUpdateRequested()
     signal removeRequested()
     signal importRequested()
     signal passwordsForgotten(int count)
@@ -508,18 +509,32 @@ Item {
                 AppToggle {
                     Layout.fillWidth: true
                     text: qsTr("Look for new versions")
-                    description: qsTr("Asks GitHub every few days whether a newer release exists. "
-                        + "Nothing is downloaded or installed without you.")
+                    description: qsTr("Checks GitHub daily for a newer release.")
                     checked: controller.checkUpdates
                     onSwitched: checked => controller.checkUpdates = checked
                 }
 
                 Separator {}
 
+                AppToggle {
+                    visible: root.onWindows
+                    Layout.fillWidth: true
+                    text: qsTr("Download updates in the background")
+                    description: qsTr("Downloads and verifies new versions automatically. "
+                        + "Installation starts after your confirmation and may ask for administrator rights.")
+                    enabled: controller.checkUpdates
+                    checked: controller.autoDownloadUpdates
+                    onSwitched: checked => controller.autoDownloadUpdates = checked
+                }
+
+                Separator { visible: root.onWindows }
+
                 SettingRow {
                     label: qsTr("Updates")
                     hint: controller.downloadingUpdate
                         ? qsTr("Downloading… %1%").arg(Math.round(controller.updateProgress * 100))
+                        : controller.updateDownloaded
+                            ? qsTr("An update is ready to install.")
                         : controller.checkingForUpdates
                             ? qsTr("Checking…")
                             : controller.latestVersion.length === 0
@@ -535,14 +550,18 @@ Item {
                         // Where the program can replace itself it offers to; where
                         // it cannot - the app image is one file its owner keeps
                         // where they like - it points at the page instead.
-                        text: !controller.updateAvailable
+                        text: controller.updateDownloaded
+                            ? qsTr("Install update")
+                            : !controller.updateAvailable
                             ? qsTr("Check now")
                             : controller.canInstallUpdate
                                 ? qsTr("Download and install")
                                 : qsTr("Download")
                         enabled: !controller.checkingForUpdates && !controller.downloadingUpdate
                         onClicked: {
-                            if (!controller.updateAvailable)
+                            if (controller.updateDownloaded)
+                                root.installUpdateRequested();
+                            else if (!controller.updateAvailable)
                                 root.updatesRequested();
                             else if (controller.canInstallUpdate)
                                 controller.downloadUpdate();

@@ -122,6 +122,8 @@ class VpnController : public QObject {
     Q_PROPERTY(bool notifyOnChange READ notifyOnChange WRITE setNotifyOnChange NOTIFY settingsChanged)
     // Asking GitHub, at most every few days, whether a newer release exists.
     Q_PROPERTY(bool checkUpdates READ checkUpdates WRITE setCheckUpdates NOTIFY settingsChanged)
+    Q_PROPERTY(bool autoDownloadUpdates READ autoDownloadUpdates WRITE setAutoDownloadUpdates NOTIFY settingsChanged)
+    Q_PROPERTY(bool backgroundUpdate READ backgroundUpdate NOTIFY updateProgressChanged)
 
     // Holding every other connection on this computer shut while the tunnel is
     // up, and keeping them shut if it falls over.
@@ -257,6 +259,9 @@ public:
     void setNotifyOnChange(bool value);
     bool checkUpdates() const;
     void setCheckUpdates(bool value);
+    bool autoDownloadUpdates() const;
+    void setAutoDownloadUpdates(bool value);
+    bool backgroundUpdate() const { return m_backgroundUpdate; }
     bool killSwitch() const;
     void setKillSwitch(bool value);
     bool killSwitchSupported() const;
@@ -416,6 +421,7 @@ private:
     void terminateConnection();
     void tryCheckLatestVersion();
     void startVersionRequest();
+    void maybeDownloadUpdate();
     void cleanupNrptRules(bool flushCache);
     bool m_dnsRepairing = false;
     bool m_dnsRepairPendingConnect = false;
@@ -476,6 +482,8 @@ private:
     bool m_reconnectOnDrop;
     bool m_notifyOnChange;
     bool m_checkUpdates;
+    bool m_autoDownloadUpdates;
+    bool m_backgroundUpdate = false;
     bool m_killSwitch;
     QString m_autoConnectProfile;
 
