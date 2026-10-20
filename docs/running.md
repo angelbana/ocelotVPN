@@ -139,6 +139,17 @@ openconnect libraries, `wintun.dll` and `vpnc-script.js`. Nothing is looked for
 in a system folder, which is what lets the same files work from a stick.
 
 
+**DNS repair on Windows.** Disconnect Ocelot, then open Settings, Maintenance,
+Split DNS, Repair. Ocelot removes only its local NRPT rules and checks the
+effective policy after clearing the resolver cache. New rules are journalled
+for recovery after a crash. Adapter DNS lists and other applications' policies
+are left intact; removing the Ocelot overlay restores the previous configuration.
+The selected gateway's DNS lookup is checked too. A remaining managed policy,
+an unidentified effective policy or a failed lookup is reported instead of
+claiming success. An effective rule without an identifiable local source must
+be investigated by its administrator; matching a corporate domain or server
+alone does not prove that Ocelot owns it.
+
 ## Linux
 
 Download `linux-appimage`, make it executable and run it:

@@ -1956,6 +1956,36 @@
 <context>
     <name>VpnController</name>
     <message>
+        <source>The DNS repair helper could not be opened.</source>
+        <translation>Не удалось открыть средство восстановления DNS.</translation>
+    </message>
+    <message>
+        <source>The DNS repair helper could not be written.</source>
+        <translation>Не удалось записать средство восстановления DNS.</translation>
+    </message>
+    <message>
+        <source>DNS repair was not completed. Other applications' and managed policies were preserved.
+%1</source>
+        <translation>Восстановление DNS не завершено. Правила других программ и управляемые политики сохранены.
+%1</translation>
+    </message>
+    <message>
+        <source>Ocelot DNS rules were removed and the effective policy was checked.</source>
+        <translation>Правила DNS Ocelot удалены, действующая политика проверена.</translation>
+    </message>
+    <message>
+        <source>Ocelot DNS rules were removed. Other DNS settings were preserved and the resolver cache was cleared.</source>
+        <translation>Правила DNS Ocelot удалены. Остальные настройки DNS сохранены, кеш разрешения имён очищен.</translation>
+    </message>
+    <message>
+        <source>The DNS repair process timed out.</source>
+        <translation>Превышено время ожидания восстановления DNS.</translation>
+    </message>
+    <message>
+        <source>Disconnect the VPN before repairing DNS.</source>
+        <translation>Отключите VPN перед восстановлением DNS.</translation>
+    </message>
+    <message>
         <source>Could not save the profile.</source>
         <translation>Не удалось сохранить профиль.</translation>
     </message>

@@ -330,6 +330,8 @@ public:
     // program does not get to disconnect - a crash, a kill, a reboot while
     // connected - and clears the resolver cache after them.
     Q_INVOKABLE void repairDns();
+    Q_PROPERTY(bool dnsRepairing READ dnsRepairing NOTIFY dnsRepairingChanged)
+    bool dnsRepairing() const { return m_dnsRepairing; }
 
     Q_INVOKABLE void showWindow();
     // Where the notification area icon sits, so the popover can be put beside
@@ -376,6 +378,7 @@ signals:
     // signed with, empty where there are no signatures.
     void updateReady(const QString& version, const QString& signer);
     void settingsChanged();
+    void dnsRepairingChanged();
     // This copy was installed; the interface offers to hand over to it.
     void installFinished();
 
@@ -414,6 +417,8 @@ private:
     void tryCheckLatestVersion();
     void startVersionRequest();
     void cleanupNrptRules(bool flushCache);
+    bool m_dnsRepairing = false;
+    bool m_dnsRepairPendingConnect = false;
     void applyLanguage();
     // Dialling again after a connection was lost rather than ended.
     void scheduleReconnect();

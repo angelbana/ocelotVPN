@@ -3,6 +3,13 @@ History of user-visible changes.
 Ocelot grew out of openconnect-gui. That project's own history stays with it
 upstream; this file begins with the first Ocelot release.
 
+## 1.1.3 - 2026-10-20
+
+- Verifies effective Windows DNS policy after repair, reports unresolved or
+  managed policies, and journals local NRPT rules for crash recovery.
+- Applies VPN DNS as a reversible NRPT overlay without replacing adapter DNS
+  settings, and reports failed or overridden DNS configuration.
+
 ## 1.1.2 - 2026-10-13
 
 - Keeps a saved password when a later code form reuses the password field

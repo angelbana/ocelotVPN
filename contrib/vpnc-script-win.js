@@ -39,11 +39,8 @@ var ERROR = 0, INFO = 1, DEBUG = 2, TRACE = 3;
 var logLevel = parseInt(env("LOG_LEVEL")) || INFO;
 var logTimestamps = false;
 
-// Every NRPT rule this program creates carries this in its Comment, and only
-// rules carrying it are ever removed. An administrator's own rule for the same
-// domain must survive us.
-var NRPT_TAG = "ocelot";
-var NRPT_DISPLAY_NAME = "Ocelot";
+// NRPT ownership and verification are shared with the application's repair
+// action in ocelot-dns.ps1.
 
 // How to add the default internal route
 // 0 - As interface gateway when setting properties
@@ -115,30 +112,37 @@ function run(cmd)
 function runPowerShell(psText)
 {
     var fso = WScript.CreateObject("Scripting.FileSystemObject");
-    var path = fso.GetSpecialFolder(2) + "\\oc-gui-nrpt.ps1";
-    var file = fso.CreateTextFile(path, true);
+    var path = fso.GetSpecialFolder(2) + "\\" + fso.GetTempName() + ".ps1";
+    var file = fso.CreateTextFile(path, true, true);
     file.WriteLine(psText);
     file.Close();
 
     // The short path has no spaces in it, which keeps the cmd.exe quoting simple.
     var shortPath = fso.GetFile(path).ShortPath;
-    var out = run("powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -File " + shortPath);
-
-    fso.DeleteFile(path, true);
-    return out;
+    var powershell = ws.ExpandEnvironmentStrings("%SystemRoot%") +
+        "\\System32\\WindowsPowerShell\\v1.0\\powershell.exe";
+    try {
+        return run('"' + powershell + '" -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' + shortPath + '"');
+    } finally {
+        fso.DeleteFile(path, true);
+    }
 }
 
-// Removes only the rules this program created; see NRPT_TAG.
-function removeOurNrptRules()
+function configureDns(action, zones, servers)
 {
-    runPowerShell(
-        "Get-DnsClientNrptRule | Where-Object { $_.Comment -eq '" + NRPT_TAG + "' } |" +
-        " ForEach-Object { Remove-DnsClientNrptRule -Name $_.Name -Force }");
-}
-
-function flushDnsCache()
-{
-    run("ipconfig /flushdns");
+    var fso = WScript.CreateObject("Scripting.FileSystemObject");
+    var helper = fso.GetParentFolderName(WScript.ScriptFullName) + "\\ocelot-dns.ps1";
+    var zoneValues = [], serverValues = [];
+    for (var i = 0; i < zones.length; i++)
+        zoneValues[zoneValues.length] = psString(zones[i]);
+    for (var i = 0; i < servers.length; i++)
+        serverValues[serverValues.length] = psString(servers[i]);
+    var previousExitCode = accumulatedExitCode;
+    runPowerShell("$ErrorActionPreference = 'Stop'; try { . " + psString(helper) +
+        "; Invoke-OcelotDns -Action " + action + " -Namespaces @(" + zoneValues.join(",") +
+        ") -Servers @(" + serverValues.join(",") + ") | ConvertTo-Json -Compress } " +
+        "catch { Write-Error $_.Exception.Message; exit 1 }");
+    return accumulatedExitCode == previousExitCode;
 }
 
 // Remember only routes we actually added. Existing routes belong to their
@@ -314,88 +318,35 @@ case "connect":
         echo(INFO, "Configured " + wins.length + " WINS servers: " + wins.join(" "));
     }
 
-    run("netsh interface ipv4 delete dnsservers " + env("TUNIDX") + " all");
-    run("netsh interface ipv6 delete dnsservers " + env("TUNIDX") + " all");
-
-    // A rule left behind by a previous run - a crash, a kill, a reboot while
-    // connected - would keep sending its domain to a server that is no longer
-    // reachable, so clear ours before adding any.
-    removeOurNrptRules();
-
+    // DNS is an additive NRPT overlay: leave all adapter DNS settings intact.
+    // Removing only our rules restores the previous policy without overwriting
+    // configuration changed by another VPN while Ocelot was connected.
+    if (!configureDns("Cleanup", [], []))
+        WScript.Quit(1);
     if (env("INTERNAL_IP4_DNS")) {
-        var dns = env("INTERNAL_IP4_DNS").split(/ /);
-        // openconnect fills CISCO_SPLIT_DNS only when the server asked for
-        // specific domains to be resolved through the tunnel. When it is empty
-        // the server wants all of DNS, which is what the interface-wide
-        // servers below do.
-        var splitDns = env("CISCO_SPLIT_DNS");
-
-        // The program can say that every lookup should go through the tunnel,
-        // whatever the server asked for. Treating the split list as empty is
-        // what that means here: the branch below then points the interface at
-        // the tunnel's resolvers and claims the whole namespace.
-        if (env("OC_DNS_MODE") == "all") {
-            echo(INFO, "Sending all DNS through the tunnel, as the profile asks");
-            splitDns = "";
-        }
-
+        var dns = env("INTERNAL_IP4_DNS").split(/ +/);
+        var splitDns = env("OC_DNS_MODE") == "all" ? "" : env("CISCO_SPLIT_DNS");
+        var namespaces = [];
         if (splitDns) {
             var zones = splitDns.split(/,/);
-            var nameServers = [];
-            for (var i = 0; i < dns.length; i++)
-                nameServers[nameServers.length] = "'" + dns[i] + "'";
-
-            var ps = [];
             for (var i = 0; i < zones.length; i++) {
                 var zone = zones[i].trim();
                 if (!zone)
                     continue;
-                // A leading dot makes the rule match the domain and everything
-                // under it, which is what a split-DNS zone means.
                 if (zone.charAt(0) != ".")
                     zone = "." + zone;
-                ps[ps.length] =
-                    "Add-DnsClientNrptRule -Namespace '" + zone + "'" +
-                    " -NameServers " + nameServers.join(",") +
-                    " -Comment '" + NRPT_TAG + "'" +
-                    " -DisplayName '" + NRPT_DISPLAY_NAME + "'";
+                namespaces[namespaces.length] = zone;
             }
-
-            if (ps.length) {
-                runPowerShell(ps.join("\r\n"));
-                // Anything already cached for these domains was answered by the
-                // resolvers in use before the tunnel came up.
-                flushDnsCache();
-                echo(INFO, "Configured split DNS for " + ps.length + " zone(s): " + splitDns);
-                echo(INFO, "  through " + dns.length + " DNS server(s): " + dns.join(" "));
+            if (!namespaces.length) {
+                echo(ERROR, "The server supplied an empty split DNS domain list");
+                WScript.Quit(1);
             }
         } else {
-            if (env("OC_DNS_MODE") == "all") {
-                var allServers = [];
-                for (var i = 0; i < dns.length; i++)
-                    allServers[allServers.length] = "'" + dns[i] + "'";
-                runPowerShell(
-                    "Add-DnsClientNrptRule -Namespace '.'" +
-                    " -NameServers " + allServers.join(",") +
-                    " -Comment '" + NRPT_TAG + "'" +
-                    " -DisplayName '" + NRPT_DISPLAY_NAME + "'");
-                flushDnsCache();
-                echo(INFO, "Every name now resolves through " + dns.join(" "));
-            }
-
-            for (var i = 0; i < dns.length; i++) {
-                var protocol = dns[i].indexOf(":") !== -1 ? "ipv6" : "ipv4";
-                // With 'validate=yes' (the default on newer Windows versions), Windows will try to
-                // connect to the DNS server, time out after ~10 seconds, and print a warning, but
-                // nevertheless add the specified server. Adding 'validate=no' is thus NECESSARY.
-                // We know that Windows 7 supports/requires the 'validate=no' flag (see #52). If
-                // someone using an older version of Windows that errors out on the unknown flag
-                // really wants us to support it, we'll need to figure out how to distinguish it.
-                run("netsh interface " + protocol + " add dnsservers " + env("TUNIDX") + " " + dns[i]
-                   + " validate=no");
-            }
-            echo(INFO, "Configured " + dns.length + " DNS servers: " + dns.join(" "));
+            namespaces[0] = ".";
         }
+        if (!configureDns("Apply", namespaces, dns))
+            WScript.Quit(1);
+        echo(INFO, "Configured DNS for " + namespaces.length + " zone(s) through " + dns.join(" "));
     }
     echo(INFO, "done.");
 
@@ -460,8 +411,7 @@ case "disconnect":
 
     // Take our split-DNS rules out before anything else: they point at servers
     // that stop answering the moment the tunnel goes.
-    removeOurNrptRules();
-    flushDnsCache();
+    configureDns("Cleanup", [], []);
 
     // Delete explicit route for the VPN gateway
     removeOuterRoutes();

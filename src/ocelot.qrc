@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="">
+        <file alias="ocelot-dns.ps1">../contrib/ocelot-dns.ps1</file>
         <file>images/network-connected.png</file>
         <file>images/network-disconnected.png</file>
         <file>fonts/Nunito.ttf</file>

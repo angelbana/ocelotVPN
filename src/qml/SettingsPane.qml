@@ -568,6 +568,7 @@ Item {
                     GhostButton {
                         glyph: "shield"
                         text: qsTr("Repair")
+                        enabled: !controller.dnsRepairing && controller.status === 1
                         onClicked: controller.repairDns()
                     }
                 }

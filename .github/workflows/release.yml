@@ -181,6 +181,39 @@ jobs:
           echo "PORTABLE_ZIP=$name" >> "$GITHUB_ENV"
           ls -l "$name"
 
+      - name: Verify the signed Windows packages
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: pwsh
+        run: |
+          $installer = @(Get-ChildItem "$env:NSIS_DIR/*-win64.exe")
+          if ($installer.Count -ne 1) { throw "Expected one installer" }
+          $portableRoot = Join-Path $env:RUNNER_TEMP ([guid]::NewGuid().ToString())
+          Expand-Archive -LiteralPath $env:PORTABLE_ZIP -DestinationPath $portableRoot
+          $portableExe = Join-Path $portableRoot "Ocelot/ocelot.exe"
+          foreach ($file in @($installer[0].FullName, $portableExe)) {
+              $signature = Get-AuthenticodeSignature -LiteralPath $file
+              if ($signature.Status -ne 'Valid' -or !$signature.TimeStamperCertificate) {
+                  throw "Invalid or untimestamped signature: $file"
+              }
+              Write-Output "Authenticode verified: $([IO.Path]::GetFileName($file))"
+          }
+          foreach ($file in @($installer[0].FullName, $env:PORTABLE_ZIP)) {
+              $expected = ((Get-Content -LiteralPath "$file.sha512" -Raw).Trim() -split '\s+')[0]
+              if ((Get-FileHash -LiteralPath $file -Algorithm SHA512).Hash -ne $expected) {
+                  throw "Checksum mismatch: $file"
+              }
+              $hash = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash
+              Write-Output "SHA256 $([IO.Path]::GetFileName($file)) $hash"
+          }
+          foreach ($pair in @(
+              @('contrib/ocelot-dns.ps1', 'Ocelot/ocelot-dns.ps1'),
+              @('contrib/vpnc-script-win.js', 'Ocelot/vpnc-script.js'))) {
+              if ((Get-FileHash -LiteralPath $pair[0]).Hash -ne
+                  (Get-FileHash -LiteralPath (Join-Path $portableRoot $pair[1])).Hash) {
+                  throw "Portable DNS script differs from its source: $($pair[1])"
+              }
+          }
+
       - uses: actions/upload-artifact@v7
         with:
           name: windows-installer
@@ -303,6 +336,23 @@ jobs:
 
       - name: Checksum the AppImage
         run: sha512sum ocelot-x86_64.AppImage > ocelot-x86_64.AppImage.sha512
+
+      - name: Verify AppImage startup
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: 1
+          QT_QPA_PLATFORM: offscreen
+          QT_QPA_PLATFORM_PLUGIN_PATH: /usr/lib64/qt6/plugins/platforms
+          QT_QUICK_BACKEND: software
+        run: |
+          smoke_root=$(mktemp -d)
+          export XDG_CONFIG_HOME="$smoke_root/config"
+          export XDG_CACHE_HOME="$smoke_root/cache"
+          export XDG_RUNTIME_DIR="$smoke_root/runtime"
+          mkdir -m 700 "$XDG_RUNTIME_DIR"
+          ./ocelot-x86_64.AppImage --version
+          result=0
+          timeout 5 ./ocelot-x86_64.AppImage || result=$?
+          test "$result" -eq 124
 
       - uses: actions/upload-artifact@v7
         with:

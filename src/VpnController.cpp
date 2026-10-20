@@ -67,6 +67,7 @@ extern "C" {
 #include <QFileInfo>
 #include <QNetworkRequest>
 #include <QProcess>
+#include <QTemporaryFile>
 #include <QRegularExpression>
 #include <QStandardPaths>
 #include <QSysInfo>
@@ -158,36 +159,83 @@ fail:
 void VpnController::cleanupNrptRules(bool flushCache)
 {
 #ifdef Q_OS_WIN
-    // Only rules carrying this comment are removed: an administrator's own rule
-    // for the same domain has to survive us. The vpnc script writes the same
-    // tag when it creates them - keep the two in step, see
-    // contrib/vpnc-script-win.js.
-    const QString script = QStringLiteral(
-        "Get-DnsClientNrptRule | Where-Object { $_.Comment -eq 'ocelot' } |"
-        " ForEach-Object { Remove-DnsClientNrptRule -Name $_.Name -Force }");
-
-    // Removing a rule needs administrator rights, which the program already has:
-    // it asks for them at every start, to create the tun device.
+    if (m_dnsRepairing) {
+        return;
+    }
+    QFile helper(QStringLiteral(":/ocelot-dns.ps1"));
+    if (helper.open(QIODevice::ReadOnly) == false) {
+        emit errorOccurred(tr("Split DNS"), tr("The DNS repair helper could not be opened."));
+        return;
+    }
     QProcess* process = new QProcess(this);
-    connect(process, &QProcess::finished, this,
-        [this, process, flushCache](int exitCode, QProcess::ExitStatus status) {
-            if (status != QProcess::NormalExit || exitCode != 0) {
-                Logger::instance().addMessage(
-                    tr("Could not clear the split DNS rules (exit code %1)").arg(exitCode));
-            } else if (flushCache == true) {
-                // Whatever is cached for those domains was answered through the
-                // tunnel, so it outlives the rules unless the cache is dropped.
-                QProcess::startDetached(QStringLiteral("ipconfig"),
-                    QStringList() << QStringLiteral("/flushdns"));
-            }
-            process->deleteLater();
-        });
+    QTemporaryFile* script = new QTemporaryFile(
+        QDir::tempPath() + QStringLiteral("/ocelot-dns-XXXXXX.ps1"), process);
+    const QString host = QString::fromLatin1(QUrl::toAce(QUrl::fromUserInput(m_gateway).host()));
+    const QByteArray gatewayArgument = flushCache
+        ? (QStringLiteral(" -GatewayHost '") + QString(host).replace(QLatin1Char('\''), QStringLiteral("''"))
+            + QLatin1Char('\'')).toUtf8() : QByteArray();
+    const QByteArray command = helper.readAll() + QByteArrayLiteral(
+        "\n[Console]::OutputEncoding = New-Object Text.UTF8Encoding($false)\n"
+        "try { Invoke-OcelotDns -Action Cleanup") + gatewayArgument + QByteArrayLiteral(
+        " | ConvertTo-Json -Compress; exit 0 }\n"
+        "catch { [Console]::Error.WriteLine($_.Exception.Message); exit 1 }\n");
+    if (script->open() == false || script->write(command) != command.size()
+        || script->flush() == false) {
+        process->deleteLater();
+        emit errorOccurred(tr("Split DNS"), tr("The DNS repair helper could not be written."));
+        return;
+    }
+    script->close();
+    m_dnsRepairing = true;
+    emit dnsRepairingChanged();
 
-    process->start(QStringLiteral("powershell"), QStringList()
+    const auto finish = [this, process, flushCache](bool success, const QString& detail) {
+        if (process->property("dnsHandled").toBool()) {
+            return;
+        }
+        process->setProperty("dnsHandled", true);
+        m_dnsRepairing = false;
+        emit dnsRepairingChanged();
+        if (success == false) {
+            const QString message = tr("DNS repair was not completed. Other applications' and managed policies were preserved.\n%1").arg(detail);
+            Logger::instance().addMessage(message);
+            if (flushCache || m_dnsRepairPendingConnect) {
+                emit errorOccurred(tr("Split DNS"), message);
+            }
+            m_dnsRepairPendingConnect = false;
+        } else {
+            Logger::instance().addMessage(tr("Ocelot DNS rules were removed and the effective policy was checked."));
+            if (flushCache) {
+                emit noticeRequested(tr("Split DNS"), tr("Ocelot DNS rules were removed. Other DNS settings were preserved and the resolver cache was cleared."));
+            }
+            if (m_dnsRepairPendingConnect) {
+                m_dnsRepairPendingConnect = false;
+                QTimer::singleShot(0, this, &VpnController::connectVpn);
+            }
+        }
+        process->deleteLater();
+    };
+    connect(process, &QProcess::finished, this,
+        [process, finish](int exitCode, QProcess::ExitStatus status) {
+            finish(status == QProcess::NormalExit && exitCode == 0,
+                QString::fromUtf8(process->readAllStandardError()).trimmed().left(4000));
+        });
+    connect(process, &QProcess::errorOccurred, this,
+        [process, finish](QProcess::ProcessError) { finish(false, process->errorString()); });
+    QTimer* deadline = new QTimer(process);
+    deadline->setSingleShot(true);
+    connect(deadline, &QTimer::timeout, process, [process, finish]() {
+        process->kill();
+        finish(false, tr("The DNS repair process timed out."));
+    });
+    deadline->start(45000);
+    const QString powershell = qEnvironmentVariable("SystemRoot")
+        + QStringLiteral("/System32/WindowsPowerShell/v1.0/powershell.exe");
+    process->start(powershell, QStringList()
             << QStringLiteral("-NoProfile")
             << QStringLiteral("-NonInteractive")
             << QStringLiteral("-ExecutionPolicy") << QStringLiteral("Bypass")
-            << QStringLiteral("-Command") << script);
+            << QStringLiteral("-File") << script->fileName());
 #else
     Q_UNUSED(flushCache);
 #endif
@@ -254,6 +302,12 @@ void VpnController::signInStarted(const QString& address)
 
 void VpnController::repairDns()
 {
+    if (m_status != StatusDisconnected || m_futureWatcher.isRunning()) {
+        emit errorOccurred(tr("Split DNS"), tr("Disconnect the VPN before repairing DNS."));
+        return;
+    }
+    m_dnsRepairPendingConnect = false;
+    cancelReconnect();
     Logger::instance().addMessage(tr("Clearing the split DNS rules left behind by the program"));
     cleanupNrptRules(true);
 }
@@ -388,8 +442,7 @@ VpnController::VpnController(bool useTray, QObject* parent)
     // A connection that ended without a disconnect - a crash, a kill, a reboot
     // while connected - leaves its split DNS rules behind, and the domains they
     // name stop resolving. Starting the program is enough to undo that; the
-    // resolver cache is left alone, since clearing it at every start would be a
-    // visible thing to do without being asked.
+    // Effective policy must be checked before another connection can begin.
     cleanupNrptRules(false);
 
     if (useTray) {
@@ -1062,6 +1115,10 @@ int VpnController::appLogLevel() const
 
 void VpnController::connectVpn()
 {
+    if (m_dnsRepairing) {
+        m_dnsRepairPendingConnect = true;
+        return;
+    }
     cancelReconnect();
     m_userAskedToDisconnect = false;
 
@@ -1158,6 +1215,7 @@ void VpnController::connectVpn()
 
 void VpnController::disconnectVpn()
 {
+    m_dnsRepairPendingConnect = false;
     // Asked for by a person, so the connection is not one to dial again.
     m_userAskedToDisconnect = true;
     m_reconnectAttempts = 0;

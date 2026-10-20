@@ -27,6 +27,13 @@ ExternalProject_Add(vpnc-scripts-${vpnc-scripts-TAG}
 )
 
 install(FILES  ${CMAKE_BINARY_DIR}/external/vpnc-script.js
+   ${CMAKE_SOURCE_DIR}/contrib/ocelot-dns.ps1
    DESTINATION .
    COMPONENT vpnc_script
 )
+
+# The connection script loads this helper beside itself in developer builds too.
+configure_file(${CMAKE_SOURCE_DIR}/contrib/vpnc-script-win.js
+    ${CMAKE_BINARY_DIR}/external/vpnc-script.js COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/contrib/ocelot-dns.ps1
+    ${CMAKE_BINARY_DIR}/external/ocelot-dns.ps1 COPYONLY)
