@@ -132,9 +132,17 @@ jobs:
           sub: ${{ secrets.SIGNSERVER_SUB }}
           secret: ${{ secrets.SIGNSERVER_SECRET }}
           path: ${{ env.STAGED_EXE }}
-          in-place: true
+          output-dir: ${{ runner.temp }}/ocelot-signed-program
           require-timestamp: true
           fail-on-warning: true
+
+      # A reset upload can leave the action holding its input open on Windows.
+      # Sign into a separate directory, then replace it after that process exits.
+      - name: Restore the signed staged program
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: pwsh
+        run: |
+          Copy-Item -LiteralPath "$env:RUNNER_TEMP/ocelot-signed-program/ocelot.exe" -Destination $env:STAGED_EXE -Force
 
       # makensis rather than cpack: cpack would run its install step again and
       # overwrite the signature in the staging tree. NSIS only reads what is
@@ -151,9 +159,17 @@ jobs:
           sub: ${{ secrets.SIGNSERVER_SUB }}
           secret: ${{ secrets.SIGNSERVER_SECRET }}
           path: ${{ env.NSIS_DIR }}/*-win64.exe
-          in-place: true
+          output-dir: ${{ runner.temp }}/ocelot-signed-installer
           require-timestamp: true
           fail-on-warning: true
+
+      - name: Restore the signed installer
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: pwsh
+        run: |
+          $signed = @(Get-ChildItem "$env:RUNNER_TEMP/ocelot-signed-installer/*-win64.exe")
+          if ($signed.Count -ne 1) { throw "Expected one signed installer" }
+          Copy-Item -LiteralPath $signed[0].FullName -Destination (Join-Path $env:NSIS_DIR $signed[0].Name) -Force
 
       - name: Refresh the checksum of the signed installer
         run: |
