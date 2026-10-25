@@ -8,7 +8,8 @@ A release is made by
 of the form `vX.Y.Z` and the run builds the Windows installer, the portable
 archive it is assembled from, and the Linux app image; signs the installer and
 the program inside it; and attaches all three to the release page together with
-their checksums.
+their checksums to a draft release. Publish the draft only after checking all
+packages and the VirusTotal result.
 
 ## Version scheme
 
@@ -35,11 +36,14 @@ and the file names.
  4. Tag and push:
 
         git tag -a v1.0.0 -m "Ocelot 1.0.0"
-        git push origin v1.0.0
+        git push public v1.0.0
 
-The run then does the rest. Signing happens only for tag runs: the token is
-held in the repository's secrets, and a branch build is left unsigned on
-purpose.
+Verify that `public` points to `angelbana/ocelotVPN` before pushing; `origin`
+may point to upstream. The run builds and attaches the packages but leaves the
+release as a draft. Check both platform jobs, signatures, checksums and the
+completed VirusTotal report, then publish the draft and mark it Latest.
+Signing requires a verified release tag: the token is held in the repository's
+secrets, and an ordinary branch build is left unsigned on purpose.
 
 ## Signing
 

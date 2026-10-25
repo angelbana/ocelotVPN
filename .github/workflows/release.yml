@@ -339,7 +339,7 @@ jobs:
           $files = @(Get-ChildItem "$env:NSIS_DIR/*-win64.exe", "$env:NSIS_DIR/*-win64.exe.sha512", "$env:PORTABLE_ZIP", "$env:PORTABLE_ZIP.sha512" | ForEach-Object { $_.FullName })
           gh release view $env:RELEASE_TAG 2>$null | Out-Null
           if ($LASTEXITCODE -ne 0) {
-              gh release create $env:RELEASE_TAG --verify-tag --title $env:RELEASE_TAG --notes "Built from $env:RELEASE_COMMIT."
+              gh release create $env:RELEASE_TAG --verify-tag --draft --title $env:RELEASE_TAG --notes "Built from $env:RELEASE_COMMIT."
               if ($LASTEXITCODE -ne 0) {
                   gh release view $env:RELEASE_TAG 2>$null | Out-Null
                   if ($LASTEXITCODE -ne 0) { throw "Release could not be created or found" }
@@ -507,7 +507,7 @@ jobs:
           # the first run of this: only the Windows job created one, and it is
           # the slowest of the four.
           if ! gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-              if ! gh release create "$RELEASE_TAG" --verify-tag --title "$RELEASE_TAG" \
+              if ! gh release create "$RELEASE_TAG" --verify-tag --draft --title "$RELEASE_TAG" \
                   --notes "Built from $RELEASE_COMMIT."; then
                   gh release view "$RELEASE_TAG" >/dev/null
               fi

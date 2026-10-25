@@ -15,6 +15,8 @@ upstream; this file begins with the first Ocelot release.
 - Retains signed Windows artifacts before scanning and supports reviewed manual
   release retries without moving an existing tag. Detection warnings remain
   visible with the report's actual results.
+- Keeps new releases in draft until all platform packages and scan results
+  have been reviewed.
 
 ## 1.1.4 - 2026-10-20
 
