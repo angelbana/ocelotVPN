@@ -7,9 +7,9 @@ A release is made by
 [.github/workflows/release.yml](../.github/workflows/release.yml). Push a tag
 of the form `vX.Y.Z` and the run builds the Windows installer, the portable
 archive it is assembled from, and the Linux app image; signs the installer and
-the program inside it; and attaches all three to the release page together with
-their checksums to a draft release. Publish the draft only after checking all
-packages and the VirusTotal result.
+the program inside it; and attaches all three, together with their checksums,
+to a draft release. Publish the draft only after checking all packages and the
+VirusTotal result.
 
 ## Version scheme
 

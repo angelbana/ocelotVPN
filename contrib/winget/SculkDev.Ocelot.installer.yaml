@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://aka.ms/winget-manifest.installer.1.6.0.schema.json
 
 PackageIdentifier: SculkDev.Ocelot
-PackageVersion: 1.1.4
+PackageVersion: 1.1.5
 InstallerLocale: en-US
 MinimumOSVersion: 10.0.0.0
 InstallerType: nullsoft
@@ -11,10 +11,10 @@ InstallModes:
   - silent
   - silentWithProgress
 UpgradeBehavior: install
-ReleaseDate: 2026-10-20
+ReleaseDate: 2026-10-26
 Installers:
   - Architecture: x64
-    InstallerUrl: https://github.com/angelbana/ocelotVPN/releases/download/v1.1.4/ocelot-1.1.4-oc-9.12-win64.exe
-    InstallerSha256: 8C1BD6ACB37834DA28D39DCB371A6AA09CAEC03CEEB12ED6ECAB2C3860635538
+    InstallerUrl: https://github.com/angelbana/ocelotVPN/releases/download/v1.1.5/ocelot-1.1.5-oc-9.12-win64.exe
+    InstallerSha256: 9BDBF31FDA5DAFE379941836A1AD510194A61A11A2984B76B13E6B6D803C2FA9
 ManifestType: installer
 ManifestVersion: 1.6.0
