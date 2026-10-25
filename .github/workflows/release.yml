@@ -29,18 +29,29 @@ on:
           - all
           - windows
           - linux
+      release_tag:
+        description: 'Existing release tag to rebuild without moving it (for example v1.1.5)'
+        type: string
+        default: ''
+      allow_reported_detections:
+        description: 'Publish this manually reviewed scan with its detections disclosed'
+        type: boolean
+        default: false
+
+env:
+  RELEASE_TAG: ${{ inputs.release_tag || (startsWith(github.ref, 'refs/tags/') && github.ref_name) || '' }}
 
 # A push replaces the one before it: the older run is building code nobody is
 # waiting for any more, and it takes runners - the Intel Mac especially - from
 # the run that matters.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ inputs.release_tag || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
   windows:
     if: >-
-      startsWith(github.ref, 'refs/tags/')
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/'))
       || inputs.platforms == 'all'
       || inputs.platforms == 'windows'
     runs-on: windows-latest
@@ -62,6 +73,29 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0    # the version comes from git describe
+          ref: ${{ env.RELEASE_TAG && format('refs/tags/{0}', env.RELEASE_TAG) || github.ref }}
+
+      - name: Verify the release source
+        if: env.RELEASE_TAG != ''
+        shell: pwsh
+        run: |
+          if ($env:RELEASE_TAG -notmatch '^v[0-9]+\.[0-9]+\.[0-9]+$') {
+              throw "Expected an existing vX.Y.Z release tag"
+          }
+          $tagRef = 'refs/tags/' + $env:RELEASE_TAG
+          $releaseCommit = (git rev-parse --verify "$tagRef^{commit}").Trim()
+          if ($LASTEXITCODE -ne 0) { throw "Release tag could not be resolved" }
+          $checkoutCommit = (git rev-parse HEAD).Trim()
+          if ($LASTEXITCODE -ne 0 -or $checkoutCommit -ne $releaseCommit) {
+              throw "Checkout does not match the release tag"
+          }
+          $project = Get-Content -LiteralPath CMakeLists.txt -Raw
+          $version = [regex]::Match($project, 'project\(\s*ocelot\s+VERSION\s+([0-9]+\.[0-9]+\.[0-9]+)')
+          if (!$version.Success -or $version.Groups[1].Value -ne $env:RELEASE_TAG.Substring(1)) {
+              throw "Application version does not match the release tag"
+          }
+          "RELEASE_COMMIT=$releaseCommit" >> $env:GITHUB_ENV
+          Write-Output "Release source: $env:RELEASE_TAG at $releaseCommit"
 
       - uses: msys2/setup-msys2@v2
         with:
@@ -126,11 +160,10 @@ jobs:
           echo "STAGED_EXE=$(ls -d build/_CPack_Packages/win64/NSIS/*/App/ocelot.exe)" >> "$GITHUB_ENV"
           echo "NSIS_DIR=build/_CPack_Packages/win64/NSIS" >> "$GITHUB_ENV"
 
-      # Only for tags. A branch run is here to check that the packaging still
-      # works, and reaching out to the signing service for every push would
-      # spend it on builds nobody receives.
+      # Sign verified release tags, including explicit manual rebuilds. Ordinary
+      # branch packaging checks do not use the signing service.
       - name: Sign the staged program
-        if: startsWith(github.ref, 'refs/tags/')
+        if: env.RELEASE_TAG != ''
         uses: sculkdev/sign-with-signserver@v1
         with:
           url: ${{ secrets.SIGNSERVER_URL }}
@@ -144,7 +177,7 @@ jobs:
       # A reset upload can leave the action holding its input open on Windows.
       # Sign into a separate directory, then replace it after that process exits.
       - name: Restore the signed staged program
-        if: startsWith(github.ref, 'refs/tags/')
+        if: env.RELEASE_TAG != ''
         shell: pwsh
         run: |
           Copy-Item -LiteralPath "$env:RUNNER_TEMP/ocelot-signed-program/ocelot.exe" -Destination $env:STAGED_EXE -Force
@@ -157,7 +190,7 @@ jobs:
 
       - name: Sign the installer
         id: sign-installer
-        if: startsWith(github.ref, 'refs/tags/')
+        if: env.RELEASE_TAG != ''
         uses: sculkdev/sign-with-signserver@v1
         with:
           url: ${{ secrets.SIGNSERVER_URL }}
@@ -169,7 +202,7 @@ jobs:
           fail-on-warning: true
 
       - name: Restore the signed installer
-        if: startsWith(github.ref, 'refs/tags/')
+        if: env.RELEASE_TAG != ''
         shell: pwsh
         run: |
           $signed = @(Get-ChildItem "$env:RUNNER_TEMP/ocelot-signed-installer/*-win64.exe")
@@ -203,7 +236,7 @@ jobs:
           ls -l "$name"
 
       - name: Verify the signed Windows packages
-        if: startsWith(github.ref, 'refs/tags/')
+        if: env.RELEASE_TAG != ''
         shell: pwsh
         run: |
           $installer = @(Get-ChildItem "$env:NSIS_DIR/*-win64.exe")
@@ -235,32 +268,10 @@ jobs:
               }
           }
 
-      - name: Scan the signed Windows installer
-        if: startsWith(github.ref, 'refs/tags/')
-        shell: pwsh
-        env:
-          VT_API_KEY: ${{ secrets.VT_API_KEY }}
-        run: |
-          $installer = @(Get-ChildItem "$env:NSIS_DIR/*-win64.exe")
-          if ($installer.Count -ne 1) { throw "Expected one signed installer" }
-          node contrib/virustotal.cjs $installer[0].FullName --output virustotal-report.json
-          if ($LASTEXITCODE -ne 0) { throw "VirusTotal analysis was not completed" }
-          $report = Get-Content -LiteralPath virustotal-report.json -Raw | ConvertFrom-Json
-          if ($report.stats.malicious -gt 0 -or $report.stats.suspicious -gt 0) {
-              throw "VirusTotal detections require review before release"
-          }
-
-      - name: Preserve the VirusTotal report
-        if: always() && startsWith(github.ref, 'refs/tags/')
-        uses: actions/upload-artifact@v7
-        with:
-          name: windows-virustotal-report
-          path: virustotal-report.json
-          if-no-files-found: warn
-
       - uses: actions/upload-artifact@v7
         with:
           name: windows-installer
+          if-no-files-found: error
           path: |
             build/_CPack_Packages/win64/NSIS/*-win64.exe
             build/_CPack_Packages/win64/NSIS/*-win64.exe.sha512
@@ -268,16 +279,56 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: windows-portable
+          if-no-files-found: error
           path: |
             ${{ env.PORTABLE_ZIP }}
             ${{ env.PORTABLE_ZIP }}.sha512
 
+      - name: Scan the signed Windows installer
+        if: env.RELEASE_TAG != ''
+        shell: pwsh
+        env:
+          VT_API_KEY: ${{ secrets.VT_API_KEY }}
+          ALLOW_VT_DETECTIONS: ${{ github.event_name == 'workflow_dispatch' && inputs.allow_reported_detections && 'true' || 'false' }}
+        run: |
+          $installer = @(Get-ChildItem "$env:NSIS_DIR/*-win64.exe")
+          if ($installer.Count -ne 1) { throw "Expected one signed installer" }
+          node contrib/virustotal.cjs $installer[0].FullName --output virustotal-report.json
+          if ($LASTEXITCODE -ne 0) { throw "VirusTotal analysis was not completed" }
+          $report = Get-Content -LiteralPath virustotal-report.json -Raw | ConvertFrom-Json
+          if ($report.status -ne 'completed' -or !$report.stats) {
+              throw "VirusTotal report is incomplete"
+          }
+          $checkedEngines = 0
+          foreach ($category in @('malicious', 'suspicious', 'undetected', 'harmless')) {
+              $value = $report.stats.$category
+              if (($value -isnot [int] -and $value -isnot [long]) -or $value -lt 0) {
+                  throw "VirusTotal report contains invalid detection counts"
+              }
+              $checkedEngines += $value
+          }
+          if ($checkedEngines -le 0) { throw "VirusTotal report contains no verdicts" }
+          if ($report.stats.malicious -gt 0 -or $report.stats.suspicious -gt 0) {
+              if ($env:ALLOW_VT_DETECTIONS -ne 'true') {
+                  throw "VirusTotal detections require an explicitly reviewed manual release"
+              }
+              Write-Output "::warning::VirusTotal reports $($report.stats.malicious) malicious and $($report.stats.suspicious) suspicious verdicts. Reviewed manual publication: $($report.reportUrl)"
+          }
+
+      - name: Preserve the VirusTotal report
+        if: always() && env.RELEASE_TAG != ''
+        uses: actions/upload-artifact@v7
+        with:
+          name: windows-virustotal-report
+          path: virustotal-report.json
+          if-no-files-found: warn
+
       # Artifacts of a run expire; a release keeps the installer at a stable
-      # address. Only for tags - a manual run has nothing to attach it to.
+      # address. Manual rebuilds attach to the same verified release tag.
       # Run in pwsh: the MSYS2 shell does not carry the Windows PATH, so gh
       # would not be found there.
       - name: Publish the installer and the portable archive on the release page
-        if: startsWith(github.ref, 'refs/tags/')
+        if: env.RELEASE_TAG != ''
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
@@ -286,28 +337,42 @@ jobs:
           # one got here first, then add to it. No job waits for another, and
           # none of them assumes a release already exists.
           $files = @(Get-ChildItem "$env:NSIS_DIR/*-win64.exe", "$env:NSIS_DIR/*-win64.exe.sha512", "$env:PORTABLE_ZIP", "$env:PORTABLE_ZIP.sha512" | ForEach-Object { $_.FullName })
-          gh release view $env:GITHUB_REF_NAME 2>$null | Out-Null
+          gh release view $env:RELEASE_TAG 2>$null | Out-Null
           if ($LASTEXITCODE -ne 0) {
-              gh release create $env:GITHUB_REF_NAME --title $env:GITHUB_REF_NAME --notes "Built from $env:GITHUB_SHA."
+              gh release create $env:RELEASE_TAG --verify-tag --title $env:RELEASE_TAG --notes "Built from $env:RELEASE_COMMIT."
+              if ($LASTEXITCODE -ne 0) {
+                  gh release view $env:RELEASE_TAG 2>$null | Out-Null
+                  if ($LASTEXITCODE -ne 0) { throw "Release could not be created or found" }
+              }
           }
-          gh release upload $env:GITHUB_REF_NAME $files --clobber
+          gh release upload $env:RELEASE_TAG $files --clobber
           if ($LASTEXITCODE -ne 0) { throw "Windows release upload failed" }
           $scan = Get-Content -LiteralPath virustotal-report.json -Raw | ConvertFrom-Json
-          $body = (gh release view $env:GITHUB_REF_NAME --json body --jq '.body') -join "`n"
+          $body = (gh release view $env:RELEASE_TAG --json body --jq '.body') -join "`n"
           if ($LASTEXITCODE -ne 0) { throw "Release notes could not be read" }
-          if (!$body.Contains($scan.reportUrl)) {
-              $notesPath = Join-Path $env:RUNNER_TEMP 'ocelot-release-notes.md'
-              $notes = "$body`n`nVirusTotal: [Windows installer]($($scan.reportUrl)).`n"
-              [IO.File]::WriteAllText($notesPath, $notes, [Text.UTF8Encoding]::new($false))
-              gh release edit $env:GITHUB_REF_NAME --notes-file $notesPath
-              if ($LASTEXITCODE -ne 0) { throw "VirusTotal release link could not be saved" }
+          $startMarker = '<!-- virustotal-report:start -->'
+          $endMarker = '<!-- virustotal-report:end -->'
+          $summary = "### VirusTotal`n`n[Windows installer]($($scan.reportUrl)).`n`nMalicious: $($scan.stats.malicious); suspicious: $($scan.stats.suspicious); undetected: $($scan.stats.undetected); harmless: $($scan.stats.harmless). Analysis: $($scan.analysisDate)."
+          if ($scan.stats.malicious -gt 0 -or $scan.stats.suspicious -gt 0) {
+              $summary += "`n`nWarning: this report contains detections; they have not been confirmed as false positives."
           }
+          $section = "$startMarker`n$summary`n$endMarker"
+          $pattern = '(?s)' + [regex]::Escape($startMarker) + '.*?' + [regex]::Escape($endMarker)
+          if ([regex]::IsMatch($body, $pattern)) {
+              $notes = [regex]::Replace($body, $pattern, [System.Text.RegularExpressions.MatchEvaluator]{ param($match) $section })
+          } else {
+              $notes = "$body`n`n$section`n"
+          }
+          $notesPath = Join-Path $env:RUNNER_TEMP 'ocelot-release-notes.md'
+          [IO.File]::WriteAllText($notesPath, $notes, [Text.UTF8Encoding]::new($false))
+          gh release edit $env:RELEASE_TAG --notes-file $notesPath
+          if ($LASTEXITCODE -ne 0) { throw "VirusTotal release results could not be saved" }
 
   # Fedora rather than the Ubuntu runner: the program needs Qt 6.5 for
   # Application.styleHints.colorScheme, and Ubuntu 24.04 still carries 6.4.
   linux:
     if: >-
-      startsWith(github.ref, 'refs/tags/')
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/'))
       || inputs.platforms == 'all'
       || inputs.platforms == 'linux'
     runs-on: ubuntu-latest
@@ -336,9 +401,21 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0    # the version comes from git describe
+          ref: ${{ env.RELEASE_TAG && format('refs/tags/{0}', env.RELEASE_TAG) || github.ref }}
 
       - name: Allow git to read the checkout
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Verify the release source
+        if: env.RELEASE_TAG != ''
+        run: |
+          printf '%s\n' "$RELEASE_TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$'
+          release_commit=$(git rev-parse --verify "refs/tags/$RELEASE_TAG^{commit}")
+          test "$(git rev-parse HEAD)" = "$release_commit"
+          version=$(sed -nE '/^project\(ocelot/,/^\)/s/^[[:space:]]*VERSION[[:space:]]+([0-9.]+).*/\1/p' CMakeLists.txt)
+          test "$version" = "${RELEASE_TAG#v}"
+          echo "RELEASE_COMMIT=$release_commit" >> "$GITHUB_ENV"
+          printf 'Release source: %s at %s\n' "$RELEASE_TAG" "$release_commit"
 
       - name: Configure
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
@@ -420,7 +497,7 @@ jobs:
       # that can be handed to someone. Only for tags - a branch run has no
       # release to attach anything to.
       - name: Publish the app image on the release page
-        if: startsWith(github.ref, 'refs/tags/')
+        if: env.RELEASE_TAG != ''
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -429,10 +506,12 @@ jobs:
           # it. Uploading into a release that does not exist yet is what broke
           # the first run of this: only the Windows job created one, and it is
           # the slowest of the four.
-          if ! gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
-              gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" \
-                  --notes "Built from $GITHUB_SHA." || true
+          if ! gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+              if ! gh release create "$RELEASE_TAG" --verify-tag --title "$RELEASE_TAG" \
+                  --notes "Built from $RELEASE_COMMIT."; then
+                  gh release view "$RELEASE_TAG" >/dev/null
+              fi
           fi
-          gh release upload "$GITHUB_REF_NAME" \
+          gh release upload "$RELEASE_TAG" \
               ocelot-x86_64.AppImage \
               ocelot-x86_64.AppImage.sha512 --clobber

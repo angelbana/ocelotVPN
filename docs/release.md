@@ -51,9 +51,22 @@ appears it stays unsigned.
 Tagged Windows releases require the GitHub Actions secret `VT_API_KEY`.
 After signature and checksum verification, the workflow scans the final signed
 installer, waits for a completed report, and adds its link to the release.
-An existing report for the same SHA-256 is reused. Analysis errors or detections
-require review before Windows packages are published; the result is retained
-in the `windows-virustotal-report` CI artifact.
+An existing report for the same SHA-256 is reused. API errors, incomplete scans,
+and invalid reports block publication. Signed installer and portable packages
+are retained as CI artifacts before scanning; the report is retained separately
+in `windows-virustotal-report`.
+
+Detections block automatic releases pending review. After reviewing a specific
+report, the owner may dispatch a manual release with
+`allow_reported_detections=true`. That run retains a warning and publishes the
+report link, analysis date, and actual detection counts. This permission applies
+only to the manual run and does not imply that the file is safe.
+
+To rebuild an existing tag without moving it, dispatch `Release` from current
+`main`, set `release_tag` (for example `v1.1.5`), and choose `platforms`.
+The workflow verifies the tag, source commit, and application version before
+signing and attaching packages. Choose `windows` when recovering Windows only;
+an already verified Linux package from the same tag does not need rebuilding.
 
 Use an account whose terms allow your release workflow. The free Public API
 restricts business workflows and commercial use. Account quotas must also cover

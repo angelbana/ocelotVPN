@@ -12,6 +12,9 @@ upstream; this file begins with the first Ocelot release.
 - Keeps DNS and transport failures from triggering a saved-password retry.
 - Verifies the final signed Windows installer with VirusTotal before attaching
   a completed report to the release.
+- Retains signed Windows artifacts before scanning and supports reviewed manual
+  release retries without moving an existing tag. Detection warnings remain
+  visible with the report's actual results.
 
 ## 1.1.4 - 2026-10-20
 
