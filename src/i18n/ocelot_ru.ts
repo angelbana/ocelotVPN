@@ -1178,6 +1178,10 @@
         <translation>Ошибка входа: не удалось получить ключ сеанса</translation>
     </message>
     <message>
+        <source>Could not connect to the VPN server or complete sign-in (%1)</source>
+        <translation>Не удалось подключиться к VPN-серверу или завершить вход (%1)</translation>
+    </message>
+    <message>
         <location filename="../vpninfo.cpp" line="652"/>
         <source>Error establishing the CSTP channel</source>
         <translation>Не удалось установить канал CSTP</translation>

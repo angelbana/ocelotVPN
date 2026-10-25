@@ -67,7 +67,7 @@ extern "C" {
 #include <QFileInfo>
 #include <QNetworkRequest>
 #include <QProcess>
-#include <QTemporaryFile>
+#include <QTemporaryDir>
 #include <QRegularExpression>
 #include <QStandardPaths>
 #include <QSysInfo>
@@ -82,6 +82,7 @@ extern "C" {
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 
 #ifdef _WIN32
 #define pipe_write(x, y, z) send(x, y, z, 0)
@@ -121,6 +122,7 @@ static void main_loop(VpnInfo* vpninfo, VpnController* controller)
                 goto fail;
 
             if (pass_was_empty != true && vpninfo->auth_failed == true
+                && vpninfo->password_set != 0
                 && vpninfo->form_pass_attempt == 0) {
                 /* authentication failed in batch mode? switch to non
                  * batch and retry */
@@ -168,8 +170,9 @@ void VpnController::cleanupNrptRules(bool flushCache)
         return;
     }
     QProcess* process = new QProcess(this);
-    QTemporaryFile* script = new QTemporaryFile(
-        QDir::tempPath() + QStringLiteral("/ocelot-dns-XXXXXX.ps1"), process);
+    const auto scriptDirectory = std::make_shared<QTemporaryDir>(
+        QDir::tempPath() + QStringLiteral("/ocelot-dns-XXXXXX"));
+    QFile script(scriptDirectory->filePath(QStringLiteral("cleanup.ps1")));
     const QString host = QString::fromLatin1(QUrl::toAce(QUrl::fromUserInput(m_gateway).host()));
     const QByteArray gatewayArgument = flushCache
         ? (QStringLiteral(" -GatewayHost '") + QString(host).replace(QLatin1Char('\''), QStringLiteral("''"))
@@ -179,17 +182,20 @@ void VpnController::cleanupNrptRules(bool flushCache)
         "try { Invoke-OcelotDns -Action Cleanup") + gatewayArgument + QByteArrayLiteral(
         " | ConvertTo-Json -Compress; exit 0 }\n"
         "catch { [Console]::Error.WriteLine($_.Exception.Message); exit 1 }\n");
-    if (script->open() == false || script->write(command) != command.size()
-        || script->flush() == false) {
+    if (scriptDirectory->isValid() == false || script.open(QIODevice::WriteOnly) == false
+        || script.write(command) != command.size() || script.flush() == false) {
         process->deleteLater();
         emit errorOccurred(tr("Split DNS"), tr("The DNS repair helper could not be written."));
         return;
     }
-    script->close();
+    // QTemporaryFile keeps its native handle open after close(), which prevents
+    // Windows PowerShell from reading it. An ordinary file really closes here.
+    script.close();
     m_dnsRepairing = true;
     emit dnsRepairingChanged();
 
-    const auto finish = [this, process, flushCache](bool success, const QString& detail) {
+    // Keep the private directory until the child and its callbacks are gone.
+    const auto finish = [this, process, flushCache, scriptDirectory](bool success, const QString& detail) {
         if (process->property("dnsHandled").toBool()) {
             return;
         }
@@ -235,7 +241,7 @@ void VpnController::cleanupNrptRules(bool flushCache)
             << QStringLiteral("-NoProfile")
             << QStringLiteral("-NonInteractive")
             << QStringLiteral("-ExecutionPolicy") << QStringLiteral("Bypass")
-            << QStringLiteral("-File") << script->fileName());
+            << QStringLiteral("-File") << script.fileName());
 #else
     Q_UNUSED(flushCache);
 #endif

@@ -46,6 +46,21 @@ purpose.
 Only the x86-64 build is signed. There is no 32-bit build, and if one ever
 appears it stays unsigned.
 
+## VirusTotal
+
+Tagged Windows releases require the GitHub Actions secret `VT_API_KEY`.
+After signature and checksum verification, the workflow scans the final signed
+installer, waits for a completed report, and adds its link to the release.
+An existing report for the same SHA-256 is reused. Analysis errors or detections
+require review before Windows packages are published; the result is retained
+in the `windows-virustotal-report` CI artifact.
+
+Use an account whose terms allow your release workflow. The free Public API
+restricts business workflows and commercial use. Account quotas must also cover
+other projects using the same key; this repository's queue coordinates only its
+Windows releases. The key is passed through the environment and is not included
+in release files.
+
 ## After the release: winget
 
 The manifests that let anyone install the program with

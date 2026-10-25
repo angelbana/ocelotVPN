@@ -519,6 +519,10 @@ ApplicationWindow {
     // A frameless window has no edges to catch, so they are drawn in - last,
     // so they sit above everything else.
     ResizeEdges {
+        // ApplicationWindow's content starts below the title bar. Grips belong
+        // to the whole window and must take precedence over title-bar dragging.
+        parent: mainWindow.header.parent
+        z: mainWindow.header.z + 1
         window: mainWindow
         visible: mainWindow.ownChrome
     }

@@ -33,6 +33,7 @@
 #include <QHash>
 #include <QUrl>
 
+#include <cerrno>
 #include <cstdarg>
 #include <cstdio>
 
@@ -660,8 +661,15 @@ int VpnInfo::connect()
 
     ret = openconnect_obtain_cookie(vpninfo);
     if (ret != 0) {
-        this->last_err = QObject::tr("Authentication error; cannot obtain cookie");
-        this->auth_failed = this->auth_cancelled == false;
+        this->auth_cancelled = this->auth_cancelled
+            || ret == OC_FORM_RESULT_CANCELLED || ret == -EINTR;
+        // Cookie acquisition also covers DNS, TLS and transport setup. Only
+        // permission failures indicate a refusal worth stopping auth retries.
+        this->auth_failed = this->auth_cancelled == false
+            && (ret == -EPERM || ret == -EACCES);
+        this->last_err = this->auth_failed
+            ? QObject::tr("Authentication error; cannot obtain cookie")
+            : QObject::tr("Could not connect to the VPN server or complete sign-in (%1)").arg(ret);
         return ret;
     }
 

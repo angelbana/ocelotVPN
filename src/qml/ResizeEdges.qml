@@ -45,7 +45,9 @@ Item {
         }
 
         TapHandler {
-            gesturePolicy: TapHandler.DragThreshold
+            // Keep this press exclusive until release: neither title dragging
+            // nor content gestures should start while the system resizes us.
+            gesturePolicy: TapHandler.ReleaseWithinBounds
             onPressedChanged: {
                 if (pressed)
                     root.window.startSystemResize(edge.edges);

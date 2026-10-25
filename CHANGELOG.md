@@ -3,6 +3,16 @@ History of user-visible changes.
 Ocelot grew out of openconnect-gui. That project's own history stays with it
 upstream; this file begins with the first Ocelot release.
 
+## 1.1.5 - 2026-10-26
+
+- Fixes DNS repair failing to launch its PowerShell script on Windows because
+  the temporary file remained locked.
+- Covers the custom title bar with resize grips and keeps resize gestures
+  separate from window dragging and content interaction.
+- Keeps DNS and transport failures from triggering a saved-password retry.
+- Verifies the final signed Windows installer with VirusTotal before attaching
+  a completed report to the release.
+
 ## 1.1.4 - 2026-10-20
 
 - Downloads Windows updates in the background by default, verifies cached
