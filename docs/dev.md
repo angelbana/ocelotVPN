@@ -67,7 +67,7 @@ comes with the `vpnc-scripts` package:
 
 From the repository root, build the native package and run it with:
 
-    nix --extra-experimental-features 'nix-command flakes' build path:.
+    nix --extra-experimental-features 'nix-command flakes' build .#ocelot
     sudo ./result/bin/ocelot
 
 The package includes the Qt runtime and uses the Nix-packaged `vpnc-script`.

@@ -57,7 +57,7 @@
             meta = {
               description = "OpenConnect-based VPN client";
               homepage = "https://github.com/angelbana/ocelotVPN";
-              license = pkgs.lib.licenses.gpl2Only;
+              license = pkgs.lib.licenses.gpl2Plus;
               mainProgram = "ocelot";
             };
           };
