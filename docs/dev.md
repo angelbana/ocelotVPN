@@ -63,6 +63,16 @@ comes with the `vpnc-scripts` package:
 
     sudo ./build/bin/ocelot
 
+### NixOS
+
+From the repository root, build the native package and run it with:
+
+    nix --extra-experimental-features 'nix-command flakes' build path:.
+    sudo ./result/bin/ocelot
+
+The package includes the Qt runtime and uses the Nix-packaged `vpnc-script`.
+Ocelot needs root privileges to create the tunnel and configure routes.
+
 ### The app image
 
 Built from the installed tree, not from the build directory: the desktop entry,
